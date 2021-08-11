@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -41,7 +44,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plugins" href="../plugins.html" />
-    <link rel="prev" title="hmc_update_upgrade – Manages the update and upgrade of HMC" href="hmc_update_upgrade.html" /> 
+    <link rel="prev" title="power_system – PowerOn, PowerOff a Managed system" href="power_system.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,17 +89,18 @@
               
             
             
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 </ul>
-<p class="caption"><span class="caption-text">References</span></p>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#module-reference">Module reference</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hmc_pwdpolicy.html">hmc_pwdpolicy – Manages the list, create, change and remove password policies of HMC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hmc_update_upgrade.html">hmc_update_upgrade – Manages the update and upgrade of HMC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="power_system.html">power_system – PowerOn, PowerOff a Managed system</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">powervm_lpar_instance – Create, Delete, Shutdown and Activate an AIX/Linux or IBMi partition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -115,16 +119,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../playbooks.html">Playbooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../demo.html">Demo</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Community Guides</span></p>
+<p class="caption" role="heading"><span class="caption-text">Community Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../community_guides.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../community_guides.html#helpful-links">Helpful Links</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Requirements</span></p>
+<p class="caption" role="heading"><span class="caption-text">Requirements</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Appendices</span></p>
+<p class="caption" role="heading"><span class="caption-text">Appendices</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Releases</a></li>
 </ul>
@@ -279,9 +283,40 @@
 </dd>
 </dl>
 </dd>
-<dt>virt_network_name (optional, str, None)</dt><dd><p>Virtual Network Name to be attached to the partition</p>
+<dt>virt_network_config (optional, dict, None)</dt><dd><p>Virtual Network configuration of the partition</p>
 <p>This implicitly adds a Virtual Ethernet Adapter with given virtual network to the partition</p>
 <p>Make sure provided Virtual Network has been attached to an active Network Bridge for external network communication</p>
+<dl class="simple">
+<dt>network_name (True, str, None)</dt><dd><p>Virtual Network Name to be attached to the partition. This parameter is mandatory with <em>virt_network_config</em></p>
+</dd>
+<dt>slot_number (optional, int, None)</dt><dd><p>Virtual slot number of a partition on which virtual network to be attached. This paramter is optional, if user doesn’t pass, it chooses next available.</p>
+</dd>
+</dl>
+</dd>
+<dt>npiv_config (optional, list, None)</dt><dd><p>To configure N-Port ID Virtualization also known as Virtual Fibre of the partition</p>
+<p>User can provide two fc port configurations and mapping will be created with VIOS implicitly</p>
+<dl>
+<dt>vios_name (True, str, None)</dt><dd><p>The name of the vios in which fc port available</p>
+<p>This option is mandatory</p>
+</dd>
+<dt>fc_port (True, str, None)</dt><dd><p>The port to be used for npiv. User can specify either port name or fully qualified location code</p>
+<p>This option is mandatory</p>
+</dd>
+<dt>wwpn_pair (optional, str, None)</dt><dd><p>The WWPN pair value to be configuired with client FC adapter.</p>
+<p>Both the WWPN value should be separated with semicolon delimiter</p>
+<p>Optional, if not provided the value will be auto assigned</p>
+</dd>
+</dl>
+</dd>
+<dt>all_resources (optional, bool, None)</dt><dd><p>Create a partition withh all the resources available in the managed system.</p>
+<p>When we choose this as true, make sure that all partitions are in shutdown state, if any exist in managed system.</p>
+<p>Default is false</p>
+</dd>
+<dt>max_virtual_slots (optional, int, None)</dt><dd><p>Maximum virtual slots configuration of the partition.</p>
+<p>if user doesn’t pass, it create partition with <em>max_virtual_slots</em> 20 as default.</p>
+</dd>
+<dt>physical_io (optional, list, None)</dt><dd><p>Physical IO adapter to be added to the partition</p>
+<p>An illustrative pattern for IO location code is XXXXX.XXX.XXXXXXX-P1-T1 or P1-T1</p>
 </dd>
 <dt>retain_vios_cfg (optional, bool, None)</dt><dd><p>Do not remove the VIOS configuration like server adapters, storage mappings associated with the partition when deleting the partition</p>
 <p>Applicable only for delete</p>
@@ -292,9 +327,11 @@
 </dd>
 <dt>state (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">present</span></code> creates a partition of specifed <em>os_type</em>, <em>vm_name</em>, <em>proc</em> and <em>memory</em> on specified <em>system_name</em></p>
 <p><code class="docutils literal notranslate"><span class="pre">absent</span></code> deletes a partition of specified <em>vm_name</em> on specified <em>system_name</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">facts</span></code> fetches a details of specified <em>vm_name</em> on specified <em>system_name</em></p>
 </dd>
 <dt>action (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">shutdown</span></code> shutdown a partition of specified <em>vm_name</em> on specified <em>system_name</em></p>
 <p><code class="docutils literal notranslate"><span class="pre">poweron</span></code> poweron a partition of specified <em>vm_name</em> with specified <em>prof_name</em>, <em>keylock</em>, <em>iIPLsource</em> on specified <em>system_name</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">restart</span></code> restart a partition of specified <em>vm_name</em> on specified <em>system_name</em></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -329,7 +366,7 @@
       <span class="nt">os_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ibmi</span>
       <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">present</span>
 
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Create an AIX/Linux logical partition instance with default proc, mem, virt_network_name and  volume_config&#39;s volumes_size values</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Create an AIX/Linux logical partition instance with default proc, mem, virt_network_config and  volume_config&#39;s volumes_size values</span>
   <span class="nt">powervm_lpar_instance</span><span class="p">:</span>
       <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&#39;</span>
       <span class="nt">hmc_auth</span><span class="p">:</span>
@@ -339,7 +376,9 @@
       <span class="nt">vm_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vm_name&gt;</span>
       <span class="nt">volume_config</span><span class="p">:</span>
          <span class="nt">volume_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;size&gt;</span>
-      <span class="nt">virt_network_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;virtual_nw_name&gt;</span>
+      <span class="nt">virt_network_config</span><span class="p">:</span>
+         <span class="nt">network_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;virtual_nw_name&gt;</span>
+         <span class="nt">slot_number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;slot no&gt;</span>
       <span class="nt">os_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">aix_linux</span>
       <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">present</span>
 
@@ -420,7 +459,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="../plugins.html" class="btn btn-neutral float-right" title="Plugins" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="hmc_update_upgrade.html" class="btn btn-neutral float-left" title="hmc_update_upgrade – Manages the update and upgrade of HMC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="power_system.html" class="btn btn-neutral float-left" title="power_system – PowerOn, PowerOff a Managed system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

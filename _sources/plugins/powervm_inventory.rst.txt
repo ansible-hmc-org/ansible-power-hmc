@@ -86,7 +86,7 @@ Parameters
   identify_unknown_by (optional, str, omit)
     Allows you to include partitions unable to be automatically detected as a valid Ansible target.
 
-    By default, partitions without ip's are ommited from the inventory. This is not be the case in the event you have lpar_name set for ansible_host_type. If not, omitted partitions will be added to a group called "unknown" and will can be identified by any LPAR property of your choosing (PartitionName or UUID are common identifiers).
+    By default, Aix/Linux partitions without ip's and IBMi partitions in not running state are ommited from the inventory. This is not be the case in the event you have lpar_name set for ansible_host_type. If not, omitted partitions will be added to a group called "unknown" and will can be identified by any LPAR property of your choosing (PartitionName or UUID are common identifiers).
 
     If you do not omit unknown partitions, you may run into issues targetting groups that include them. To avoid this, you can specify a host pattern in a playbooks such as `targetgroup:!unknown`. This will your playbook to run against all known hosts in your target group.
 
@@ -203,4 +203,6 @@ Authors
 - Torin Reilly (@torinreilly)
 - Michael Cohoon (@mtcohoon)
 - Ozzie Rodriguez
+- Anil Vijayan
+- Navinakumar Kandakur (@nkandak1)
 
