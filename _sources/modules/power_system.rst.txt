@@ -1,8 +1,8 @@
 .. _power_system_module:
 
 
-power_system -- PowerOn, PowerOff a Managed system
-==================================================
+power_system -- PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of a Managed system
+=========================================================================================
 
 .. contents::
    :local:
@@ -15,6 +15,12 @@ Synopsis
 Poweron specified managed system
 
 Poweroff specified managed system
+
+Modify System configuration of specified managed system with specified configuration details
+
+Modify hardware resource of specified managed system with specified hardware resource details
+
+Get the facts of the specified managed system
 
 
 
@@ -58,8 +64,6 @@ Parameters
 
     Configuring this option with '1' will power off Managed System after all partitions are shut down
 
-    And Configuring this option with '0' will not power off Managed System after all partitions are shut down
-
 
   power_on_lpar_start_policy (optional, str, None)
     power on partition start policy to be configured on specified *system_name* for the next system restart
@@ -70,13 +74,15 @@ Parameters
   requested_num_sys_huge_pages (optional, int, None)
     Configures the number of pages of huge page memory.
 
-    You can change this value only when the managed system is powered off.
+    User can change this value only when the managed system is powered off.
 
     This option works with *modify_hwres* action
 
 
   mem_mirroring_mode (optional, str, None)
     Configures the memory mirroring mode on specified *system_name* for the next system power-on or system restart
+
+    User can use this option on only managed systems which supports memory mirroring.
 
     This option works with *modify_hwres* action
 
@@ -133,6 +139,39 @@ Examples
              password: '{{ hmc_password }}'
         system_name: sys_name
         action: poweron
+
+    - name: modify managed system name, powerOn lpar start policy and powerOff policy
+      hmc_managed_system:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+             username: '{{ ansible_user }}'
+             password: '{{ hmc_password }}'
+        system_name: sys_name
+        new_name: <System_name_to_be_changed>
+        power_off_policy: '1'
+        power_on_lpar_start_policy: autostart
+        action: modify_syscfg
+
+    - name: modify managed system memory settings
+      hmc_managed_system:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+             username: '{{ ansible_user }}'
+             password: '{{ hmc_password }}'
+        system_name: sys_name
+        requested_num_sys_huge_pages: <sys_huge_pages_to_be_set>
+        mem_mirroring_mode: sys_firmware_only
+        pend_mem_region_size: auto
+        action: modify_hwres
+
+    - name: fetch the managed system details
+      hmc_managed_system:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+             username: '{{ ansible_user }}'
+             password: '{{ hmc_password }}'
+        system_name: sys_name
+        state: facts
 
 
 
