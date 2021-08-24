@@ -106,7 +106,7 @@ Parameters
 
 
   state (optional, str, None)
-    ``facts`` fetches destails of specified *system_name*
+    ``facts`` fetch details of specified *system_name*
 
 
 
