@@ -1,0 +1,101 @@
+.. _hmc_adhoc_command_module:
+
+
+hmc_adhoc_command -- run an adhoc command on HMC
+================================================
+
+.. contents::
+   :local:
+   :depth: 1
+
+
+Synopsis
+--------
+
+Execute HMC command
+
+
+
+
+
+
+Parameters
+----------
+
+  hmc_host (True, str, None)
+    The IPaddress or hostname of the HMC.
+
+
+  hmc_auth (True, dict, None)
+    Username and Password credential of the HMC.
+
+
+    username (True, str, None)
+      Username of the HMC to login.
+
+
+    password (optional, str, None)
+      Password of the HMC.
+
+
+
+  cmd (True, str, None)
+    The command to be executed on HMC.
+
+
+  action (optional, str, None)
+    ``run`` Runs command on HMC.
+
+
+
+
+
+
+
+
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    
+    - name: validate specified vm_name migration
+      powervm_lpar_migration:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+             username: '{{ ansible_user }}'
+             password: '{{ hmc_password }}'
+        cmd: <cmd>
+        action: run
+
+
+
+Return Values
+-------------
+
+Command_output (always, str, )
+  Respective command output
+
+
+
+
+
+Status
+------
+
+
+
+
+- This module is not guaranteed to have a backwards compatible interface. *[preview]*
+
+
+- This module is maintained by community.
+
+
+
+Authors
+~~~~~~~
+
+- Navinakumar Kandakur (@nkandak1)
+

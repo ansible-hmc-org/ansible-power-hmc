@@ -115,10 +115,10 @@ Parameters
     This option is valid only for ``poweron`` *action*
 
 
-  volume_config (optional, dict, None)
+  volume_config (optional, list, None)
     Storage volume configurations of a partition.
 
-    Attaches Physical Volume via Virtual SCSI.
+    Attach Physical Volumes via Virtual SCSI.
 
     Redundant paths created by default, if the specified/identified physical volume is visible in more than one VIOS.
 
@@ -138,7 +138,7 @@ Parameters
 
 
 
-  virt_network_config (optional, dict, None)
+  virt_network_config (optional, list, None)
     Virtual Network configuration of the partition
 
     This implicitly adds a Virtual Ethernet Adapter with given virtual network to the partition
@@ -220,6 +220,16 @@ Parameters
     Default is to not delete the virtual disks.
 
 
+  advanced_info (optional, bool, None)
+    Option to display advanced information of the logical partition.
+
+    Applicable only for ``facts`` state.
+
+    Default is false.
+
+    Currently we are showing only NPIV storage details.
+
+
   state (optional, str, None)
     ``present`` creates a partition of the specified *os_type*, *vm_name*, *proc* and *memory* on specified *system_name*.
 
@@ -288,8 +298,8 @@ Examples
           volume_config:
              volume_size: <disk_size>
           virt_network_config:
-             network_name: <virtual_nw_name>
-             slot_number: <client_slot_no>
+             - network_name: <virtual_nw_name>
+               slot_number: <client_slot_no>
           npiv_config:
              - vios_name: <viosname>
                fc_port: <fc_port_name/loc_code>
@@ -352,7 +362,6 @@ Examples
           vm_name: <vm_name>
           all_resources: True
           state: present
-
 
 
 
