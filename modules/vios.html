@@ -122,12 +122,15 @@
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h2>
 <p>Creates VIOS partition</p>
+<p>Installs VIOS</p>
+<p>Displays VIOS information</p>
+<p>Accepts VIOS License</p>
 </section>
 <section id="parameters">
 <h2><a class="toc-backref" href="#id2">Parameters</a><a class="headerlink" href="#parameters" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><dl>
-<dt>hmc_host (True, str, None)</dt><dd><p>The IPaddress or hostname of the HMC.</p>
+<dt>hmc_host (True, str, None)</dt><dd><p>The IP Address or hostname of the HMC.</p>
 </dd>
 <dt>hmc_auth (True, dict, None)</dt><dd><p>Username and Password credential of the HMC.</p>
 <dl class="simple">
@@ -139,42 +142,43 @@
 </dd>
 <dt>system_name (True, str, None)</dt><dd><p>The name of the managed system.</p>
 </dd>
-<dt>name (True, str, None)</dt><dd><p>The name of the VirtualIOServer</p>
+<dt>name (True, str, None)</dt><dd><p>The name of the VirtualIOServer.</p>
 </dd>
-<dt>settings (optional, dict, None)</dt><dd><p>To configure various supported attributes of VIOS partition</p>
+<dt>settings (optional, dict, None)</dt><dd><p>To configure various supported attributes of VIOS partition.</p>
 <p>Supports all the attributes available for creation of VIOS on the mksyscfg command</p>
+<p>valid only for <code class="docutils literal notranslate"><span class="pre">state</span></code> = <em>present</em></p>
 </dd>
-<dt>nim_IP (optional, str, None)</dt><dd><p>IP Address of the NIM Server</p>
+<dt>nim_IP (optional, str, None)</dt><dd><p>IP Address of the NIM Server.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>nim_gateway (optional, str, None)</dt><dd><p>VIOS gateway IP Address</p>
+<dt>nim_gateway (optional, str, None)</dt><dd><p>VIOS gateway IP Address.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>vios_IP (optional, str, None)</dt><dd><p>IP Address to be configured to VIOS</p>
+<dt>vios_IP (optional, str, None)</dt><dd><p>IP Address to be configured to VIOS.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>prof_name (optional, str, None)</dt><dd><p>Profile Name to be used for VIOS install</p>
+<dt>prof_name (optional, str, None)</dt><dd><p>Profile Name to be used for VIOS install.</p>
 <p>Default profile name ‘default_profile’</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>location_code (optional, str, None)</dt><dd><p>network adapter location code to be used while installing VIOS</p>
-<p>If user doesn’t pass, it automatically picks the first successfule adapter attached to partition</p>
+<dt>location_code (optional, str, None)</dt><dd><p>Network adapter location code to be used while installing VIOS.</p>
+<p>If user doesn’t provide, it automatically picks the first pingable adapter attached to the partition.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>nim_subnetmask (optional, str, None)</dt><dd><p>Subnetmask IP Address to be configured to VIOS</p>
+<dt>nim_subnetmask (optional, str, None)</dt><dd><p>Subnetmask IP Address to be configured to VIOS.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>nim_vlan_id (optional, str, None)</dt><dd><p>Specifies the VLANID(0 to 4094) to use for tagging Ethernet frames during network install for virtual network communication</p>
+<dt>nim_vlan_id (optional, str, None)</dt><dd><p>Specifies the VLANID(0 to 4094) to use for tagging Ethernet frames during network install for virtual network communication.</p>
 <p>Default value is 0</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>nim_vlan_priority (optional, str, None)</dt><dd><p>Specifies the VLAN priority (0 to 7) to use for tagging Ethernet frames during network install for virtual network communication</p>
+<dt>nim_vlan_priority (optional, str, None)</dt><dd><p>Specifies the VLAN priority (0 to 7) to use for tagging Ethernet frames during network install for virtual network communication.</p>
 <p>Default value is 0</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
-<dt>timeout (optional, int, None)</dt><dd><p>Max waiting time in mins for VIOS to bootup fully</p>
-<p>Min timeout should be more than 10 mins</p>
-<p>Default value is 60 min</p>
+<dt>timeout (optional, int, None)</dt><dd><p>Max waiting time in mins for VIOS to bootup fully.</p>
+<p>Min timeout should be more than 10 mins.</p>
+<p>Default value is 60 min.</p>
 <p>valid only for <code class="docutils literal notranslate"><span class="pre">action</span></code> = <em>install</em></p>
 </dd>
 <dt>state (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">facts</span></code> fetch details of specified <em>virtualioserver</em></p>
@@ -192,10 +196,23 @@
   <span class="nt">vios</span><span class="p">:</span>
     <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&quot;</span>
     <span class="nt">hmc_auth</span><span class="p">:</span>
-         <span class="nt">username</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">ansible_user</span> <span class="cp">}}</span><span class="s">&#39;</span>
-         <span class="nt">password</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">hmc_password</span> <span class="cp">}}</span><span class="s">&#39;</span>
+      <span class="nt">username</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">ansible_user</span> <span class="cp">}}</span><span class="s">&#39;</span>
+      <span class="nt">password</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">hmc_password</span> <span class="cp">}}</span><span class="s">&#39;</span>
     <span class="nt">system_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;managed_system_name&gt;</span>
     <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vios_partition_name&gt;</span>
+    <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">present</span>
+
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Create VIOS with user defined settings</span>
+  <span class="nt">vios</span><span class="p">:</span>
+    <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&#39;</span>
+    <span class="nt">hmc_auth</span><span class="p">:</span>
+      <span class="nt">username</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">ansible_user</span> <span class="cp">}}</span><span class="s">&#39;</span>
+      <span class="nt">password</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">hmc_password</span> <span class="cp">}}</span><span class="s">&#39;</span>
+    <span class="nt">system_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;managed_system_name&gt;</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vios_partition_name&gt;</span>
+    <span class="nt">settings</span><span class="p">:</span>
+      <span class="nt">profile_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;profileName&gt;</span>
+      <span class="nt">io_slots</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;ioslot1&gt;,&lt;ioslot2&gt;</span>
     <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">present</span>
 
 <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Install VIOS using NIM Server</span>
@@ -211,6 +228,16 @@
     <span class="nt">vios_IP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vios ip&gt;</span>
     <span class="nt">nim_subnetmask</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;subnetmask&gt;</span>
     <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">install</span>
+
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Accept License after VIOS Installation</span>
+  <span class="nt">vios</span><span class="p">:</span>
+    <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&quot;</span>
+    <span class="nt">hmc_auth</span><span class="p">:</span>
+         <span class="nt">username</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">ansible_user</span> <span class="cp">}}</span><span class="s">&#39;</span>
+         <span class="nt">password</span><span class="p">:</span> <span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">hmc_password</span> <span class="cp">}}</span><span class="s">&#39;</span>
+    <span class="nt">system_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;managed_system_name&gt;</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vios_partition_name&gt;</span>
+    <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">accept_license</span>
 </pre></div>
 </div>
 </section>

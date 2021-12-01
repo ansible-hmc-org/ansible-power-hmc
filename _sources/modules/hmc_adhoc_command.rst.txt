@@ -23,7 +23,7 @@ Parameters
 ----------
 
   hmc_host (True, str, None)
-    The IPaddress or hostname of the HMC.
+    The IP address or hostname of the HMC.
 
 
   hmc_auth (True, dict, None)
@@ -60,8 +60,8 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: validate specified vm_name migration
-      powervm_lpar_migration:
+    - name: Execute a command on HMC
+      hmc_adhoc_command:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
              username: '{{ ansible_user }}'

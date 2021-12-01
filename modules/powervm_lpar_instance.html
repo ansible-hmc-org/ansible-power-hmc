@@ -188,10 +188,12 @@
 <p>Attach Physical Volumes via Virtual SCSI.</p>
 <p>Redundant paths created by default, if the specified/identified physical volume is visible in more than one VIOS.</p>
 <p>User needs to provide either <em>volume_size</em> or both <em>volume_name</em> and <em>vios_name</em>. If <em>volume_size</em> is provided, available physical volume matching or greater than specified size would be attached.</p>
-<dl class="simple">
-<dt>volume_name (optional, str, None)</dt><dd><p>Physical volume name visible through VIOS. This option is mutually exclusive with <em>volume_size</em></p>
+<dl>
+<dt>volume_name (optional, str, None)</dt><dd><p>Physical volume name visible through VIOS.</p>
+<p>This option is mutually exclusive with <em>volume_size</em></p>
 </dd>
-<dt>vios_name (optional, str, None)</dt><dd><p>VIOS name to which mentioned <em>volume_name</em> is present. This option is mutually exclusive with <em>volume_size</em></p>
+<dt>vios_name (optional, str, None)</dt><dd><p>VIOS name to which mentioned <em>volume_name</em> is present.</p>
+<p>This option is mutually exclusive with <em>volume_size</em></p>
 </dd>
 <dt>volume_size (optional, int, None)</dt><dd><p>Physical volume size in MB</p>
 </dd>
@@ -283,9 +285,13 @@
       <span class="nt">proc_unit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
       <span class="nt">mem</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20480</span>
       <span class="nt">volume_config</span><span class="p">:</span>
-         <span class="nt">vios_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;viosname&gt;</span>
-         <span class="nt">volume_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;volumename&gt;</span>
-      <span class="nt">physical_io</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;IO_location_code&gt;</span>
+         <span class="p p-Indicator">-</span> <span class="nt">vios_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;viosname1&gt;</span>
+           <span class="nt">volume_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;volumename1&gt;</span>
+         <span class="p p-Indicator">-</span> <span class="nt">vios_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;viosname2&gt;</span>
+           <span class="nt">volume_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;volumename2&gt;</span>
+      <span class="nt">physical_io</span><span class="p">:</span>
+         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">&lt;physicalIO location code&gt;</span>
+         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">&lt;physicalio location code&gt;</span>
       <span class="nt">max_virtual_slots</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
       <span class="nt">os_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ibmi</span>
       <span class="nt">state</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">present</span>
@@ -300,7 +306,8 @@
       <span class="nt">system_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;system_name&gt;</span>
       <span class="nt">vm_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vm_name&gt;</span>
       <span class="nt">volume_config</span><span class="p">:</span>
-         <span class="nt">volume_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;disk_size&gt;</span>
+         <span class="p p-Indicator">-</span> <span class="nt">volume_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;disk_size&gt;</span>
+         <span class="p p-Indicator">-</span> <span class="nt">volume_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;disk_size&gt;</span>
       <span class="nt">virt_network_config</span><span class="p">:</span>
          <span class="p p-Indicator">-</span> <span class="nt">network_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;virtual_nw_name&gt;</span>
            <span class="nt">slot_number</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;client_slot_no&gt;</span>

@@ -27,7 +27,7 @@ Parameters
 ----------
 
   hmc_host (True, str, None)
-    The IPaddress or hostname of the HMC.
+    The IP Address or hostname of the HMC.
 
 
   hmc_auth (True, dict, None)
@@ -50,23 +50,23 @@ Parameters
   dest_system (optional, str, None)
     The name of the destination managed system.
 
-    valid only for ``validate`` and ``migrate`` operation
+    valid only for ``validate`` and ``migrate`` *action* operation.
 
 
   vm_names (optional, list, None)
     Name of the partition/s to be migrated/validated.
 
-    To perform action on multiple partitions, provide comma seperated partition names or in list form
+    To perform action on multiple partitions, provide comma separated partition names or in list form.
 
-    For ``recover`` *action* only one partition name is allowed
+    For ``recover`` *action* only one partition name is allowed.
 
 
   vm_ids (optional, list, None)
-    ID/s of the partition to be  migrated/validated.
+    ID/s of the partition to be migrated/validated.
 
-    To perform action on multiple partitions, provide comma seperated partition ids or in list form
+    To perform action on multiple partitions, provide comma separated partition ids or in list form.
 
-    For ``recover`` *action* only one partition id is allowed
+    For ``recover`` *action* only one partition id is allowed.
 
 
   all_vms (optional, bool, None)
@@ -76,11 +76,11 @@ Parameters
 
 
   action (optional, str, None)
-    ``validate`` validate a specified partition.
+    ``validate`` validate a specified partition/s.
 
-    ``migrate`` migrate a specified partition from *src_system* to *dest_system*.
+    ``migrate`` migrate a specified partition/s from *src_system* to *dest_system*.
 
-    ``recover`` recover a specified partition .
+    ``recover`` recover a specified partition.
 
 
 
@@ -96,7 +96,7 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: validate specified vm_namemigration
+    - name: Validate that the input partitions can be migrated to the destination
       powervm_lpar_migration:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
@@ -109,7 +109,7 @@ Examples
           - <vm_name2>
         action: validate
 
-    - name: recover specifed vm_id
+    - name: recover specifed vm_id from migration failure
       powervm_lpar_migration:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
