@@ -1,8 +1,8 @@
-.. _hmc_adhoc_command_module:
+.. _hmc_command_module:
 
 
-hmc_adhoc_command -- run an adhoc command on HMC
-================================================
+hmc_command -- Execute HMC command
+==================================
 
 .. contents::
    :local:
@@ -12,7 +12,7 @@ hmc_adhoc_command -- run an adhoc command on HMC
 Synopsis
 --------
 
-Execute HMC command
+Executes a command on HMC
 
 
 
@@ -61,7 +61,7 @@ Examples
 
     
     - name: Execute a command on HMC
-      hmc_adhoc_command:
+      hmc_command:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
              username: '{{ ansible_user }}'
