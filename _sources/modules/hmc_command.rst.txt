@@ -12,7 +12,11 @@ hmc_command -- Execute HMC command
 Synopsis
 --------
 
-Executes a command on HMC
+Generic module that can execute any HMC CLI command
+
+The given command will be executed on all selected HMC
+
+Information about the HMC CLI commands can be found in the https://www.ibm.com/docs/en/power10/7063-CR1?topic=hmc-commands
 
 
 
@@ -43,10 +47,6 @@ Parameters
     The command to be executed on HMC.
 
 
-  action (optional, str, None)
-    ``run`` Runs command on HMC.
-
-
 
 
 
@@ -67,7 +67,6 @@ Examples
              username: '{{ ansible_user }}'
              password: '{{ hmc_password }}'
         cmd: <cmd>
-        action: run
 
 
 

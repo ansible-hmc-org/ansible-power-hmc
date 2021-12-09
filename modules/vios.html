@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>vios – Creation and management of VirtualIOServer partition &mdash; IBM Power Systems HMC 1.0.0-beta1 documentation</title>
+  <title>vios – Creation and management of Virtual I/O Server partition &mdash; IBM Power Systems HMC 1.0.0-beta1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plugins" href="../plugins.html" />
-    <link rel="prev" title="powervm_lpar_migration – validate, migrate, recover, of the LPAR" href="powervm_lpar_migration.html" /> 
+    <link rel="prev" title="powervm_lpar_migration – validate, migrate and recover of the LPAR" href="powervm_lpar_migration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,8 +52,8 @@
 <li class="toctree-l3"><a class="reference internal" href="hmc_update_upgrade.html">hmc_update_upgrade – Manages the update and upgrade of the HMC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="power_system.html">power_system – PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of the Managed system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="powervm_lpar_instance.html">powervm_lpar_instance – Create, Delete, Shutdown, Activate, Restart and facts of an AIX/Linux or IBMi partition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="powervm_lpar_migration.html">powervm_lpar_migration – validate, migrate, recover, of the LPAR</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">vios – Creation and management of VirtualIOServer partition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="powervm_lpar_migration.html">powervm_lpar_migration – validate, migrate and recover of the LPAR</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">vios – Creation and management of Virtual I/O Server partition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#parameters">Parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
@@ -98,7 +98,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../modules.html">Modules</a> &raquo;</li>
-      <li>vios – Creation and management of VirtualIOServer partition</li>
+      <li>vios – Creation and management of Virtual I/O Server partition</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/IBM/ansible-power-hmc/blob/dev-collection/docs/source/modules/vios.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -108,8 +108,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="vios-creation-and-management-of-virtualioserver-partition">
-<span id="vios-module"></span><h1>vios – Creation and management of VirtualIOServer partition<a class="headerlink" href="#vios-creation-and-management-of-virtualioserver-partition" title="Permalink to this headline"></a></h1>
+  <section id="vios-creation-and-management-of-virtual-i-o-server-partition">
+<span id="vios-module"></span><h1>vios – Creation and management of Virtual I/O Server partition<a class="headerlink" href="#vios-creation-and-management-of-virtual-i-o-server-partition" title="Permalink to this headline"></a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
@@ -192,7 +192,7 @@
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id3">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">create VIOS with default configuration</span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Create VIOS with default configuration</span>
   <span class="nt">vios</span><span class="p">:</span>
     <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&quot;</span>
     <span class="nt">hmc_auth</span><span class="p">:</span>
@@ -244,7 +244,7 @@
 <section id="return-values">
 <h2><a class="toc-backref" href="#id4">Return Values</a><a class="headerlink" href="#return-values" title="Permalink to this headline"></a></h2>
 <dl class="simple">
-<dt>vios_info (on success for action C(install), dict, )</dt><dd><p>Respective VIOS information</p>
+<dt>vios_info (on success for action install, dict, )</dt><dd><p>Respective VIOS information</p>
 </dd>
 </dl>
 </section>
@@ -268,7 +268,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="powervm_lpar_migration.html" class="btn btn-neutral float-left" title="powervm_lpar_migration – validate, migrate, recover, of the LPAR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="powervm_lpar_migration.html" class="btn btn-neutral float-left" title="powervm_lpar_migration – validate, migrate and recover of the LPAR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../plugins.html" class="btn btn-neutral float-right" title="Plugins" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

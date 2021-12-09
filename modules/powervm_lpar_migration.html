@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>powervm_lpar_migration – validate, migrate, recover, of the LPAR &mdash; IBM Power Systems HMC 1.0.0-beta1 documentation</title>
+  <title>powervm_lpar_migration – validate, migrate and recover of the LPAR &mdash; IBM Power Systems HMC 1.0.0-beta1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="vios – Creation and management of VirtualIOServer partition" href="vios.html" />
+    <link rel="next" title="vios – Creation and management of Virtual I/O Server partition" href="vios.html" />
     <link rel="prev" title="powervm_lpar_instance – Create, Delete, Shutdown, Activate, Restart and facts of an AIX/Linux or IBMi partition" href="powervm_lpar_instance.html" /> 
 </head>
 
@@ -52,7 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="hmc_update_upgrade.html">hmc_update_upgrade – Manages the update and upgrade of the HMC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="power_system.html">power_system – PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of the Managed system</a></li>
 <li class="toctree-l3"><a class="reference internal" href="powervm_lpar_instance.html">powervm_lpar_instance – Create, Delete, Shutdown, Activate, Restart and facts of an AIX/Linux or IBMi partition</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">powervm_lpar_migration – validate, migrate, recover, of the LPAR</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">powervm_lpar_migration – validate, migrate and recover of the LPAR</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#parameters">Parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
@@ -60,7 +60,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#status">Status</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="vios.html">vios – Creation and management of VirtualIOServer partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vios.html">vios – Creation and management of Virtual I/O Server partition</a></li>
 </ul>
 </li>
 </ul>
@@ -98,7 +98,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../modules.html">Modules</a> &raquo;</li>
-      <li>powervm_lpar_migration – validate, migrate, recover, of the LPAR</li>
+      <li>powervm_lpar_migration – validate, migrate and recover of the LPAR</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/IBM/ansible-power-hmc/blob/dev-collection/docs/source/modules/powervm_lpar_migration.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -108,8 +108,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="powervm-lpar-migration-validate-migrate-recover-of-the-lpar">
-<span id="powervm-lpar-migration-module"></span><h1>powervm_lpar_migration – validate, migrate, recover, of the LPAR<a class="headerlink" href="#powervm-lpar-migration-validate-migrate-recover-of-the-lpar" title="Permalink to this headline"></a></h1>
+  <section id="powervm-lpar-migration-validate-migrate-and-recover-of-the-lpar">
+<span id="powervm-lpar-migration-module"></span><h1>powervm_lpar_migration – validate, migrate and recover of the LPAR<a class="headerlink" href="#powervm-lpar-migration-validate-migrate-and-recover-of-the-lpar" title="Permalink to this headline"></a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
@@ -121,9 +121,9 @@
 </div>
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h2>
-<p>validate provided LPAR/s for migration</p>
-<p>migrate provided LPAR/s</p>
-<p>recover provided LPAR</p>
+<p>Validate provided LPAR/s for migration</p>
+<p>Migrate provided LPAR/s</p>
+<p>Recover provided LPAR</p>
 </section>
 <section id="parameters">
 <h2><a class="toc-backref" href="#id2">Parameters</a><a class="headerlink" href="#parameters" title="Permalink to this headline"></a></h2>
@@ -177,7 +177,7 @@
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">&lt;vm_name2&gt;</span>
     <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">validate</span>
 
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">recover specifed vm_id from migration failure</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Recover specifed vm_id from migration failure</span>
   <span class="nt">powervm_lpar_migration</span><span class="p">:</span>
     <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&quot;</span>
     <span class="nt">hmc_auth</span><span class="p">:</span>
@@ -188,7 +188,7 @@
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">&lt;id1&gt;</span>
     <span class="nt">action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">recover</span>
 
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">migrate all partitions of the cec</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Migrate all partitions of the cec</span>
   <span class="nt">hmc_managed_system</span><span class="p">:</span>
     <span class="nt">hmc_host</span><span class="p">:</span> <span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&quot;</span>
     <span class="nt">hmc_auth</span><span class="p">:</span>
@@ -228,7 +228,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="powervm_lpar_instance.html" class="btn btn-neutral float-left" title="powervm_lpar_instance – Create, Delete, Shutdown, Activate, Restart and facts of an AIX/Linux or IBMi partition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="vios.html" class="btn btn-neutral float-right" title="vios – Creation and management of VirtualIOServer partition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="vios.html" class="btn btn-neutral float-right" title="vios – Creation and management of Virtual I/O Server partition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,8 +1,8 @@
 .. _vios_module:
 
 
-vios -- Creation and management of VirtualIOServer partition
-============================================================
+vios -- Creation and management of Virtual I/O Server partition
+===============================================================
 
 .. contents::
    :local:
@@ -152,7 +152,7 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: create VIOS with default configuration
+    - name: Create VIOS with default configuration
       vios:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
@@ -205,7 +205,7 @@ Examples
 Return Values
 -------------
 
-vios_info (on success for action C(install), dict, )
+vios_info (on success for action install, dict, )
   Respective VIOS information
 
 
