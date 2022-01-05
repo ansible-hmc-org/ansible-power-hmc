@@ -1084,32 +1084,56 @@ class HmcRestClient:
     def getPartitionAdvancedDetails(self, system_uuid, lpar_id):
         vfcs = []
         vscsis = []
-        vios_fc_xml = xml_strip_namespace(self.getVirtualIOServers(system_uuid, 'ViosFCMapping'))
-        vios_fcs = vios_fc_xml.xpath('//VirtualFibreChannelMapping')
-        vios_scsi_xml = xml_strip_namespace(self.getVirtualIOServers(system_uuid, 'ViosSCSIMapping'))
-        vios_scsis = vios_scsi_xml.xpath('//VirtualSCSIMapping')
-        if vios_fcs:
+        vios_response = self.getVirtualIOServersQuick(system_uuid)
+        if vios_response is None:
+            return vfcs, vscsis
+        vios_list = json.loads(vios_response)
+        vios_dict = {vios['PartitionID']: vios['PartitionName'] for vios in vios_list}
+
+        try:
+            vios_fc_xml = xml_strip_namespace(self.getVirtualIOServers(system_uuid, 'ViosFCMapping'))
+            vios_fcs = vios_fc_xml.xpath('//VirtualFibreChannelMapping')
             for vios_fc_raw in vios_fcs:
                 vfc_dict = {}
                 vios_fc = etree.ElementTree(vios_fc_raw)
                 part_id = vios_fc.xpath('//ClientAdapter/LocalPartitionID')[0].text
                 if str(lpar_id) == str(part_id):
-                    vfc_dict['PortName'] = vios_fc.xpath('//ServerAdapter/PhysicalPort/PortName')[0].text
+                    vios_id = int(vios_fc.xpath('//ClientAdapter/ConnectingPartitionID')[0].text)
+                    vfc_dict['PortName'] = vios_fc.xpath('//ServerAdapter/PhysicalPort/PortName')[0].text + "(" + vios_dict[vios_id] + ")"
                     vfc_dict['LocationCode'] = vios_fc.xpath('//ServerAdapter/PhysicalPort/LocationCode')[0].text
                     vfc_dict['WWPNs'] = vios_fc.xpath('//ClientAdapter/WWPNs')[0].text
                     vfc_dict['ClinetVirtualSlotNumber'] = vios_fc.xpath('//ClientAdapter/VirtualSlotNumber')[0].text
                     vfc_dict['ServerVirtualSlotNumber'] = vios_fc.xpath('//ClientAdapter/ConnectingVirtualSlotNumber')[0].text
                     vfcs.append(vfc_dict)
-        if vios_scsis:
+        except Exception:
+            pass
+
+        try:
+            vios_scsi_xml = xml_strip_namespace(self.getVirtualIOServers(system_uuid, 'ViosSCSIMapping'))
+            vios_scsis = vios_scsi_xml.xpath('//VirtualSCSIMapping')
             for vios_scsi_raw in vios_scsis:
                 vscsi_dict = {}
                 vios_scsi = etree.ElementTree(vios_scsi_raw)
+                # This code is to handle stale adapters and shared storage
+                if vios_scsi.find('//ClientAdapter') is None or vios_scsi.find('//Storage') is None:
+                    continue
                 part_id = vios_scsi.xpath('//ClientAdapter/LocalPartitionID')[0].text
                 if str(lpar_id) == str(part_id):
-                    vscsi_dict['TargetDeviceName'] = vios_scsi.xpath('//TargetDevice/PhysicalVolumeVirtualTargetDevice/TargetName')[0].text
-                    vscsi_dict['VolumeName'] = vios_scsi.xpath('//Storage/PhysicalVolume/VolumeName')[0].text
-                    vscsi_dict['VolumeUniqueID'] = vios_scsi.xpath('//Storage/PhysicalVolume/VolumeUniqueID')[0].text
-                    vscsi_dict['ClinetVirtualSlotNumber'] = vios_scsi.xpath('//ClientAdapter/VirtualSlotNumber')[0].text
-                    vscsi_dict['ServerVirtualSlotNumber'] = vios_scsi.xpath('//ClientAdapter/RemoteSlotNumber')[0].text
-                    vscsis.append(vscsi_dict)
+                    volumeUniqueID = vios_scsi.xpath('//Storage/PhysicalVolume/VolumeUniqueID')[0].text
+                    vscsi_dict['VolumeUniqueID'] = volumeUniqueID
+                    vios_id = int(vios_scsi.xpath('//ClientAdapter/RemoteLogicalPartitionID')[0].text)
+                    vscsi_dict['VolumeName'] = vios_dict[vios_id] + "(" + vios_scsi.xpath('//Storage/PhysicalVolume/VolumeName')[0].text + ")"
+                    flag = False
+                    for vscsi in vscsis:
+                        if vscsi['VolumeUniqueID'] == volumeUniqueID:
+                            vscsi.update({'VolumeName': vscsi['VolumeName'] + "," + vscsi_dict['VolumeName']})
+                            flag = True
+                    if not flag:
+                        vscsi_dict['ClinetVirtualSlotNumber'] = vios_scsi.xpath('//ClientAdapter/VirtualSlotNumber')[0].text
+                        vscsi_dict['ServerVirtualSlotNumber'] = vios_scsi.xpath('//ClientAdapter/RemoteSlotNumber')[0].text
+                        vscsi_dict['TargetDeviceName'] = vios_scsi.xpath('//TargetDevice//TargetName')[0].text
+                        vscsis.append(vscsi_dict)
+        except Exception:
+            pass
+
         return vfcs, vscsis
