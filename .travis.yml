@@ -2,11 +2,11 @@ sudo: required
 dist: bionic
 language: python
 python:
-  - "3.9"
+  - "3.10"
 
 # command to install dependencies
 install:
-  - pip install ansible
+  - pip install ansible == 4.1.0
   - pip install flake8
   - pip install wheel       # for ansible-test
   - pip install Jinja2      # for ansible-test
@@ -35,6 +35,7 @@ script:
   # With flake ignore
   #  E402: <module> level import not at top of file (as per Ansible module developement)
   #  W503: line break before binary operator (PEP8 advices to put logical operator ahead)
+  - ansible --version
   - flake8 plugins/modules/* --max-line-length=160 --ignore=E402,W503
   - flake8 plugins/module_utils/* --max-line-length=160 --ignore=E402,W503
   - flake8 plugins/inventory/* --max-line-length=160 --ignore=E402,W503  
