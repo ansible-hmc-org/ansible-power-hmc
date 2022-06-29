@@ -49,6 +49,7 @@ script:
   - ansible-test sanity --python 3.7 --skip-test shellcheck
   - python --version
   - ansible-test sanity --python 3.10 --skip-test shellcheck
+  - pyenv global 3.5
   - ansible-test sanity --python 3.5 --skip-test shellcheck 
   - cd /home/travis/.ansible/collections/
   - python -m pytest
