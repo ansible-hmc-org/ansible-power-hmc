@@ -66,15 +66,18 @@ DOCUMENTATION = '''
               that match the RMC IP address specified in the HMC will be excluded.
               This is not valid for IBMi LPARs
             type: list
+            elements: str
             default: []
         exclude_lpar:
             description: A list of partitions (LPAR, VIOS) to exclude by partition name.
             type: list
+            elements: str
             default: []
         exclude_system:
             description: A list of HMC managed systems whose partitions (LPAR, VIOS)
               will be excluded from the dynamic inventory.
             type: list
+            elements: str
             default: []
         ansible_display_name:
             description: By default, partitions names will be used as the name displayed by
