@@ -40,7 +40,8 @@ DOCUMENTATION = '''
         - Ozzie Rodriguez
         - Anil Vijayan
         - Navinakumar Kandakur (@nkandak1)
-    plugin_type: inventory
+    plugin_type: 
+        - inventory
     version_added: "1.1.0"
     requirements:
         - Python >= 3
