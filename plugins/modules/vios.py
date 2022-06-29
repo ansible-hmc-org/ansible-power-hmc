@@ -23,7 +23,7 @@ description:
     - "Installs VIOS"
     - "Displays VIOS information"
     - "Accepts VIOS License"
-version_added: 1.0.0
+version_added: 2.0.0
 options:
     hmc_host:
         description:
