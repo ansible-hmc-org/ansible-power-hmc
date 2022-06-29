@@ -34,7 +34,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
     name: powervm_inventory
-    author:
+    authors:
         - Torin Reilly (@torinreilly)
         - Michael Cohoon (@mtcohoon)
         - Ozzie Rodriguez
@@ -67,7 +67,7 @@ DOCUMENTATION = '''
         hmc_hosts:
           description: A dictionary of hosts and their associated usernames and passwords.
           required: true
-          type: dict
+          type: list
           elements: dict
         filters:
             description:
