@@ -9,11 +9,6 @@ DOCUMENTATION = '''
     name: powervm_inventory
     author:
         - Torin Reilly (@torinreilly)
-        - Michael Cohoon (@mtcohoon)
-        - Ozzie Rodriguez (@Ozzie Rodriguez)
-        - Anil Vijayan (@AnilVijayan)
-        - Navinakumar Kandakur (@nkandak1)
-    plugin_type: "inventory"
     version_added: "1.1.0"
     requirements:
         - Python >= 3
@@ -39,8 +34,8 @@ DOCUMENTATION = '''
         hmc_hosts:
           description: A dictionary of hosts and their associated usernames and passwords.
           required: true
-          type: dict
-          elements: list
+          type: list
+          elements: dict
         filters:
             description:
                 - A key value pair for filtering by various LPAR/VIOS attributes.
