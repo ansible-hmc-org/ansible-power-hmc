@@ -125,6 +125,7 @@
 <h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h2>
 <p>Create a Hardware Management Console user</p>
 <p>List Hardware Management Console user information</p>
+<p>Modify a Hardware Management Console user</p>
 <p>Remove Hardware Management Console users</p>
 </section>
 <section id="parameters">
@@ -162,23 +163,23 @@
 </dd>
 <dt>current_passwd (optional, str, None)</dt><dd><p>When changing the password for a Kerberos user, use this attribute to specify the user’s current password.</p>
 </dd>
-<dt>pwage (optional, str, None)</dt><dd><p>Number of days. Valid only for local user.</p>
+<dt>pwage (optional, str, None)</dt><dd><p>Number of days. Valid only for local user. Default value is 99999</p>
 </dd>
-<dt>min_pwage (optional, str, None)</dt><dd><p>Number of days. Valid only for local user.</p>
+<dt>min_pwage (optional, str, None)</dt><dd><p>Number of days. Valid only for local user. Default value is 0</p>
 </dd>
 <dt>authentication_type (optional, str, None)</dt><dd><p>Valid values are <code class="docutils literal notranslate"><span class="pre">local|kerberos|ldap</span></code>.</p>
 </dd>
-<dt>session_timeout (optional, int, None)</dt><dd><p>Number of minutes.</p>
+<dt>session_timeout (optional, int, None)</dt><dd><p>Number of minutes. Default value is 0</p>
 </dd>
-<dt>verify_timeout (optional, int, None)</dt><dd><p>Number of minutes.</p>
+<dt>verify_timeout (optional, int, None)</dt><dd><p>Number of minutes. Default value is 15</p>
 </dd>
-<dt>idle_timeout (optional, int, None)</dt><dd><p>Number of minutes.</p>
+<dt>idle_timeout (optional, int, None)</dt><dd><p>Number of minutes. Default value is 120</p>
 </dd>
-<dt>inactivity_expiration (optional, int, None)</dt><dd><p>Number of days.</p>
+<dt>inactivity_expiration (optional, int, None)</dt><dd><p>Number of days. Default value is 0</p>
 </dd>
-<dt>remote_webui_access (optional, bool, None)</dt><dd><p>Allow or not allow the user to log in remotely to the HMC Web user interface.</p>
+<dt>remote_webui_access (optional, bool, None)</dt><dd><p>Allow or not allow the user to log in remotely to the HMC Web user interface. Default value is False</p>
 </dd>
-<dt>remote_ssh_access (optional, bool, None)</dt><dd><p>Allow or not allow the user to log in remotely to the HMC using SSH.</p>
+<dt>remote_ssh_access (optional, bool, None)</dt><dd><p>Allow or not allow the user to log in remotely to the HMC using SSH. Default value is True</p>
 </dd>
 <dt>passwd_authentication (optional, bool, None)</dt><dd><p>Allow or not allow the user to log in remotely to the HMC using a password.</p>
 </dd>
@@ -249,7 +250,7 @@
 <section id="return-values">
 <h2><a class="toc-backref" href="#id4">Return Values</a><a class="headerlink" href="#return-values" title="Permalink to this heading"></a></h2>
 <dl class="simple">
-<dt>Command_output (on success of all states except C(absent|), dict, )</dt><dd><p>Respective user configuration</p>
+<dt>Command_output (on success of all states except C(absent), dict, )</dt><dd><p>Respective user configuration</p>
 </dd>
 </dl>
 </section>

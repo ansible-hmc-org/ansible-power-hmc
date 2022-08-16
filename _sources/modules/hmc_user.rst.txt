@@ -16,6 +16,8 @@ Create a Hardware Management Console user
 
 List Hardware Management Console user information
 
+Modify a Hardware Management Console user
+
 Remove Hardware Management Console users
 
 
@@ -86,11 +88,11 @@ Parameters
 
 
     pwage (optional, str, None)
-      Number of days. Valid only for local user.
+      Number of days. Valid only for local user. Default value is 99999
 
 
     min_pwage (optional, str, None)
-      Number of days. Valid only for local user.
+      Number of days. Valid only for local user. Default value is 0
 
 
     authentication_type (optional, str, None)
@@ -98,27 +100,27 @@ Parameters
 
 
     session_timeout (optional, int, None)
-      Number of minutes.
+      Number of minutes. Default value is 0
 
 
     verify_timeout (optional, int, None)
-      Number of minutes.
+      Number of minutes. Default value is 15
 
 
     idle_timeout (optional, int, None)
-      Number of minutes.
+      Number of minutes. Default value is 120
 
 
     inactivity_expiration (optional, int, None)
-      Number of days.
+      Number of days. Default value is 0
 
 
     remote_webui_access (optional, bool, None)
-      Allow or not allow the user to log in remotely to the HMC Web user interface.
+      Allow or not allow the user to log in remotely to the HMC Web user interface. Default value is False
 
 
     remote_ssh_access (optional, bool, None)
-      Allow or not allow the user to log in remotely to the HMC using SSH.
+      Allow or not allow the user to log in remotely to the HMC using SSH. Default value is True
 
 
     passwd_authentication (optional, bool, None)
@@ -212,7 +214,7 @@ Examples
 Return Values
 -------------
 
-Command_output (on success of all states except C(absent|), dict, )
+Command_output (on success of all states except C(absent), dict, )
   Respective user configuration
 
 
