@@ -371,6 +371,7 @@
 <li><p>The network configuration currently will not support SRIOV configurations.</p></li>
 <li><p><em>retain_vios_cfg</em> and <em>delete_vdisks</em> options will only be supported from HMC release level on or above V9 R1 M930.</p></li>
 <li><p>Partition creation is not supported for resource role-based user in HMC Version prior to 951.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">install_os</span></code> action doesn’t support installation of IBMi OS.</p></li>
 </ul>
 </div>
 </section>
@@ -493,17 +494,17 @@
 <span class="w">      </span><span class="nt">os_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aix_linux</span><span class="w"></span>
 <span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span><span class="w"></span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install aix/Linux OS on LPAR from NIM Server</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install Aix/Linux OS on LPAR from NIM Server</span><span class="w"></span>
 <span class="w">  </span><span class="nt">powervm_lpar_instance</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">hmc_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&#39;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">hmc_auth</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">curr_hmc_auth</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">system_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;system_name&gt;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">vm_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;vm_name&gt;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">install_settings</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">vm_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP_address of the lpar&gt;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">nim_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP_address of the NIM Server&gt;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">nim_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Gateway IP_Addres&gt;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">nim_subnetmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Subnetmask IP_Address&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="nt">vm_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP_address of the lpar&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="nt">nim_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP_address of the NIM Server&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="nt">nim_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Gateway IP_Addres&gt;</span><span class="w"></span>
+<span class="w">         </span><span class="nt">nim_subnetmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Subnetmask IP_Address&gt;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">install_os</span><span class="w"></span>
 </pre></div>
 </div>
