@@ -53,15 +53,15 @@ Parameters
     Add hosts to group based on the values of a variable.
 
 
-  exclude_ip (optional, list, None)
+  exclude_ip (optional, str, None)
     A list of IP addresses to exclude from the inventory. This will be compared to the RMC IP address specified in the HMC. Currently, no hostname lookup is performed, so only IP addresses that match the RMC IP address specified in the HMC will be excluded. This is not valid for IBMi LPARs
 
 
-  exclude_lpar (optional, list, None)
+  exclude_lpar (optional, str, None)
     A list of partitions (LPAR, VIOS) to exclude by partition name.
 
 
-  exclude_system (optional, list, None)
+  exclude_system (optional, str, None)
     A list of HMC managed systems whose partitions (LPAR, VIOS) will be excluded from the dynamic inventory.
 
 

@@ -142,11 +142,11 @@
 </dd>
 <dt>keyed_groups (optional, list, None)</dt><dd><p>Add hosts to group based on the values of a variable.</p>
 </dd>
-<dt>exclude_ip (optional, list, None)</dt><dd><p>A list of IP addresses to exclude from the inventory. This will be compared to the RMC IP address specified in the HMC. Currently, no hostname lookup is performed, so only IP addresses that match the RMC IP address specified in the HMC will be excluded. This is not valid for IBMi LPARs</p>
+<dt>exclude_ip (optional, str, None)</dt><dd><p>A list of IP addresses to exclude from the inventory. This will be compared to the RMC IP address specified in the HMC. Currently, no hostname lookup is performed, so only IP addresses that match the RMC IP address specified in the HMC will be excluded. This is not valid for IBMi LPARs</p>
 </dd>
-<dt>exclude_lpar (optional, list, None)</dt><dd><p>A list of partitions (LPAR, VIOS) to exclude by partition name.</p>
+<dt>exclude_lpar (optional, str, None)</dt><dd><p>A list of partitions (LPAR, VIOS) to exclude by partition name.</p>
 </dd>
-<dt>exclude_system (optional, list, None)</dt><dd><p>A list of HMC managed systems whose partitions (LPAR, VIOS) will be excluded from the dynamic inventory.</p>
+<dt>exclude_system (optional, str, None)</dt><dd><p>A list of HMC managed systems whose partitions (LPAR, VIOS) will be excluded from the dynamic inventory.</p>
 </dd>
 <dt>ansible_display_name (optional, str, lpar_name)</dt><dd><p>By default, partitions names will be used as the name displayed by Ansible in output. If you wish this to display the IP address instead you may set this to “ip”.</p>
 </dd>
