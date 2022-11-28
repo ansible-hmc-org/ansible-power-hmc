@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="powervm_lpar_migration – validate, migrate and recover of the LPAR" href="powervm_lpar_migration.html" />
-    <link rel="prev" title="power_system – PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of the Managed system" href="power_system.html" /> 
+    <link rel="prev" title="powervm_dlpar – Dynamically managing resources of partition" href="powervm_dlpar.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,6 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="hmc_update_upgrade.html">hmc_update_upgrade – Manages the update and upgrade of the HMC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hmc_user.html">hmc_user – Manage the hmc users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="power_system.html">power_system – PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of the Managed system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="powervm_dlpar.html">powervm_dlpar – Dynamically managing resources of partition</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">powervm_lpar_instance – Create, Delete, Shutdown, Activate, Restart, Facts and Install of PowerVM Partitions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -159,7 +160,8 @@
 </dd>
 </dl>
 </dd>
-<dt>system_name (True, str, None)</dt><dd><p>The name of the managed system.</p>
+<dt>system_name (optional, str, None)</dt><dd><p>The name of the managed system.</p>
+<p>Optional for <em>state=absent</em>.</p>
 </dd>
 <dt>vm_name (True, str, None)</dt><dd><p>The name of the powervm partition.</p>
 </dd>
@@ -538,7 +540,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="power_system.html" class="btn btn-neutral float-left" title="power_system – PowerOn, PowerOff, modify_syscfg, modify_hwres, facts of the Managed system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="powervm_dlpar.html" class="btn btn-neutral float-left" title="powervm_dlpar – Dynamically managing resources of partition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="powervm_lpar_migration.html" class="btn btn-neutral float-right" title="powervm_lpar_migration – validate, migrate and recover of the LPAR" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

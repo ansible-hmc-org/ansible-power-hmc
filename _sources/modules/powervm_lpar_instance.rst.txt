@@ -57,8 +57,10 @@ Parameters
 
 
 
-  system_name (True, str, None)
+  system_name (optional, str, None)
     The name of the managed system.
+
+    Optional for *state=absent*.
 
 
   vm_name (True, str, None)
