@@ -12,7 +12,7 @@ firmware_update -- Change firmware level on Managed Systems
 Synopsis
 --------
 
-Update/Upgrade a managed system
+Update/Upgrade a managed system.
 
 
 
@@ -23,36 +23,36 @@ Parameters
 ----------
 
   hmc_host (True, str, None)
-    IPaddress or hostname of the HMC
+    IP address or hostname of the HMC.
 
 
   hmc_auth (True, dict, None)
-    Username and Password credential of the HMC
+    Username and Password credential of the HMC.
 
 
     username (True, str, None)
-      HMC username
+      HMC username.
 
 
     password (optional, str, None)
-      HMC password
+      HMC password.
 
 
 
   system_name (True, str, None)
-    The name of the managed system
+    The name of the managed system.
 
 
   repository (optional, str, ibmwebsite)
-    Type of image repository for the firmware image
+    Type of image repository for the firmware image.
 
 
   remote_repo (optional, dict, None)
-    When the image repository needs credentials to be accessed remotely
+    When the image repository needs credentials to be accessed remotely.
 
 
     hostname (True, str, None)
-      The hostname or IPaddress of the remote server where the firmware image is located.
+      The hostname or IP address of the remote server where the firmware image is located.
 
 
     userid (True, str, None)
@@ -68,22 +68,22 @@ Parameters
 
 
     directory (True, str, None)
-      Location where the images are stored on the host
+      Location where the images are stored on the host.
 
 
 
   level (optional, str, latest)
-    target level of operation
+    target level of operation.
 
 
   state (optional, str, None)
-    ``updated`` executes an update on target system
+    ``updated`` executes an update on target system.
 
-    ``upgraded`` executes an upgrade on target system
+    ``upgraded`` executes an upgrade on target system.
 
 
   action (optional, str, None)
-    ``accept`` accepts firmware level for target system
+    ``accept`` accepts firmware level for target system.
 
 
 
@@ -99,7 +99,7 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: Update to latest level with default values (latest at ibmwebsite)
+    - name: Update to latest level with default values (latest at ibmwebsite).
       ibm.power_hmc.firmware_update:
           hmc_host: '{{ inventory_hostname }}'
           hmc_auth:
@@ -107,7 +107,7 @@ Examples
              password: '{{ hmc_password }}'
           state: updated
 
-    - name: Upgrade system to specific level at an sftp repo
+    - name: Upgrade system to specific level at an sftp repo.
       firmware_update:
         hmc_host: '{{ inventory_hostname }}'
         hmc_auth: '{{ curr_hmc_auth }}'

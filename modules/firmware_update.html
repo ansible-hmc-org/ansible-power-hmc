@@ -126,29 +126,29 @@
 </div>
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h2>
-<p>Update/Upgrade a managed system</p>
+<p>Update/Upgrade a managed system.</p>
 </section>
 <section id="parameters">
 <h2><a class="toc-backref" href="#id2">Parameters</a><a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><dl>
-<dt>hmc_host (True, str, None)</dt><dd><p>IPaddress or hostname of the HMC</p>
+<dt>hmc_host (True, str, None)</dt><dd><p>IP address or hostname of the HMC.</p>
 </dd>
-<dt>hmc_auth (True, dict, None)</dt><dd><p>Username and Password credential of the HMC</p>
+<dt>hmc_auth (True, dict, None)</dt><dd><p>Username and Password credential of the HMC.</p>
 <dl class="simple">
-<dt>username (True, str, None)</dt><dd><p>HMC username</p>
+<dt>username (True, str, None)</dt><dd><p>HMC username.</p>
 </dd>
-<dt>password (optional, str, None)</dt><dd><p>HMC password</p>
+<dt>password (optional, str, None)</dt><dd><p>HMC password.</p>
 </dd>
 </dl>
 </dd>
-<dt>system_name (True, str, None)</dt><dd><p>The name of the managed system</p>
+<dt>system_name (True, str, None)</dt><dd><p>The name of the managed system.</p>
 </dd>
-<dt>repository (optional, str, ibmwebsite)</dt><dd><p>Type of image repository for the firmware image</p>
+<dt>repository (optional, str, ibmwebsite)</dt><dd><p>Type of image repository for the firmware image.</p>
 </dd>
-<dt>remote_repo (optional, dict, None)</dt><dd><p>When the image repository needs credentials to be accessed remotely</p>
+<dt>remote_repo (optional, dict, None)</dt><dd><p>When the image repository needs credentials to be accessed remotely.</p>
 <dl class="simple">
-<dt>hostname (True, str, None)</dt><dd><p>The hostname or IPaddress of the remote server where the firmware image is located.</p>
+<dt>hostname (True, str, None)</dt><dd><p>The hostname or IP address of the remote server where the firmware image is located.</p>
 </dd>
 <dt>userid (True, str, None)</dt><dd><p>The user ID to use to log in to the remote FTP or SFTP server. This option is required when the firmware image is located on a remote FTP or SFTP server Otherwise, this option is not valid.</p>
 </dd>
@@ -156,23 +156,23 @@
 </dd>
 <dt>sshkey_file (optional, str, None)</dt><dd><p>The name of the file that contains the SSH private key. This option is only valid if <em>location_type=sftp</em>.</p>
 </dd>
-<dt>directory (True, str, None)</dt><dd><p>Location where the images are stored on the host</p>
+<dt>directory (True, str, None)</dt><dd><p>Location where the images are stored on the host.</p>
 </dd>
 </dl>
 </dd>
-<dt>level (optional, str, latest)</dt><dd><p>target level of operation</p>
+<dt>level (optional, str, latest)</dt><dd><p>target level of operation.</p>
 </dd>
-<dt>state (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">updated</span></code> executes an update on target system</p>
-<p><code class="docutils literal notranslate"><span class="pre">upgraded</span></code> executes an upgrade on target system</p>
+<dt>state (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">updated</span></code> executes an update on target system.</p>
+<p><code class="docutils literal notranslate"><span class="pre">upgraded</span></code> executes an upgrade on target system.</p>
 </dd>
-<dt>action (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">accept</span></code> accepts firmware level for target system</p>
+<dt>action (optional, str, None)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">accept</span></code> accepts firmware level for target system.</p>
 </dd>
 </dl>
 </div></blockquote>
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id3">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update to latest level with default values (latest at ibmwebsite)</span><span class="w"></span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update to latest level with default values (latest at ibmwebsite).</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ibm.power_hmc.firmware_update</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">hmc_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&#39;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">hmc_auth</span><span class="p">:</span><span class="w"></span>
@@ -180,7 +180,7 @@
 <span class="w">         </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">hmc_password</span> <span class="cp">}}</span><span class="s">&#39;</span><span class="w"></span>
 <span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">updated</span><span class="w"></span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Upgrade system to specific level at an sftp repo</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Upgrade system to specific level at an sftp repo.</span><span class="w"></span>
 <span class="w">  </span><span class="nt">firmware_update</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">hmc_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">inventory_hostname</span> <span class="cp">}}</span><span class="s">&#39;</span><span class="w"></span>
 <span class="w">    </span><span class="nt">hmc_auth</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">curr_hmc_auth</span> <span class="cp">}}</span><span class="s">&#39;</span><span class="w"></span>

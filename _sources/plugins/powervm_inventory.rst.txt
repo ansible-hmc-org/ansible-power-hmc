@@ -18,13 +18,13 @@ To create a usable Ansible host for a given LPAR or Power Server, the IP or host
 
 Valid LPAR/VIOS properties that can be used for groups, keyed groups, filters, unknown partition identification, and composite variables can be found in the HMC REST API documentation. By default, valid properties include those listed as "Quick Properties", but if `advanced_fields` are enabled, you may be able to use more advanced properties of the partition. Further information about the LPAR APIs can be found in the `Knowledge Center <https://www.ibm.com/support/knowledgecenter/9040-MR9/p9ehl/apis/LogicalPartition.htm>`_.
 
-Valid Power Server properties that can be used for system_groups, system_keyed_groups, system_filters and system_composit variables can be found in HMC REST API documentation listed as 'Quick Properties'. (These options works only when group_lpars_by_managed_system option set to false) `Knowledge Center <https://www.ibm.com/support/knowledgecenter/9040-MR9/p9ehl/apis/ManagedSystem.htm'>`_.
+Valid Power Server properties that can be used for system_groups, system_keyed_groups, system_filters and system_composit variables can be found in HMC REST API documentation listed as 'Quick Properties'. (These options works only when `group_lpars_by_managed_system` option set to false) `Knowledge Center <https://www.ibm.com/support/knowledgecenter/9040-MR9/p9ehl/apis/ManagedSystem.htm'>`_.
 
 Apart from properties defined in HMC REST API Documentation we can use the following properties also with Power Server, and LPAR/VIOS 'AssociatedGroups' (Tagged group name), 'AssociatedHMC' (HMC IP/Hostname), 'AssociatedHMCUserName' (HMC username) for LPAR/VIOS or Power server grouping and compose.
 
 If a property is used in the inventory source that is unique to a partition type, only partitions for which that property is defined may be included. Non-compatible partitions can be filtered out by `OperatingSystemVersion` or `PartitionType` as detailed in the second example.
 
-A group named 'MaagedSystems' gets created with all the Power Server Managed by the HMC only when group_lpars_by_managed_system option set to false in the dynamic inventory playbook.
+A group named 'MaagedSystems' gets created with all the Power Server Managed by the HMC and Power Server grouping features enables only when `group_lpars_by_managed_system` option set to false in the dynamic inventory playbook.
 
 
 
@@ -114,7 +114,7 @@ Parameters
 
     If you do not omit unknown partitions, you may run into issues targeting groups that include them. To avoid this, you can specify a host pattern in a playbooks such as `targetgroup:!unknown`. This will your playbook to run against all known hosts in your target group.
 
-    This is not valid for IBMi LPARs and Power Servers.
+    This is not valid for Power Servers.
 
 
 

@@ -20,6 +20,12 @@ Modify a Hardware Management Console user
 
 Remove Hardware Management Console users
 
+List LDAP Configurations
+
+Configure LDAP Settings
+
+Remove LDAP Configurations
+
 
 
 
@@ -60,7 +66,7 @@ Parameters
 
 
   resource (optional, str, None)
-    The LDAP resources to be listed. This option is valid only for *state=ldap_facts*. To filter out the LDAP configuration of perticular user we can use ``name`` parameter with *resource=user*
+    The LDAP resources to be listed. This option is valid only for *state=ldap_facts*. To filter out the LDAP configuration of particular user we can use ``name`` parameter with *resource=user*.
 
 
   ldap_resource (optional, str, None)
@@ -149,7 +155,7 @@ Parameters
 
 
   ldap_settings (optional, dict, None)
-    Configuration attributes used during Configuration LDAP on HMC.
+    Configuration attributes used during Configuration of LDAP on HMC.
 
 
     primary (optional, str, None)
@@ -157,15 +163,15 @@ Parameters
 
 
     backup (optional, str, None)
-      The  backup  LDAP  server.
+      The backup LDAP  server.
 
 
     basedn (optional, str, None)
-      The  base  DN  for  LDAP  search.
+      The base DN for LDAP search.
 
 
     binddn (optional, str, None)
-      The DN to use for binding to the LDAP server when the LDAP server is configured to use non-anonymous  binding.
+      The DN to use for binding to the LDAP server when the LDAP server is configured to use non-anonymous binding.
 
 
     bindpw (optional, str, None)
@@ -177,17 +183,17 @@ Parameters
 
 
     bindtimelimit (optional, str, None)
-      The  LDAP  server bind time limit in seconds.
+      The LDAP server bind time limit in seconds.
 
 
     automanage (optional, str, None)
-      Use this option to indicate whether the HMC should automatically manage remotely authenticated LDAP  users.
+      Use this option to indicate whether the HMC should automatically manage remotely authenticated LDAP users.
 
       Valid values are 0 to disable automatic management, or 1 to enable automatic management.
 
 
     auth (optional, str, None)
-      The type of authentication to use for automatically managed LDAP users.  Valid values are ldap to use  LDAP authentication, or kerberos to use Kerberos authentication.
+      The type of authentication to use for automatically managed LDAP users.
 
 
     loginattribute (optional, str, None)
@@ -211,7 +217,7 @@ Parameters
 
 
     referrals (optional, str, None)
-      Specifies  whether  automatic  referral chasing is to be enabled or disabled.
+      Specifies whether automatic referral chasing is to be enabled or disabled.
 
 
     starttls (optional, str, None)
@@ -223,11 +229,11 @@ Parameters
 
 
     authsearch (optional, str, None)
-      Specifies  whether  the HMC will attempt an LDAP search, with the user's credentials, as an additional con- firmation that the bind operation was successful.
+      Specifies whether  the HMC will attempt an LDAP search, with the user's credentials, as an additional con- firmation that the bind operation was successful.
 
 
     tlsreqcert (optional, str, None)
-      Specifies  what  checks to perform on a server-supplied certificate.
+      Specifies what checks to perform on a server-supplied certificate.
 
 
     groupattribute (optional, str, None)
@@ -237,7 +243,7 @@ Parameters
 
 
     memberattribute (optional, str, None)
-      Specifies  the  name  of the group Member attribute on the LDAP server.
+      Specifies the name of the group Member attribute on the LDAP server.
 
       When this option is specified, the 'groupattribute' option must also be specified.
 
@@ -258,9 +264,9 @@ Parameters
 
 
   action (optional, str, None)
-    ``configure_ldap`` Configure Hardware Management Console (HMC) Light weight Directory Access Protocol (LDAP) client con- figuration.
+    ``configure_ldap`` Configure Hardware Management Console (HMC) Light weight Directory Access Protocol (LDAP) client configuration.
 
-    ``remove_ldap_config`` Remove the Hardware Management Console (HMC) Light weight Directory Access Protocol (LDAP) client con- figuration.
+    ``remove_ldap_config`` Remove the Hardware Management Console (HMC) Light weight Directory Access Protocol (LDAP) client configuration.
 
 
 
@@ -276,7 +282,7 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: List the properties of hmc user
+    - name: List the properties of hmc user.
       hmc_user:
         state: facts
         hmc_host: "{{ inventory_hostname }}"
@@ -285,7 +291,7 @@ Examples
           username: <username>
           password: <password>
 
-    - name: Create hmc user
+    - name: Create hmc user.
       hmc_user:
         state: present
         hmc_host: "{{ inventory_hostname }}"
@@ -298,7 +304,7 @@ Examples
           taskrole: hmcsuperadmin
           passwd: <new_user_password>
 
-    - name: Modify hmc user
+    - name: Modify hmc user.
       hmc_user:
         state: updated
         hmc_host: "{{ inventory_hostname }}"
@@ -310,7 +316,7 @@ Examples
           new_name: <new_user_name>
           max_webui_login_attempts: 20
 
-    - name: Remove hmc user
+    - name: Remove hmc user.
       hmc_user:
         state: absent
         hmc_host: "{{ inventory_hostname }}"
@@ -319,7 +325,7 @@ Examples
           username: <username>
           password: <password>
 
-    - name: list the ldap configuration
+    - name: List the ldap configuration.
       hmc_user:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
@@ -329,7 +335,7 @@ Examples
         name: <hmc_user_name>
         state: ldap_facts
 
-    - name: configure ldap settings
+    - name: Configure ldap settings.
       hmc_user:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
@@ -345,7 +351,7 @@ Examples
           starttls: 0
         action: configure_ldap
 
-    - name: remove ldap configuration
+    - name: Remove ldap configuration.
       hmc_user:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
