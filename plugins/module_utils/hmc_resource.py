@@ -170,13 +170,6 @@ class Hmc():
         result = self.hmcconn.execute(hmcCmd)
         return result
 
-    def listHMCPTF(self, locationType, configDict=None):
-        hmcCmd = self.CMD['LSUPDHMC'] + \
-            self.OPT['LSUPDHMC']['-T'][locationType.upper()]
-
-        result = self.hmcconn.execute(hmcCmd)
-        return self.cmdClass.parseMultiLineCSV(result)
-
     def configAltDisk(self, enable, mode):
         chhhmcCmd = self.CMD['CHHMC'] + \
             self.OPT['CHHMC']['-C']['ALTDISKBOOT'] +  \
@@ -321,9 +314,8 @@ class Hmc():
                 logger.debug(cec_state)
                 stateSuccess = True
                 break
-            else:
-                logger.debug(cec_state)
-                waited += POLL_INTERVAL_IN_SEC
+            logger.debug(cec_state)
+            waited += POLL_INTERVAL_IN_SEC
 
             # waiting for 30 seconds
             time.sleep(POLL_INTERVAL_IN_SEC)
@@ -579,8 +571,7 @@ class Hmc():
             if conf_dict['rmc_state'] == 'active':
                 rmcActive = True
                 break
-            else:
-                waited += POLL_INTERVAL_IN_SEC
+            waited += POLL_INTERVAL_IN_SEC
             time.sleep(POLL_INTERVAL_IN_SEC)
         if not rmcActive:
             res = self.getPartitionRefcode(system_name, name)
