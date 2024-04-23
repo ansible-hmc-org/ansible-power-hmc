@@ -129,7 +129,7 @@ options:
            - c(listptf) lists available Hardware Management Console (HMC) updates from the IBM Fix Central website.
            - This option is available for HMC versions from 1030 onwards
        type: str
-       choices: ['listptf']
+       choices: ['listptf',]
 '''
 
 EXAMPLES = '''
@@ -645,7 +645,7 @@ def run_module():
                           )
                           ),
         state=dict(type='str', choices=['updated', 'upgraded', 'facts']),
-        action=dict(type='str', choices=['listptf'])
+        action=dict(type='str', choices=['listptf',])
     )
 
     module = AnsibleModule(
