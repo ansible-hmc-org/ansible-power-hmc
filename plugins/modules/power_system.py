@@ -227,7 +227,7 @@ def build_dict(params):
             continue
         if value is None:
             continue
-        elif isinstance(value, int):
+        if isinstance(value, int):
             config_dict[key] = str(value)
         else:
             config_dict[key] = value
