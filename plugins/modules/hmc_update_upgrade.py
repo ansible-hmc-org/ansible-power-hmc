@@ -125,11 +125,11 @@ options:
         type: str
         choices: ['facts', 'updated', 'upgraded']
     action:
-       description:
+        description:
            - c(listptf) lists available Hardware Management Console (HMC) updates from the IBM Fix Central website.
            - This option is available for HMC versions from 1030 onwards
-       type: str
-       choices: ['listptf']
+        type: str
+        choices: ['listptf']
 '''
 
 EXAMPLES = '''
