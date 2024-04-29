@@ -99,6 +99,7 @@ options:
             - AM collects data from LTM and EM, hence when the AM is enabled automatically LTM and EM will be enabled.
             - When LTM or EM is disabled then automatically the AM will also get disabled.
         type: list
+        elements: str
         choices: ['LTM', 'STM', 'AM', 'CLTM', 'EM']
     action:
         description:
