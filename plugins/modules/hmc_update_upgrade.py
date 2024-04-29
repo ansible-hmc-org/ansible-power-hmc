@@ -109,7 +109,7 @@ options:
                       During update of the HMC if I(location_type=disk) and ISO image is kept in Ansible controller node or HMC hard disk,
                       this option should be provided with the ansible control node path in which ISO file or network install image is kept.
                 type: str
-             ptf:
+            ptf:
                 description:
                     - The name of the PTF to install.
                       This option is required when the ISO image is located on the IBM Fix Central website. Otherwise, this option is not valid.
