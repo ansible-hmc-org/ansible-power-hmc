@@ -178,7 +178,7 @@ EXAMPLES = '''
          password: '{{ hmc_password }}'
     system_name: <managed_system_name>
     metrics:
-           - LTM
+         - LTM
     action: enable_pcm
 
  - name: disable the short-term monitoring
@@ -189,7 +189,7 @@ EXAMPLES = '''
          password: '{{ hmc_password }}'
     system_name: <managed_system_name>
     metrics:
-           - STM
+         - STM
     action: disble_pcm
 
 '''
