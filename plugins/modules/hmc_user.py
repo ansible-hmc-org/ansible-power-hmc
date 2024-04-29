@@ -618,7 +618,7 @@ def is_user_present(user_list, r_type):
     for eachUser in user_list:
         if eachUser['NAME'] in permanent_user:
             continue
-        elif r_type == 'all':
+        if r_type == 'all':
             return True
         elif eachUser['AUTHENTICATION_TYPE'] == r_type:
             return True

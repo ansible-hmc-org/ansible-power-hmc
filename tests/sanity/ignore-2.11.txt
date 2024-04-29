@@ -9,3 +9,7 @@ plugins/modules/vios.py pylint:consider-using-f-string
 plugins/modules/powervm_lpar_migration.py pylint:consider-using-f-string
 plugins/module_utils/hmc_resource.py pylint:consider-using-f-string
 plugins/modules/hmc_user.py pylint:consider-using-f-string
+plugins/modules/firmware_update.py pylint:consider-using-f-string
+plugins/modules/powervm_dlpar.py pylint:consider-using-f-string
+plugins/modules/hmc_pwdpolicy.py pylint:consider-using-f-string
+plugins/modules/hmc_command.py pylint:consider-using-f-string
