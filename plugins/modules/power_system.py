@@ -97,8 +97,8 @@ options:
             - Long Term Monitor(LTM), Short Term Monitor(STM), Aggregated metrics(AM), ComputeLTM(CLTM), EnergyMonitor(EM).
             - AM collects data from LTM and EM, hence when the AM is enabled automatically LTM and EM will be enabled.
             - When LTM or EM is disabled then automatically the AM will also get disabled.
-         type: list
-         choices: ['LTM', 'STM', 'AM', 'CLTM', 'EM']
+        type: list
+        choices: ['LTM', 'STM', 'AM', 'CLTM', 'EM']
     action:
         description:
             - C(poweroff) poweroff a specified I(system_name).
