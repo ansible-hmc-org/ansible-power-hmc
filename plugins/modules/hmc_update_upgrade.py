@@ -314,6 +314,12 @@ def image_copy_from_local_to_hmc(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     local_path = params['build_config']['build_file']
+    iso_name = ""
+    iso_count = 0
+
+    if '.iso' in local_path:
+        local_path = local_path[:local_path.rfind("/")]
+        iso_name = params['build_config']['build_file'].split("/")[-1]
 
     if params['state'] == 'upgraded':
         imageFilesUpg = ['base.img', 'disk1.img', 'hmcnetworkfiles.sum', 'img2a', 'img3a']
@@ -327,6 +333,19 @@ def image_copy_from_local_to_hmc(module, params):
             logger.debug(err)
             raise ParameterError("not able to list files on mentioned local path")
 
+    if params['state'] == 'updated':
+        list_cmd = "ls " + local_path
+        rc, out, err = module.run_command(list_cmd)
+        if rc == 0:
+            files = out.split()
+            if params['state'] == 'updated' and iso_name == "":
+                iso_count = sum(file.endswith(".iso") for file in files)
+            if iso_count > 1:
+                raise Error("There are multiple iso files in specified folder. Please specify the iso file also in build_file")
+        else:
+            logger.debug(err)
+            raise ParameterError("not able to list files on mentioned local path")
+
     mkdir_cmd = 'sshpass -p {0} ssh {1}@{2} mkdir -p network_install'.format(password, hmc_user, hmc_host)
     rc1, out1, err1 = module.run_command(mkdir_cmd)
     if rc1 == 1:
@@ -334,6 +353,8 @@ def image_copy_from_local_to_hmc(module, params):
         raise Error("creation of temporary install directory inside HMC failed")
 
     scp_cmd = 'sshpass -p {0} scp -r {1}/* {2}@{3}:/home/{2}/network_install'.format(password, local_path, hmc_user, hmc_host)
+    if params['state'] == 'updated' and iso_name != "":
+        scp_cmd = 'sshpass -p {0} scp  {1}/{2} {3}@{4}:/home/{3}/network_install'.format(password, local_path, iso_name,  hmc_user, hmc_host)
     rc2, out2, err2 = module.run_command(scp_cmd, use_unsafe_shell=True)
     if rc2 == 1:
         logger.debug(err2)
@@ -347,8 +368,9 @@ def image_copy_from_local_to_hmc(module, params):
             if not all(True if each in out3 else False for each in imageFilesUpg):
                 remove_image_from_hmc(module, params)
                 raise Error("copy of image to hmc is incomplete. Necessary files are missing")
+        elif params['state'] == 'updated':
+            return out3
         else:
-            files = out3.split()
             iso_file = None
             for fl in files:
                 if '.iso' in fl:
@@ -499,7 +521,7 @@ def update_hmc(module, params):
     warning_msg = None
     isBootedUp = False
     is_img_in_hmc = False
-
+    iso_file = None
     if not params['build_config']:
         raise ParameterError("missing options on build_config")
 
@@ -512,24 +534,33 @@ def update_hmc(module, params):
     locationType = params['build_config']['location_type']
 
     if locationType == 'disk':
-        is_img_in_hmc = check_image_in_hmc(module, params)
-        if not is_img_in_hmc:
-            iso_file = image_copy_from_local_to_hmc(module, params)
+        if '.iso' in params['build_config']['build_file']:
+            iso_file = params['build_config']['build_file'].split("/")[-1]
+            is_img_in_hmc = check_image_in_hmc(module, params)
+            if not is_img_in_hmc:
+                iso_file = image_copy_from_local_to_hmc(module, params)
         else:
-            hmc_ls_cmd = "sshpass -p {0} ssh {1}@{2} ls {3}".format(password, hmc_user, hmc_host, params['build_config']['build_file'])
-            rc, out, err = module.run_command(hmc_ls_cmd)
-            if rc == 0:
-                files = out.split()
-                for fl in files:
-                    if '.iso' in fl:
-                        iso_file = fl
-                        break
-                logger.debug(iso_file)
-                if not iso_file:
-                    raise Error("Necessary files are missing in hmc")
-            else:
-                logger.debug(err)
-                raise Error("could not confirm the necessary image files in hmc")
+            is_img_in_hmc = check_image_in_hmc(module, params)
+            if not is_img_in_hmc:
+                iso_file = image_copy_from_local_to_hmc(module, params)
+       	    else:
+                hmc_ls_cmd = "sshpass -p {0} ssh {1}@{2} ls {3}".format(password, hmc_user, hmc_host, params['build_config']['build_file'])
+                rc, out, err = module.run_command(hmc_ls_cmd)
+                if rc == 0:
+                    files = out.split()
+                    iso_count = sum(file.endswith(".iso") for file in files)
+                    if iso_count > 1:
+                        raise Error("There are multiple iso files in specified folder. Please specify the iso file also in build_file")
+               	    else:
+                        for fl in files:
+                            if '.iso' in fl:
+                                iso_file = fl
+                                break
+                        if not iso_file:
+                            raise Error("Necessary files are missing in hmc")
+                else:
+                    logger.debug(err)
+                    raise Error("could not confirm the necessary image files in hmc")
 
     otherConfig = {}
     if params['build_config']['hostname']:
@@ -550,10 +581,12 @@ def update_hmc(module, params):
     if locationType == 'disk':
         if not is_img_in_hmc:
             otherConfig['-C'] = ""
-            otherConfig['-F'] = '/home/{0}/network_install/{1}'.format(hmc_user, iso_file)
+            otherConfig['-F'] = '/home/{0}/network_install/{1}'.format(hmc_user, iso_file).strip()
+        elif '.iso' in params['build_config']['build_file']:
+            otherConfig['-F'] = '/{0}'.format(params['build_config']['build_file']).strip()
         else:
-            otherConfig['-F'] = '/{0}/{1}'.format(params['build_config']['build_file'], iso_file)
-
+            otherConfig['-F'] = '/{0}/{1}'.format(params['build_config']['build_file'], iso_file).strip()
+    
     initial_version_details = hmc.listHMCVersion()
 
     # In case of ibmwebsite, provide the ptf number
