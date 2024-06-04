@@ -354,7 +354,7 @@ def image_copy_from_local_to_hmc(module, params):
 
     scp_cmd = 'sshpass -p {0} scp -r {1}/* {2}@{3}:/home/{2}/network_install'.format(password, local_path, hmc_user, hmc_host)
     if params['state'] == 'updated' and iso_name != "":
-        scp_cmd = 'sshpass -p {0} scp  {1}/{2} {3}@{4}:/home/{3}/network_install'.format(password, local_path, iso_name,  hmc_user, hmc_host)
+        scp_cmd = 'sshpass -p {0} scp  {1}/{2} {3}@{4}:/home/{3}/network_install'.format(password, local_path, iso_name, hmc_user, hmc_host)
     rc2, out2, err2 = module.run_command(scp_cmd, use_unsafe_shell=True)
     if rc2 == 1:
         logger.debug(err2)
@@ -543,7 +543,7 @@ def update_hmc(module, params):
             is_img_in_hmc = check_image_in_hmc(module, params)
             if not is_img_in_hmc:
                 iso_file = image_copy_from_local_to_hmc(module, params)
-       	    else:
+            else:
                 hmc_ls_cmd = "sshpass -p {0} ssh {1}@{2} ls {3}".format(password, hmc_user, hmc_host, params['build_config']['build_file'])
                 rc, out, err = module.run_command(hmc_ls_cmd)
                 if rc == 0:
@@ -551,7 +551,7 @@ def update_hmc(module, params):
                     iso_count = sum(file.endswith(".iso") for file in files)
                     if iso_count > 1:
                         raise Error("There are multiple iso files in specified folder. Please specify the iso file also in build_file")
-               	    else:
+                    else:
                         for fl in files:
                             if '.iso' in fl:
                                 iso_file = fl
@@ -586,7 +586,7 @@ def update_hmc(module, params):
             otherConfig['-F'] = '/{0}'.format(params['build_config']['build_file']).strip()
         else:
             otherConfig['-F'] = '/{0}/{1}'.format(params['build_config']['build_file'], iso_file).strip()
-    
+
     initial_version_details = hmc.listHMCVersion()
 
     # In case of ibmwebsite, provide the ptf number
