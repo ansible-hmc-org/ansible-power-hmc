@@ -108,6 +108,10 @@ options:
                       image is kept.
                       During update of the HMC if I(location_type=disk) and ISO image is kept in Ansible controller node or HMC hard disk,
                       this option should be provided with the ansible control node path in which ISO file or network install image is kept.
+                      If the path specified contains the ISO file name then that specified ISO file will considered for updation.
+                      If the path specified doesnot contain the ISO file name then the specified folder will be searched for ISO files,
+                      sorted in alphabetical order and the 1st ISO will be considered for updation.
+                      Note: If there are multiple ISO files in the path specified, include the ISO file name as well in this parameter.
                 type: str
              ptf:
                 description:
