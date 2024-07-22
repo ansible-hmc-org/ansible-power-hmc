@@ -1322,7 +1322,7 @@ def remove_partition(module, params):
                     if eachLpar['PartitionState'] != 'not activated' and force is False:
                         module.fail_json(msg="The partition is not in a valid state to perform the disaster recovery cleanup operation.")
                     if force is True:
-                        poweroff_partition(module,params)         
+                        poweroff_partition(module,params)
                     hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
                     flag =True
                     break
