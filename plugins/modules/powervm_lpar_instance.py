@@ -1309,7 +1309,7 @@ def remove_partition(module, params):
             system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
             if system_name == 1:
                 warn_msg = "Logical Partition Name:'{0}' not found in any of the managed systems".format(vm_name)
-                return False, None,warn_msg
+                return False, None, warn_msg
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
 
         if not system_uuid:
@@ -1324,13 +1324,13 @@ def remove_partition(module, params):
                     if force is True:
                         poweroff_partition(module, params)
                     hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
-                    flag =True
+                    flag = True
                     break
             if flag is False:
                 warn_msg = "Logical Partition Name:'{0}' not found in the managed systems".format(vm_name)
                 return False, None, warn_msg
         else:
-            module.fail_json(msg= "There are no Logical Partitions present on the system")
+            module.fail_json(msg="There are no Logical Partitions present on the system")
             return False, None, None
 
     except HmcError as del_lpar_error:
@@ -1616,7 +1616,6 @@ def partition_details(module, params):
         ms_state = server_dom.xpath("//DetailedState")[0].text
         if ms_state != 'None':
             module.fail_json(msg="Given system is in " + ms_state + " state")
-
         lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
         if lpar_response is not None:
             lpar_quick_list = json.loads(lpar_response)
