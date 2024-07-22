@@ -1608,7 +1608,7 @@ def partition_details(module, params):
             hmc = Hmc(hmc_conn)
             system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
             if system_name == 1:
-               return False, None, None
+                return False, None, None
 
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
         if not system_uuid:
@@ -1749,7 +1749,7 @@ def run_module():
                       ),
         system_name=dict(type='str'),
         vm_name=dict(type='str', required=True),
-        force= dict(type='bool'),
+        force=dict(type='bool'),
         vm_id=dict(type='int'),
         proc=dict(type='int'),
         max_proc=dict(type='int'),
