@@ -70,6 +70,11 @@ options:
             - The name of the powervm partition.
         required: true
         type: str
+    force:
+        description:
+            - This paramter is provided for force deletion of a partition.
+            - Delete a partition that is not in off state.
+        type: bool
     vm_id:
         description:
             - The partition ID to be set while creating a Logical Partition.
