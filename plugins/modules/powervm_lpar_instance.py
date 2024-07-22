@@ -1309,7 +1309,7 @@ def remove_partition(module, params):
             system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
             if system_name == 1:
                 warn_msg = "Logical Partition Name:'{0}' not found in any of the managed systems".format(vm_name)
-                return False, None,warn_msg 
+                return False, None,warn_msg
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
 
         if not system_uuid:
@@ -1322,12 +1322,11 @@ def remove_partition(module, params):
                     if eachLpar['PartitionState'] != 'not activated' and force is False:
                         module.fail_json(msg="The partition is not in a valid state to perform the disaster recovery cleanup operation.")
                     if force is True:
-                        poweroff_partition(module,params)
-                    
+                        poweroff_partition(module,params)         
                     hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
                     flag =True
                     break
-            if flag == False:
+            if flag is False:
                 warn_msg = "Logical Partition Name:'{0}' not found in the managed systems".format(vm_name)
                 return False, None, warn_msg
         else:
@@ -1403,7 +1402,7 @@ def poweroff_partition(module, params):
             if operation == 'restart':
                 rest_conn.poweroffPartition(lpar_uuid, 'true', restart_option)
                 changed = True
-            elif operation == 'shutdown' or params['force'] == True:
+            elif operation == 'shutdown' or params['force'] is True:
                 rest_conn.poweroffPartition(lpar_uuid, 'false', shutdown_option)
                 changed = True
 
