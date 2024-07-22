@@ -1322,7 +1322,7 @@ def remove_partition(module, params):
                     if eachLpar['PartitionState'] != 'not activated' and force is False:
                         module.fail_json(msg="The partition is not in a valid state to perform the disaster recovery cleanup operation.")
                     if force is True:
-                        poweroff_partition(module,params)
+                        poweroff_partition(module, params)
                     hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
                     flag =True
                     break
@@ -1330,7 +1330,7 @@ def remove_partition(module, params):
                 warn_msg = "Logical Partition Name:'{0}' not found in the managed systems".format(vm_name)
                 return False, None, warn_msg
         else:
-            module.fail_json(msg="There are no Logical Partitions present on the system")
+            module.fail_json(msg= "There are no Logical Partitions present on the system")
             return False, None, None
 
     except HmcError as del_lpar_error:
