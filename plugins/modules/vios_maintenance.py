@@ -346,8 +346,7 @@ def ensure_present(module, params):
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
     sys_list = (
-        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
-        hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
@@ -409,8 +408,7 @@ def ensure_restore(module, params):
         module.warn(msg="For restore the type can be either viosioconfig or ssp")
     m_system = attributes['system']
     sys_list = (
-        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
-        hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
@@ -462,8 +460,7 @@ def ensure_absent(module, params):
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
     sys_list = (
-        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
-        hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
@@ -522,8 +519,7 @@ def ensure_modify(module, params):
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
     sys_list = (
-        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
-        hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
