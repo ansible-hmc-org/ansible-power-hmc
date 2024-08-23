@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: hmc_user
+module: vios_maintenance
 author:
     - Anil Vijayan(@AnilVijayan)
     - Navinakumar Kandaur(@nkandak1)
