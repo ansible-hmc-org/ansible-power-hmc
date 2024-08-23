@@ -97,18 +97,21 @@ options:
                       C(1) to include and C(0) to not include the NIMOL resources.
                       This option is only valid when creating a full VIOS backup.
                 type: int
+                choices: [1, 0]
             media_repository:
                 description:
                     - Option to include the contents of the media repository.
                       C(1) to include and C(0) to not include the media resources.
                       This option is only valid when creating a full VIOS backup.
                 type: int
+                choices: [1, 0]
             volume_group_structure:
                 description:
                     - Option to include the volume groups structure of user.
                       C(1) to include and C(0) to not include the volume groups structure of user.
                       This option is only valid when creating a full VIOS backup.
                 type: int
+                choices: [1, 0]
             restart:
                 description:
                     - Specify this option to restart the VIOS if required.
