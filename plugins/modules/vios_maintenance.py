@@ -428,7 +428,7 @@ def ensure_restore(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']} 
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             vios_list = hmc.listViosbk(filter_d)
             vios_list = [item['NAME'] for item in vios_list]
             if attributes['backup_name'] not in vios_list:
@@ -481,7 +481,7 @@ def ensure_absent(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}      
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}   
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             file_list = attributes['file_list']
@@ -502,7 +502,7 @@ def ensure_absent(module, params):
                     logger.debug(repr(error))
                     return False, None, None
                 else:
-                    raise  
+                    raise
             changed = True
             return changed, None, None
 
@@ -541,7 +541,7 @@ def ensure_modify(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}        
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}      
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             if attributes['backup_name'] not in backup_list:
@@ -555,7 +555,7 @@ def ensure_modify(module, params):
                         logger.debug(repr(error))
                         return False, None, None
                     else:
-                        raise  
+                        raise
                 changed = True
                 return changed, None, None
 
