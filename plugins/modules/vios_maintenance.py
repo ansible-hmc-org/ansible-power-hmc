@@ -133,7 +133,7 @@ options:
 
 EXAMPLES = '''
 - name: Create a viosioconfig backup file
-  vios_backup:
+  vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
          username: '{{ ansible_user }}'
@@ -146,7 +146,7 @@ EXAMPLES = '''
     state: present
 
 - name: Restore a vios from test backup file
-  vios_backup:
+  vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
          username: '{{ ansible_user }}'
@@ -159,7 +159,7 @@ EXAMPLES = '''
     state: restore
 
 - name: Remove a backup file
-  vios_backup:
+  vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
          username: '{{ ansible_user }}'
@@ -172,7 +172,7 @@ EXAMPLES = '''
     state: absent
 
 - name: Rename the backup file
-  vios_backup:
+  vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
          username: '{{ ansible_user }}'
@@ -365,7 +365,7 @@ def ensure_present(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}     
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             vios_list = hmc.listViosbk(filter_d)
             vios_list = [item['NAME'].split('.')[0] for item in vios_list]
             if attributes['backup_name'] in vios_list:
@@ -386,7 +386,7 @@ def ensure_present(module, params):
                         logger.debug(repr(error))
                         return False, None, None
                     else:
-                        raise      
+                        raise
                 changed = True
                 return changed, viosbk_info, None
 
@@ -428,7 +428,7 @@ def ensure_restore(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}            
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}      
             vios_list = hmc.listViosbk(filter_d)
             vios_list = [item['NAME'] for item in vios_list]
             if attributes['backup_name'] not in vios_list:
@@ -481,7 +481,7 @@ def ensure_absent(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}            
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}         
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             file_list = attributes['file_list']
@@ -502,7 +502,7 @@ def ensure_absent(module, params):
                     logger.debug(repr(error))
                     return False, None, None
                 else:
-                    raise          
+                    raise      
             changed = True
             return changed, None, None
 
@@ -541,7 +541,7 @@ def ensure_modify(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}            
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}          
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             if attributes['backup_name'] not in backup_list:
@@ -555,7 +555,7 @@ def ensure_modify(module, params):
                         logger.debug(repr(error))
                         return False, None, None
                     else:
-                        raise          
+                        raise       
                 changed = True
                 return changed, None, None
 
@@ -594,20 +594,20 @@ def run_module():
                           password=dict(type='str', no_log=True),
                       )
                       ),
-        state=dict(type='str',choices=['facts','present', 'absent', 'restore', 'modify']),
+        state=dict(type='str', choices=['facts', 'present', 'absent', 'restore', 'modify']),
         attributes=dict(type='dict',
                         required=True,
                         options=dict(
-                            types=dict(type='str',choices=['viosioconfig', 'vios', 'ssp']),
+                            types=dict(type='str', choices=['viosioconfig', 'vios', 'ssp']),
                             system=dict(type='str'),
                             vios_id=dict(type='str'),
                             vios_uuid=dict(type='str'),
                             vios_name=dict(type='str'),
                             backup_name=dict(tye='str'),
                             file_list=dict(type='list'),
-                            nimol_resource=dict(type='int', choices=[0,1]),
-                            media_repository=dict(type='int', choices=[0,1]),
-                            volume_group_structure=dict(type='int', choices=[0,1]),
+                            nimol_resource=dict(type='int', choices=[0, 1]),
+                            media_repository=dict(type='int', choices=[0, 1]),
+                            volume_group_structure=dict(type='int', choices=[0, 1]),
                             restart=dict(type='bool'),
                             new_name=dict(type='str')
                         )
