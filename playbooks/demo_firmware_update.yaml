@@ -1,22 +1,21 @@
-- name: demo firmware update
+- name: Demo firmware update
   hosts: hmcs
   connection: local
-  collections: ibm.power_hmc
   vars:
     curr_hmc_auth:
       username: '{{ ansible_user }}'
   tasks:
-  - name: update managed systems to newer available level found in an sftp repo
-    firmware_update:
-      hmc_host: '{{ inventory_hostname }}'
-      hmc_auth: '{{ curr_hmc_auth }}'
-      system_name: '{{ item }}'
-      repository: sftp
-      remote_repo:
-        hostname: <sftp Server IP/Hostname>
-        userid: <sftpuser>
-        passwd: <sftpuserpasswd>
-        directory: <images dir>
-      level: <level>
-      state: updated
-    with_items: <systems_to_update>
+    - name: Update managed systems to newer available level found in an sftp repo
+      ibm.power_hmc.firmware_update:
+        hmc_host: '{{ inventory_hostname }}'
+        hmc_auth: '{{ curr_hmc_auth }}'
+        system_name: '{{ item }}'
+        repository: sftp
+        remote_repo:
+          hostname: <sftp Server IP/Hostname>
+          userid: <sftpuser>
+          passwd: <sftpuserpasswd>
+          directory: <images dir>
+        level: <level>
+        state: updated
+      loop: <systems_to_update>

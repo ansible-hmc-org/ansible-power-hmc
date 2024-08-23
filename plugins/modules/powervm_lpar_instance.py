@@ -26,6 +26,7 @@ notes:
     - Partition creation is not supported for resource role-based user in HMC Version prior to 951.
     - C(install_os) action doesn't support installation of IBMi OS.
     - Only state=absent and action=install_os operations support passwordless authentication.
+    - install_settings suboption "location_code" supports AIX installation, "vm_mac" supports Linux installation on LPAR
 description:
     - "Creates AIX/Linux or IBMi partition with specified configuration details on mentioned system"
     - "Or Deletes specified AIX/Linux or IBMi partition on specified system"
@@ -70,6 +71,11 @@ options:
             - The name of the powervm partition.
         required: true
         type: str
+    force:
+        description:
+            - This paramter is provided for force deletion of a partition.
+            - Delete a partition that is not in off state.
+        type: bool
     vm_id:
         description:
             - The partition ID to be set while creating a Logical Partition.
@@ -327,8 +333,13 @@ options:
                 type: str
             location_code:
                 description:
-                    - Network adapter location code to be used while installing OS.
+                    - Network adapter location code to be used while installing AIX OS.
                     - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
+                type: str
+            vm_mac:
+                description:
+                    - mac address of lpar
+                    - Used while installing linux OS on lpar, provided by user
                 type: str
             nim_vlan_id:
                 description:
@@ -529,7 +540,7 @@ EXAMPLES = '''
       os_type: aix_linux
       state: present
 
-- name: Install Aix/Linux OS on LPAR from NIM Server.
+- name: Install Aix OS on LPAR from NIM Server.
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth: "{{ curr_hmc_auth }}"
@@ -540,6 +551,20 @@ EXAMPLES = '''
          nim_ip: <IP_address of the NIM Server>
          nim_gateway: <Gateway IP_Addres>
          nim_subnetmask: <Subnetmask IP_Address>
+      action: install_os
+
+- name: Install Linux OS on LPAR from NIM Server.
+  powervm_lpar_instance:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth: "{{ curr_hmc_auth }}"
+      system_name: <system_name>
+      vm_name: <vm_name>
+      install_settings:
+         vm_ip: <IP_address of the lpar>
+         nim_ip: <IP_address of the NIM Server>
+         nim_gateway: <Gateway IP_Addres>
+         nim_subnetmask: <Subnetmask IP_Address>
+         vm_mac: <mac address of lpar>
       action: install_os
 
 '''
@@ -986,7 +1011,7 @@ def get_MS_names_by_lpar_name(hmc_obj, lpar_name):
     return ms_list
 
 
-def identify_ManagedSystem_of_lpar(hmc, vm_name):
+def identify_ManagedSystem_of_lpar(hmc, vm_name, module):
     system_name = None
     ms_name = get_MS_names_by_lpar_name(hmc, vm_name)
     if len(ms_name) == 1:
@@ -997,7 +1022,8 @@ def identify_ManagedSystem_of_lpar(hmc, vm_name):
         raise ParameterError(err_msg)
     else:
         err_msg = "Logical Partition Name:'{0}' not found in any of the managed systems".format(vm_name)
-        raise ParameterError(err_msg)
+        module.warn(err_msg)
+        return 1
     return system_name
 
 
@@ -1271,6 +1297,16 @@ def remove_partition(module, params):
     vm_name = params['vm_name']
     retainViosCfg = params['retain_vios_cfg']
     deleteVdisks = params['delete_vdisks']
+    flag = False
+    force = False
+    if params['force'] is True:
+        force = True
+
+    try:
+        rest_conn = HmcRestClient(hmc_host, hmc_user, password)
+    except Exception as error:
+        logger.debug(repr(error))
+        module.fail_json(msg="Logon to HMC failed")
 
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
@@ -1288,17 +1324,41 @@ def remove_partition(module, params):
         retainViosCfg = not (retainViosCfg)
     try:
         if system_name:
-            hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
+            system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
         else:
-            ms_name = identify_ManagedSystem_of_lpar(hmc, vm_name)
-            hmc.deletePartition(ms_name, vm_name, retainViosCfg, deleteVdisks)
+            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
+            if system_name == 1:
+                warn_msg = "Logical Partition Name:'{0}' not found in any of the managed systems".format(vm_name)
+                return False, None, warn_msg
+            system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
+
+        if not system_uuid:
+            module.fail_json(msg="Given system is not present")
+        lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
+        if lpar_response is not None:
+            lpar_quick_list = json.loads(lpar_response)
+            for eachLpar in lpar_quick_list:
+                if eachLpar['PartitionName'] == vm_name:
+                    if eachLpar['PartitionState'] != 'not activated' and force is False:
+                        module.fail_json(msg="The partition is not in a valid state to perform the disaster recovery cleanup operation.")
+                    if force is True:
+                        poweroff_partition(module, params)
+                    hmc.deletePartition(system_name, vm_name, retainViosCfg, deleteVdisks)
+                    flag = True
+                    break
+            if flag is False:
+                warn_msg = "Logical Partition Name:'{0}' not found in the managed systems".format(vm_name)
+                return False, None, warn_msg
+        else:
+            module.fail_json(msg="There are no Logical Partitions present on the system")
+            return False, None, None
+
     except HmcError as del_lpar_error:
         error_msg = parse_error_response(del_lpar_error)
         if 'HSCL8012' in error_msg:
             return False, None, None
         else:
             return False, repr(del_lpar_error), None
-
     return True, None, None
 
 
@@ -1328,7 +1388,9 @@ def poweroff_partition(module, params):
         if not system_name:
             hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
             hmc = Hmc(hmc_conn)
-            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name)
+            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
+            if system_name == 1:
+                return False, None, None
 
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
         if not system_uuid:
@@ -1360,7 +1422,7 @@ def poweroff_partition(module, params):
             if operation == 'restart':
                 rest_conn.poweroffPartition(lpar_uuid, 'true', restart_option)
                 changed = True
-            elif operation == 'shutdown':
+            elif operation == 'shutdown' or params['force'] is True:
                 rest_conn.poweroffPartition(lpar_uuid, 'false', shutdown_option)
                 changed = True
 
@@ -1405,7 +1467,9 @@ def poweron_partition(module, params):
         if not system_name:
             hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
             hmc = Hmc(hmc_conn)
-            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name)
+            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
+            if system_name == 1:
+                return False, None, None
 
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
         if not system_uuid:
@@ -1491,6 +1555,7 @@ def install_aix_os(module, params):
     nim_gateway = params['install_settings']['nim_gateway']
     nim_subnetmask = params['install_settings']['nim_subnetmask']
     location_code = params['install_settings']['location_code']
+    vm_mac = params['install_settings']['vm_mac']
     profile_name = params['prof_name'] or 'default_profile'
     nim_vlan_id = params['install_settings']['nim_vlan_id'] or '0'
     nim_vlan_priority = params['install_settings']['nim_vlan_priority'] or '0'
@@ -1503,6 +1568,9 @@ def install_aix_os(module, params):
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
 
+    if location_code and vm_mac:
+        module.fail_json(msg="One of location_code/vm_mac should be specified to install AIX/Linux OS respectively")
+
     if timeout < 10:
         module.fail_json(msg="timeout should be more than 10mins")
     try:
@@ -1512,6 +1580,9 @@ def install_aix_os(module, params):
 
         if location_code:
             hmc.installOSFromNIM(location_code, nim_ip, nim_gateway, vm_ip, nim_vlan_id, nim_vlan_priority, nim_subnetmask, vm_name, profile_name, system_name)
+        elif vm_mac:
+            hmc.installOSFromNIM(location_code, nim_ip, nim_gateway, vm_ip, None, None, nim_subnetmask, vm_name, profile_name, system_name, vm_mac)
+            hmc.checkconsolelog(module, vm_ip, hmc_host, hmc_user, password, system_name, vm_name)
         else:
             dvcdictlt = hmc.fetchIODetailsForNetboot(nim_ip, nim_gateway, vm_ip, vm_name, profile_name, system_name, nim_subnetmask)
             for dvcdict in dvcdictlt:
@@ -1529,9 +1600,11 @@ def install_aix_os(module, params):
             changed = True
         elif ref_code in ['', '00']:
             changed = True
-            warn_msg = "AIX installation has been successfull but RMC didnt come up, please check the HMC firewall and security"
+            warn_msg = "AIX/Linux installation has been successfull but RMC didnt come up, please check the HMC firewall and security"
+        elif vm_mac and "linux" in vm_property['os_version'].lower():
+            warn_msg = "Partition is up with Linux OS, Wait for Post Installation verification for the installation Success/Failure"
         else:
-            module.fail_json(msg="AIX Installation failed even after waiting for " + str(timeout) + " mins and the reference code is " + ref_code)
+            module.fail_json(msg="AIX/Linux Installation failed even after waiting for " + str(timeout) + " mins and the reference code is " + ref_code)
     except HmcError as install_error:
         return False, repr(install_error), None
 
@@ -1562,7 +1635,9 @@ def partition_details(module, params):
         if not system_name:
             hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
             hmc = Hmc(hmc_conn)
-            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name)
+            system_name = identify_ManagedSystem_of_lpar(hmc, vm_name, module)
+            if system_name == 1:
+                return False, None, None
 
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
         if not system_uuid:
@@ -1570,7 +1645,6 @@ def partition_details(module, params):
         ms_state = server_dom.xpath("//DetailedState")[0].text
         if ms_state != 'None':
             module.fail_json(msg="Given system is in " + ms_state + " state")
-
         lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
         if lpar_response is not None:
             lpar_quick_list = json.loads(lpar_response)
@@ -1620,7 +1694,7 @@ def partition_details(module, params):
                 partition_prop['UncappedWeight'] = rest_conn.getProcUncappedWeight(partition_dom)
 
         if not lpar_uuid:
-            module.fail_json(msg="Given Logical Partition is not present on the system")
+            module.warn("Logical Partition Name:'{0}' not found in the managed systems".format(vm_name))
 
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
@@ -1677,6 +1751,7 @@ def run_module():
                            nim_gateway=dict(type='str', required=True),
                            nim_subnetmask=dict(type='str', required=True),
                            location_code=dict(type='str'),
+                           vm_mac=dict(type='str'),
                            nim_vlan_id=dict(type='str'),
                            nim_vlan_priority=dict(type='str'),
                            timeout=dict(type='int')
@@ -1704,6 +1779,7 @@ def run_module():
                       ),
         system_name=dict(type='str'),
         vm_name=dict(type='str', required=True),
+        force=dict(type='bool'),
         vm_id=dict(type='int'),
         proc=dict(type='int'),
         max_proc=dict(type='int'),

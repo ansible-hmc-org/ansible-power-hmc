@@ -34,6 +34,7 @@ jobs:
         python -m pip install --upgrade pip
         make install-ansible
         make install-sanity-test-requirements
+        make install-ansible-lint
 
     - name: build and install new content as collection
       run: |
@@ -42,3 +43,6 @@ jobs:
     - name: run linter
       run: make module-lint
       working-directory: /home/runner/.ansible/collections/ansible_collections/ibm/power_hmc
+
+    - name: run install-ansible
+      run: make ansible-lint

@@ -8,11 +8,11 @@ __metaclass__ = type
 import time
 import re
 import subprocess
+import multiprocessing
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_command_stack import HmcCommandStack
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_cli_client import HmcCliConnection
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import HmcError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -482,20 +482,52 @@ class Hmc():
         result = self.hmcconn.execute(lpar_netboot)
         return self._parseIODetailsFromNetboot(result)
 
-    def installOSFromNIM(self, loc_code, nimIP, gateway, lparIP, vlanID, vlanPrio, submask, viosName, profName, systemName):
-        lpar_netboot = self.CMD['LPAR_NETBOOT'] +\
-            self.OPT['LPAR_NETBOOT']['-F'] +\
+    def installOSFromNIM(self, loc_code, nimIP, gateway, lparIP, vlanID, vlanPrio, submask, viosName, profName, systemName, lparMac=None):
+        if loc_code:
+            os_command = self.OPT['LPAR_NETBOOT']['-L'] + loc_code +\
+                self.OPT['LPAR_NETBOOT']['-V'] + vlanID +\
+                self.OPT['LPAR_NETBOOT']['-Y'] + vlanPrio
+        elif lparMac:
+            os_command = self.OPT['LPAR_NETBOOT']['-x'] +\
+                self.OPT['LPAR_NETBOOT']['-v'] +\
+                self.OPT['LPAR_NETBOOT']['-i'] +\
+                self.OPT['LPAR_NETBOOT']['-s'] + "auto" +\
+                self.OPT['LPAR_NETBOOT']['-d'] + "auto" +\
+                self.OPT['LPAR_NETBOOT']['-m'] + lparMac
+        else:
+            pass
+
+        lpar_netboot = self.CMD['LPAR_NETBOOT'] + self.OPT['LPAR_NETBOOT']['-F'] +\
             self.OPT['LPAR_NETBOOT']['-D'] +\
             self.OPT['LPAR_NETBOOT']['-T'] + "ent" +\
-            self.OPT['LPAR_NETBOOT']['-L'] + loc_code +\
             self.OPT['LPAR_NETBOOT']['-S'] + nimIP +\
             self.OPT['LPAR_NETBOOT']['-G'] + gateway +\
             self.OPT['LPAR_NETBOOT']['-C'] + lparIP +\
-            self.OPT['LPAR_NETBOOT']['-V'] + vlanID +\
-            self.OPT['LPAR_NETBOOT']['-Y'] + vlanPrio +\
             self.OPT['LPAR_NETBOOT']['-K'] + submask +\
+            os_command +\
             " " + viosName + " " + profName + " " + systemName
         self.hmcconn.execute(lpar_netboot)
+
+    def getconsolelog(self, module, lpar_hmc, userid, hmc_password, systemName, lparName):
+        conn = HmcCliConnection(module, lpar_hmc, userid, hmc_password)
+        cmd = 'rmvterm -m ' + systemName + ' -p ' + lparName
+        conn.execute(cmd)
+        cmd = 'mkvterm -m ' + systemName + ' -p ' + lparName
+        stdout = conn.execute(cmd)
+        try:
+            for line in stdout:
+                logger.debug(line.strip())
+                logger.debug("\n")
+        except UnicodeDecodeError:
+            pass
+
+    def checkconsolelog(self, module, lpar_ip, lpar_hmc, userid, hmc_password, systemName, lparName):
+        logger.info("Installation will take approximatly 10-12 mins to complete.")
+        process = multiprocessing.Process(target=self.getconsolelog, args=(module, lpar_hmc, userid, hmc_password, systemName, lparName))
+        process.start()
+        time.sleep(360)
+        process.terminate()
+        process.join()
 
     def getPartitionRefcode(self, system_name, name):
         filter_config = dict(LPAR_NAMES=name)
@@ -740,6 +772,7 @@ class Hmc():
             lssyscfgCmd += self.OPT['LSSYSCFG']['-F'] + filter
 
         raw_result = self.hmcconn.execute(lssyscfgCmd)
+        raw_result = raw_result.replace("Power Off", "Off")
         lines = raw_result.split()
 
         return lines
@@ -753,6 +786,7 @@ class Hmc():
             lssyscfgCmd += self.OPT['LSSYSCFG']['-F'] + filter
 
         raw_result = self.hmcconn.execute(lssyscfgCmd)
+        raw_result = raw_result.replace("Power Off", "Off")
         lines = raw_result.split()
 
         return lines

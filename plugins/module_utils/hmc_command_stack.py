@@ -51,6 +51,8 @@ class HmcCommandStack():
                'RSTVIOSBK': 'rstviosbk',
                'RMVIOSBK': 'rmviosbk',
                'CHVIOSBK': 'chviosbk',
+               'MKVTERM': 'mkvterm',
+               'RMVTERM': 'rmvterm'
                }
 
     HMC_CMD_OPT = {'LSHMC': {'-N': ' -n ',
@@ -324,7 +326,13 @@ class HmcCommandStack():
                                     '-L': ' -l ',
                                     '-V': ' -V ',
                                     '-Y': ' -Y ',
-                                    '-K': ' -K '},
+                                    '-K': ' -K ',
+                                    '-x': ' -x ',
+                                    '-v': ' -v ',
+                                    '-i': ' -i ',
+                                    '-d': ' -d ',
+                                    '-s': ' -s ',
+                                    '-m': ' -m '},
                    'LSREFCODE': {'-R': {'LPAR': ' -r lpar'},
                                  '-M': ' -m ',
                                  '-F': ' -F ',
@@ -438,6 +446,10 @@ class HmcCommandStack():
                    'RSTVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-R': '-r '},
                    'RMVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid '},
                    'CHVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-O': '-o ', '-A': '-a '}
+                   'MKVTERM': {'-m': ' -m ',
+                               '-p': ' -p '},
+                   'RMVTERM': {'-m': ' -m ',
+                               '-p': ' -p '},
                    }
 
     def filterBuilder(self, cmdKey, configOptionsDict):

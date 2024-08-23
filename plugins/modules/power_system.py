@@ -26,6 +26,7 @@ description:
     - "Modify System configuration of the specified managed system with specified configuration details"
     - "Modify hardware resource of the specified managed system with specified hardware resource details"
     - "Get the facts of the specified managed system"
+    - "Enable and Disable PCM metrics"
 version_added: 1.0.0
 options:
     hmc_host:
@@ -93,12 +94,14 @@ options:
         choices: ['auto', '16', '32', '64', '128', '256']
     metrics:
         description:
-            - Provides option five types of utilization data
+            - Provides five types of utilization data
             - Long Term Monitor(LTM), Short Term Monitor(STM), Aggregated metrics(AM), ComputeLTM(CLTM), EnergyMonitor(EM).
             - AM collects data from LTM and EM, hence when the AM is enabled automatically LTM and EM will be enabled.
             - When LTM or EM is disabled then automatically the AM will also get disabled.
-         type: list
-         choices: ['LTM', 'STM', 'AM', 'CLTM', 'EM']
+            - This option works only with C(enable_pcm) and C(disable_pcm) I(action).
+        type: list
+        elements: str
+        choices: ['LTM', 'STM', 'AM', 'CLTM', 'EM']
     action:
         description:
             - C(poweroff) poweroff a specified I(system_name).
@@ -176,10 +179,10 @@ EXAMPLES = '''
          password: '{{ hmc_password }}'
     system_name: <managed_system_name>
     metrics:
-           - LTM
+         - LTM
     action: enable_pcm
 
- - name: disable the short-term monitoring
+- name: disable the short-term monitoring
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
@@ -187,7 +190,7 @@ EXAMPLES = '''
          password: '{{ hmc_password }}'
     system_name: <managed_system_name>
     metrics:
-           - STM
+         - STM
     action: disble_pcm
 
 '''

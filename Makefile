@@ -30,6 +30,7 @@ help:
 	run sanity testing"
 	@echo "install-unit-test-requirements 			install python modules needed \
 	run unit testing"
+	@echo "install-ansible-lint"
 	@echo "module-lint MODULE=<module path> 		lint ansible module"         
 	@echo "unit-test TEST=<test path>			run unit test suite for the collection"
 	@echo "clean						clean junk files"
@@ -47,7 +48,7 @@ clean:
 
 .PHONY: install-requirements
 install-requirements: install-ansible install-sanity-test-requirements \
-		install-unit-test-requirements
+		install-unit-test-requirements install-ansible-lint
 	python -m pip install --upgrade pip
 
 .PHONY: install-ansible
@@ -73,6 +74,9 @@ install-sanity-test-requirements:
 install-unit-test-requirements:
 	python -m pip install -r tests/unit/unit.requirements
 
+.PHONY: install-ansible-lint
+install-ansible-lint:
+	python -m pip install ansible-lint
 
 ######################################################################################
 # testing targets
@@ -98,3 +102,7 @@ prep-collection:
 unit-test: prep-collection
 	cd ~/.ansible/collections/; \
 	python -m pytest
+
+.PHONY: ansible-lint
+ansible-lint: 
+	cd playbooks && ansible-lint --exclude=hmc_users_input.yaml,partitions.power_hmc.yml,source.power_hmc.yml .
