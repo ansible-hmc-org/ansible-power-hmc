@@ -546,7 +546,7 @@ def ensure_modify(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}     
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}   
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             if attributes['backup_name'] not in backup_list:
@@ -608,8 +608,8 @@ def run_module():
                             vios_id=dict(type='str'),
                             vios_uuid=dict(type='str'),
                             vios_name=dict(type='str'),
-                            backup_name=dict(tye='str'),
-                            file_list=dict(type='list'),
+                            backup_name=dict(type='str'),
+                            file_list=dict(type='list', elements='str'),
                             nimol_resource=dict(type='int', choices=[0, 1]),
                             media_repository=dict(type='int', choices=[0, 1]),
                             volume_group_structure=dict(type='int', choices=[0, 1]),
