@@ -92,6 +92,7 @@ options:
                       This option is for C(remove) state only.
                       Add backup file name as comma seperated values.
                 type: list
+                elements: str
             nimol_resource:
                 description:
                     - Option to include the NIMOL resources.
@@ -222,11 +223,7 @@ def validate_sub_params(params):
     opr = None
     unsupportedList = []
     mandatoryList = []
-
-    if params['state'] is not None:
-        opr = params['state']
-    else:
-        opr = params['action']
+    opr = params['state']
 
     if opr == 'present':
         params = params['attributes']
@@ -577,13 +574,8 @@ def perform_task(module):
 
     if not params['hmc_auth']:
         return False, "missing credential info", None
-
-    oper = 'state'
-    if params['state'] is None:
-        oper = 'action'
-
     try:
-        return actions[params[oper]](module, params)
+        return actions[params['state']](module, params)
     except Exception as error:
         return False, repr(error), None
 
@@ -621,8 +613,6 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        mutually_exclusive=[('state', 'action')],
-        required_one_of=[('state', 'action')],
     )
 
     if module._verbosity >= 5:
