@@ -445,7 +445,7 @@ class HmcCommandStack():
                    'MKVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '-A': '-a ', '--ID': '--id ', '--UUID': '--uuid '},
                    'RSTVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-R': '-r '},
                    'RMVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid '},
-                   'CHVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-O': '-o ', '-A': '-a '}
+                   'CHVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-O': '-o ', '-A': '-a '},
                    'MKVTERM': {'-m': ' -m ',
                                '-p': ' -p '},
                    'RMVTERM': {'-m': ' -m ',
