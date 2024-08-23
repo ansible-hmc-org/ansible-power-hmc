@@ -119,7 +119,6 @@ options:
                     - The attributes to change the name of the backup file.
                       Valid for C(modify) state only.
                 type: str
-            
     state:
         description:
             - The desired build state of the target HMC.
@@ -146,7 +145,7 @@ EXAMPLES = '''
         types: viosioconfig
     state: present
 
-- name: Restore a vios from test backup file 
+- name: Restore a vios from test backup file
   vios_backup:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
@@ -206,11 +205,13 @@ import sys
 
 USER_AUTHORITY_ERR = "HSCL350B The user does not have the appropriate authority"
 
+
 def init_logger():
     logging.basicConfig(
         filename=LOG_FILENAME,
         format='[%(asctime)s] %(levelname)s: [%(funcName)s] %(message)s',
         level=logging.DEBUG)
+
 
 def validate_sub_params(params):
     opr = None
@@ -225,21 +226,21 @@ def validate_sub_params(params):
     if opr == 'present':
         params = params['attributes']
         mandatoryList = ['types', 'system', 'backup_name']
-        unsupportedList = ['restart','new_name']
+        unsupportedList = ['restart', 'new_name']
     if opr == 'restore':
         params = params['attributes']
         mandatoryList = ['types', 'system', 'backup_name']
-        unsupportedList = ['nimol_resource', 'media_repository', 'volume_group_structure', 'file_list','new_name']
+        unsupportedList = ['nimol_resource', 'media_repository', 'volume_group_structure', 'file_list', 'new_name']
     if opr == 'absent':
         params = params['attributes']
         mandatoryList = ['types', 'system', 'file_list']
-        unsupportedList = ['restart', 'nimol_resource', 'media_repository', 'volume_group_structure', 'backup_name','new_name']
+        unsupportedList = ['restart', 'nimol_resource', 'media_repository', 'volume_group_structure', 'backup_name', 'new_name']
     if opr == 'modify':
         params = params['attributes']
         mandatoryList = ['types', 'system', 'backup_name', 'new_name']
         unsupportedList = ['restart', 'nimol_resource', 'media_repository', 'volume_group_structure', 'file_list']
 
-    if opr in ['present', 'restore', 'absent','modify']:
+    if opr in ['present', 'restore', 'absent', 'modify']:
         count = sum(x is not None for x in [params['vios_id'], params['vios_uuid'], params['vios_name']])
         if count == 0:
            raise ParameterError("Missing VIOS details")
