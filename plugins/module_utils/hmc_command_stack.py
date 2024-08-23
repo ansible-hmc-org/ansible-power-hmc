@@ -429,6 +429,11 @@ class HmcCommandStack():
                                  'GROUPATTRIBUTE': ' --groupattribute',
                                  'MEMBERATTRIBUTE': ' --memberattribute'
                                  },
+                   'LSVIOSBK': {'--FILTER': {'VIOS_NAMES': 'vios_names',
+                                             'SYS_NAMES': 'sys_names',
+                                             'TYPES': 'types',
+                                             'VIOS_UUIDS': 'vios_uuids',
+                                             'VIOS_IDS': 'vios_ids'}},
                    'MKVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '-A': '-a ', '--ID': '--id ', '--UUID': '--uuid '},
                    'RSTVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-R': '-r '},
                    'RMVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid '},
