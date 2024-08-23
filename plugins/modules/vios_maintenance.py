@@ -94,24 +94,25 @@ options:
             nimol_resource:
                 description:
                     - Option to include the NIMOL resources.
-                      Value can be either 1(include) or 0(not include)
+                      C(1) to include and C(0) to not include the NIMOL resources.
                       This option is only valid when creating a full VIOS backup.
                 type: int
             media_repository:
                 description:
                     - Option to include the contents of the media repository.
-                      Value can be either 1(include) or 0(not include)
+                      C(1) to include and C(0) to not include the media resources.
                       This option is only valid when creating a full VIOS backup.
                 type: int
             volume_group_structure:
                 description:
                     - Option to include the volume groups structure of user.
-                      Value can be either 1(include) or 0(not include)
+                      C(1) to include and C(0) to not include the volume groups structure of user.
                       This option is only valid when creating a full VIOS backup.
                 type: int
             restart:
                 description:
                     - Specify this option to restart the VIOS if required.
+                      C(True) to restart the VIOS and C(False) not to restart the VIOS.
                       Valid for C(restore) state only.
                 type: bool
             new_name:
@@ -481,7 +482,7 @@ def ensure_absent(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}   
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             file_list = attributes['file_list']
@@ -541,7 +542,7 @@ def ensure_modify(module, params):
             elif attributes['vios_id'] is not None:
                 filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
             elif attributes['vios_uuid'] is not None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}      
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}     
             backup_list = hmc.listViosbk(filter_d)
             backup_list = [item['NAME'] for item in backup_list]
             if attributes['backup_name'] not in backup_list:
