@@ -618,12 +618,12 @@ class Hmc():
             self.OPT['MKVIOSBK']['-T'] + configDict['types'] + \
             self.OPT['MKVIOSBK']['-M'] + configDict['system'] + \
             self.OPT['MKVIOSBK']['-F'] + configDict['backup_name'] + " "
-        if  configDict['vios_name'] != None:
+        if configDict['vios_name'] is not None:
             viosbk_cmd += self.OPT['MKVIOSBK']['-P'] + configDict['vios_name'] + " "
-        elif configDict['vios_id'] != None:
+        elif configDict['vios_id'] is not None:
             viosbk_cmd += self.OPT['MKVIOSBK']['--ID'] + configDict['vios_id'] + " "
-        elif configDict['vios_uuid'] != None:
-            viosbk_cmd += self.OPT['MKVIOSBK']['--UUID'] + configDict['vios_uuid'] + " "  
+        elif configDict['vios_uuid'] is not None:
+            viosbk_cmd += self.OPT['MKVIOSBK']['--UUID'] + configDict['vios_uuid'] + " "
         if output != "":
             viosbk_cmd += self.OPT['MKVIOSBK']['-A'] + '"' + output + '"'
         return self.hmcconn.execute(viosbk_cmd)
@@ -633,26 +633,26 @@ class Hmc():
             self.OPT['RSTVIOSBK']['-T'] + configDict['types'] + \
             self.OPT['RSTVIOSBK']['-M'] + configDict['system'] + \
             self.OPT['RSTVIOSBK']['-F'] + configDict['backup_name'] + " "
-        if  configDict['vios_name'] != None:
+        if configDict['vios_name'] is not None:
             restore_cmd += self.OPT['RSTVIOSBK']['-P'] + configDict['vios_name'] + " "
-        elif configDict['vios_id'] != None:
+        elif configDict['vios_id'] is not None:
             restore_cmd += self.OPT['RSTVIOSBK']['--ID'] + configDict['vios_id'] + " "
-        elif configDict['vios_uuid'] != None:
+        elif configDict['vios_uuid'] is not None:
             restore_cmd += self.OPT['RSTVIOSBK']['--UUID'] + configDict['vios_uuid'] + " "
-        if configDict['restart'] != None:
+        if configDict['restart'] is not None:
             restore_cmd += self.OPT['RSTVIOSBK']['-R']
         self.hmcconn.execute(restore_cmd)
-    
+
     def removeViosBk(self, configDict=None, enable=False, modify_type=None):
         rmviosbk_cmd = self.CMD['RMVIOSBK'] + \
             self.OPT['RMVIOSBK']['-T'] + configDict['types'] + \
             self.OPT['RMVIOSBK']['-M'] + configDict['system'] + \
             self.OPT['RMVIOSBK']['-F'] + configDict['backup_name'] + " "
-        if  configDict['vios_name'] != None:
+        if configDict['vios_name'] is not None:
             rmviosbk_cmd += self.OPT['MKVIOSBK']['-P'] + configDict['vios_name']
-        elif configDict['vios_id'] != None:
+        elif configDict['vios_id'] is not None:
             rmviosbk_cmd += self.OPT['MKVIOSBK']['--ID'] + configDict['vios_id']
-        elif configDict['vios_uuid'] != None:
+        elif configDict['vios_uuid'] is not None:
             rmviosbk_cmd += self.OPT['MKVIOSBK']['--UUID'] + configDict['vios_uuid']
         return self.hmcconn.execute(rmviosbk_cmd)
 
@@ -662,11 +662,11 @@ class Hmc():
             self.OPT['CHVIOSBK']['-M'] + configDict['system'] + \
             self.OPT['CHVIOSBK']['-F'] + configDict['backup_name'] + " "
         modviosbk_cmd += self.OPT['CHVIOSBK']['-O'] + "s "
-        if  configDict['vios_name'] != None:
+        if configDict['vios_name'] is not None:
             modviosbk_cmd += self.OPT['CHVIOSBK']['-P'] + configDict['vios_name']
-        elif configDict['vios_id'] != None:
+        elif configDict['vios_id'] is not None:
             modviosbk_cmd += self.OPT['CHVIOSBK']['--ID'] + configDict['vios_id']
-        elif configDict['vios_uuid'] != None:
+        elif configDict['vios_uuid'] is not None:
             modviosbk_cmd += self.OPT['CHVIOSBK']['--UUID'] + configDict['vios_uuid']
         modviosbk_cmd += " " + self.OPT['CHVIOSBK']['-A'] + "'new_name=" + configDict['new_name'] + "'"
         return self.hmcconn.execute(modviosbk_cmd)
