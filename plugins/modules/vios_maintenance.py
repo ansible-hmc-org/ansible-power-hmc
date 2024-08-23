@@ -53,6 +53,7 @@ options:
             - Configuration parameters required for VIOS backup and restore.
         required: false
         type: dict
+        required: true
         suboptions:
             types:
                 description:
@@ -602,7 +603,7 @@ def run_module():
         attributes=dict(type='dict',
                         required=True,
                         options=dict(
-                            types=dict(type='str', choices=['viosioconfig', 'vios', 'ssp']),
+                            types=dict(required=True, type='str', choices=['viosioconfig', 'vios', 'ssp']),
                             system=dict(type='str'),
                             vios_id=dict(type='str'),
                             vios_uuid=dict(type='str'),
