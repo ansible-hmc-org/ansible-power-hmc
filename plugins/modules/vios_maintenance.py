@@ -243,13 +243,13 @@ def validate_sub_params(params):
     if opr in ['present', 'restore', 'absent', 'modify']:
         count = sum(x is not None for x in [params['vios_id'], params['vios_uuid'], params['vios_name']])
         if count == 0:
-           raise ParameterError("Missing VIOS details")
-        if count!= 1:
+            raise ParameterError("Missing VIOS details")
+        if count != 1:
             raise ParameterError("Parameters 'vios_id', 'vios_uuid' and 'vios_name' are mutually exclusive")
     if opr == 'present':
-        if params['nimol_resource'] != None or params['media_repository'] != None or params['volume_group_structure'] != None:
-                if params['types'] != 'vios':
-                    raise ParameterError("Parameters 'nimol_resource', 'media_repository' and 'volume_group_structure' are valid for only full VIOS backup")
+        if params['nimol_resource'] is not None or params['media_repository'] is not None or params['volume_group_structure'] is not None:
+             if params['types'] != 'vios':
+                  raise ParameterError("Parameters 'nimol_resource', 'media_repository' and 'volume_group_structure' are valid for only full VIOS backup")
     collate = []
     for eachMandatory in mandatoryList:
         if not params[eachMandatory]:
@@ -270,14 +270,14 @@ def validate_sub_params(params):
             raise ParameterError("unsupported parameter: %s" % (collate[0]))
         else:
             raise ParameterError("unsupported parameters: %s" % (','.join(collate)))
- 
+
 
 def validate_parameters(params):
     '''Check that the input parameters satisfy the mutual exclusiveness of HMC'''
     opr = None
     unsupportedList = []
     mandatoryList = []
-    
+
     if params['state'] is not None:
         opr = params['state']
     else:
@@ -315,7 +315,7 @@ def facts(module, params):
     password = params['hmc_auth']['password']
     filter_d = {}
     viosbk_details = []
-    
+
     validate_parameters(params)
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
@@ -330,6 +330,7 @@ def facts(module, params):
             raise
     return False, viosbk_details, None
 
+
 def ensure_present(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -340,31 +341,31 @@ def ensure_present(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
-    
+
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
     sys_list = (
-    hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
-    hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() +
+        hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
     else:
-        if attributes['vios_name'] != None:
+        if attributes['vios_name'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(m_system)).splitlines())
-        elif attributes['vios_id'] != None:
+        elif attributes['vios_id'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F lpar_id".format(m_system)).splitlines())
-        elif attributes['vios_uuid'] != None:
+        elif attributes['vios_uuid'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F uuid".format(m_system)).splitlines())
         if vios_name not in vios_list:
             module.fail_json(msg="The vios is not available in the managed system")
         else:
-            if attributes['vios_name'] != None:
-                filter_d = {"VIOS_NAMES": attributes['vios_name'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-            elif attributes['vios_id'] != None:
-                filter_d = {"VIOS_IDS": attributes['vios_id'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-            elif attributes['vios_uuid'] != None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}            
+            if attributes['vios_name'] is not None:
+                filter_d = {"VIOS_NAMES": attributes['vios_name'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+            elif attributes['vios_id'] is not None:
+                filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+            elif attributes['vios_uuid'] is not None:
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}            
             vios_list = hmc.listViosbk(filter_d)
             vios_list = [item['NAME'].split('.')[0] for item in vios_list]
             if attributes['backup_name'] in vios_list:
@@ -373,12 +374,12 @@ def ensure_present(module, params):
             else:
                 try: 
                     hmc.createViosBk(configDict=attributes)
-                    if attributes['vios_name'] != None:
-                        filter_d = {"VIOS_NAMES": attributes['vios_name'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-                    elif attributes['vios_id'] != None:
-                        filter_d = {"VIOS_IDS": attributes['vios_id'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-                    elif attributes['vios_uuid'] != None:
-                        filter_d = {"VIOS_UUIDS": attributes['vios_uuid'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
+                    if attributes['vios_name'] is not None:
+                        filter_d = {"VIOS_NAMES": attributes['vios_name'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+                    elif attributes['vios_id'] is not None:
+                        filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+                    elif attributes['vios_uuid'] is not None:
+                        filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
                     viosbk_info = hmc.listViosbk(filter_d)
                 except HmcError as error:
                     if USER_AUTHORITY_ERR in repr(error):
@@ -412,21 +413,21 @@ def ensure_restore(module, params):
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC") 
     else:
-        if attributes['vios_name'] != None:
+        if attributes['vios_name'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(m_system)).splitlines())
-        elif attributes['vios_id'] != None:
+        elif attributes['vios_id'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F lpar_id".format(m_system)).splitlines())
-        elif attributes['vios_uuid'] != None:
+        elif attributes['vios_uuid'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F uuid".format(m_system)).splitlines())
         if vios_name not in vios_list:
             module.fail_json(msg="The vios is not available in the managed system")
         else:
-            if attributes['vios_name'] != None:
-                filter_d = {"VIOS_NAMES": attributes['vios_name'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-            elif attributes['vios_id'] != None:
-                filter_d = {"VIOS_IDS": attributes['vios_id'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}
-            elif attributes['vios_uuid'] != None:
-                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'],"SYS_NAMES": attributes['system'],"TYPES": attributes['types']}            
+            if attributes['vios_name'] is not None:
+                filter_d = {"VIOS_NAMES": attributes['vios_name'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+            elif attributes['vios_id'] is not None:
+                filter_d = {"VIOS_IDS": attributes['vios_id'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}
+            elif attributes['vios_uuid'] is not None:
+                filter_d = {"VIOS_UUIDS": attributes['vios_uuid'], "SYS_NAMES": attributes['system'], "TYPES": attributes['types']}            
             vios_list = hmc.listViosbk(filter_d)
             vios_list = [item['NAME'] for item in vios_list]
             if attributes['backup_name'] not in vios_list:
