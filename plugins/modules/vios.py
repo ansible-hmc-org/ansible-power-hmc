@@ -239,8 +239,22 @@ def validate_parameters(params):
         opr = params['action']
 
     if opr == 'install':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']
-        unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs']
+        if params['nim_IP'] and params['image_dir']:
+            logger.debug("HELLO VALIDATE FROM VALIDATE1")
+            raise ParameterError("Cannot provide both nim_IP and image_dir. Provide one of them.")
+        elif params['nim_IP'] and not params['image_dir'] :
+            logger.debug("HELLO VALIDATE FROM VALIDATE2")
+            mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']
+            unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'mac_addr', 'vios_name', 'profile', 'label']
+        elif params['image_dir'] and not params['nim_IP']:
+            logger.debug("HELLO VALIDATE FROM VALIDATE3")
+            mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'gateway_ip', 'subnet_mask', 'mac_addr', 'system_name', 'vios_name', 'profile', 'label']
+            unsupportedList = ['name', 'nim_IP', 'nim_gateway','nim_subnetmask']
+        else:
+            logger.debug("HELLO VALIDATE FROM VALIDATE4")
+            raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir")
+
+        
     elif opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name',
@@ -263,6 +277,7 @@ def validate_parameters(params):
             raise ParameterError("mandatory parameter '%s' is missing" % (collate[0]))
         else:
             raise ParameterError("mandatory parameters '%s' are missing" % (','.join(collate)))
+
 
     collate = []
     for eachUnsupported in unsupportedList:
@@ -426,18 +441,18 @@ def createVios(module, params):
     return True, lpar_config, None
 
 
-def installVios(module, params):
+def installViosUsingNim(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
     name = params['name']
     nim_IP = params['nim_IP']
-    nim_gateway = params['nim_gateway']
+    nim_gateway = params['nim_gateway'] or params['gateway_ip']
     vios_IP = params['vios_IP']
     prof_name = params['prof_name'] or 'default_profile'
     location_code = params['location_code']
-    nim_subnetmask = params['nim_subnetmask']
+    nim_subnetmask = params['nim_subnetmask'] or params['subnet_mask']
     nim_vlan_id = params['nim_vlan_id'] or '0'
     nim_vlan_priority = params['nim_vlan_priority'] or '0'
     timeout = params['timeout'] or 60
@@ -478,6 +493,68 @@ def installVios(module, params):
 
     return changed, vios_property, warn_msg
 
+def installViosUsingDisk(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    vios_iso = params['vios_iso']
+    image_dir = params['image_dir']
+    vios_IP = params['vios_IP']
+    gateway_ip = params['gateway_ip']
+    subnet_mask = params['subnet_mask']
+    mac_addr = params['mac_addr']
+    system_name= params['system_name']
+    vios_name = params['vios_name']
+    profile = params['profile']
+    label = params['label']
+    # logger.debug(vios_iso, image_name, vios_IP, gateway_ip, subnet_mask, mac_addr, system_name, vios_name, profile, label)
+    validate_parameters(params)
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    
+    try:
+        if mac_addr:
+            logger.debug("hi if")
+            hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, gateway_ip, subnet_mask, mac_addr, system_name, vios_name, profile, label)
+        else:
+            logger.debug("hi else")
+            dvcdictlt = hmc.fetchIODetailsForNetboot(hmc_host, gateway_ip, vios_IP, vios_name, profile, system_name, subnet_mask)
+            for dvcdict in dvcdictlt:
+                if dvcdict['Ping Result'] == 'successful':
+                    mac_addr = dvcdict['MAC Address']
+                    break
+            if mac_addr:
+                hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, gateway_ip, subnet_mask, mac_addr, system_name, vios_name, profile, label)
+            else:
+                module.fail_json(msg="Mac address not retrievable.") 
+        module.exit_json(changed=True, msg=f"The VIOS image has been installed successfully.")
+    except HmcError as install_error:
+        return False, repr(install_error), None
+    
+
+def install(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    nim_IP = params['nim_IP']
+    image_dir = params['image_dir']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    logger.debug("HELLO")
+    # logger.debug(image_dir)
+
+    if image_dir:
+        logger.debug("HELLO FROM IMAGE NAME")
+        installViosUsingDisk(module, params)
+
+    elif nim_IP:
+        logger.debug("HELLO FROM NIM IP")
+        installViosUsingNim(module, params)
+
+    else:
+        logger.debug("HELLO FROM NONE")
+        raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir to perform vios installation")
+        
 
 def viosLicenseAccept(module, params):
     hmc_host = params['hmc_host']
@@ -507,7 +584,7 @@ def perform_task(module):
     actions = {
         "facts": fetchViosInfo,
         "present": createVios,
-        "install": installVios,
+        "install": install,
         "accept_license": viosLicenseAccept
     }
     oper = 'action'
@@ -533,7 +610,8 @@ def run_module():
                       )
                       ),
         system_name=dict(type='str', required=True),
-        name=dict(type='str', required=True),
+        # name=dict(type='str', required=True),
+        name=dict(type='str'),
         settings=dict(type='dict'),
         nim_IP=dict(type='str'),
         nim_gateway=dict(type='str'),
@@ -548,6 +626,15 @@ def run_module():
         free_pvs=dict(type='bool'),
         state=dict(type='str', choices=['facts', 'present']),
         action=dict(type='str', choices=['install', 'accept_license']),
+        vios_iso= dict(type='str'),
+        image_dir=dict(type='str'),
+        # lpar_ip=dict(type='str'),
+        gateway_ip=dict(type='str'),
+        subnet_mask=dict(type='str'),
+        mac_addr=dict(type='str'),
+        vios_name=dict(type='str'),
+        profile=dict(type='str'),
+        label=dict(type='str'),
     )
 
     module = AnsibleModule(
@@ -556,8 +643,9 @@ def run_module():
         required_one_of=[('state', 'action')],
         required_if=[['state', 'facts', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
                      ['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
-                     ['action', 'install', ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']],
+                    #  ['action', 'install', ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']],
                      ['action', 'accept_license', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
+                     ['action', 'install', ['hmc_host', 'hmc_auth', 'vios_IP', 'system_name', 'gateway_ip', 'subnet_mask']]
                      ],
     )
 
