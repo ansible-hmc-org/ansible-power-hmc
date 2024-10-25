@@ -816,6 +816,9 @@ class Hmc():
         options = params['options']
         ssh_key_file = params['ssh_key_file']
 
+        if files:
+            files = ','.join(files)
+
         if media == 'sftp':
             sftp_user = params['sftp_auth']['username']
             sftp_password = params['sftp_auth']['password']
@@ -852,9 +855,10 @@ class Hmc():
                 ' || echo No results were found'
         else:
             lsviosimgCmd = self.CMD['LSVIOSIMG']
+        
         output = self.hmcconn.execute(lsviosimgCmd)
-        if 'No results were found' in output:
-            return []
+        if 'No results' in output:
+            return None
         return self.cmdClass.parseMultiLineCSV(output)
 
     def deleteViosImage(self, image_name):

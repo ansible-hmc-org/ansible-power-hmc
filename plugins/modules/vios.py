@@ -84,7 +84,7 @@ options:
         description:
             - Specify one or two comma-separated VIOS ISO files. 
             - For DVDs, list the first file first. Required for remote imports; not valid for USB.
-        type: str
+        type: list
     ssh_key_file:
         description:
             - Specify the SSH private key file name. 
@@ -271,7 +271,9 @@ EXAMPLES = '''
                 username: username
                 password: password
               remote_directory: <directory_path>
-              files: <file_name>
+              files: 
+                - file1
+                - file2
               action: copy
         register: testout
 
@@ -284,7 +286,9 @@ EXAMPLES = '''
               server: server_IP
               remote_directory: <directory_path>
               mount_location: <mount_location>
-              files: <file_name>
+              files: 
+                - file1
+                - file2
               options: <NFS_version>
               action: copy
         register: testout
@@ -357,6 +361,8 @@ def validate_parameters(params):
             ssh_key_file = params['ssh_key_file']
             if sftp_password and ssh_key_file:
                 raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exculsive")
+            elif not sftp_password and not ssh_key_file:
+                raise ParameterError("Please provide either 'sftp_password' or 'ssh_key_file' for authentication.")
             mandatoryList += ['hmc_host', 'hmc_auth', 'image_name', 'sftp_auth','server','files']
             unsupportedList = ['system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
@@ -670,6 +676,8 @@ def copy_vios_image(module, params):
             image = hmc.listViosImages(image_name=image_name)
             if image:
                 module.exit_json(changed=True, msg=f"The VIOS image with name '{image_name}' has been copied successfully.")
+            else:
+                module.exit_json(changed=False, msg=f"The VIOS image with name '{image_name}' has Not been copied successfully.")
     except Exception as e:
         module.fail_json(msg=str(e))
 
@@ -738,7 +746,7 @@ def run_module():
         mount_location=dict(type='str'),
         ssh_key_file=dict(type='str'),
         options=dict(type='str'),
-        files=dict(type='str'),
+        files=dict(type='list', elements='str'),
         settings=dict(type='dict'),
         nim_IP=dict(type='str'),
         nim_gateway=dict(type='str'),
