@@ -745,7 +745,7 @@ def run_module():
         remote_directory=dict(type='str'),
         mount_location=dict(type='str'),
         ssh_key_file=dict(type='str'),
-        options=dict(type='str'),
+        options=dict(type='str', choices=['3', '4']),
         files=dict(type='list', elements='str'),
         settings=dict(type='dict'),
         nim_IP=dict(type='str'),
