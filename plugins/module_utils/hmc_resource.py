@@ -819,6 +819,9 @@ class Hmc():
         if files:
             files = ','.join(files)
 
+        if options:
+            options = f'"ver={options}"'
+
         if media == 'sftp':
             sftp_user = params['sftp_auth']['username']
             sftp_password = params['sftp_auth']['password']
