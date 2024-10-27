@@ -1,0 +1,33 @@
+---
+# vars file for test_pass
+
+password_policy_username: hscroot
+
+password_policy_configs:
+      min_pwage: "2"
+      pwage: "150"
+      min_length: "8"
+      hist_size: "8"
+      warn_pwage: "10"
+      min_digits: "2"
+      min_uppercase_chars: "1"
+      min_lowercase_chars: "3"
+      min_special_chars: "1"
+
+password_policy_new_configs:
+      pwage: 60
+      hist_size: 9
+      min_uppercase_chars: "3"
+
+
+password_policy_name: testpolicytest1
+
+password_policy_users:
+      - name: manya1
+        taskrole: hmcsuperadmin
+        authentication_type: local
+        remote_ssh_access: 1
+      - name: manya2
+        taskrole: hmcviewer
+        authentication_type: local
+        remote_ssh_access: 1

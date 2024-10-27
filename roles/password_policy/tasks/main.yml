@@ -1,0 +1,97 @@
+---
+
+- name: Initializing default value of password policy as not existing
+  ansible.builtin.set_fact:
+      found: false
+
+
+- name: Check if the password policy exists in power HMC
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      state: facts
+      policy_type: policies
+  register: policy_check
+
+
+- name: Setting value of password policy as true if exists
+  ansible.builtin.set_fact:
+      found: true
+  when: password_policy_name in item.NAME
+  loop: "{{ policy_check.policy_info }}"
+  no_log: true
+
+
+- name: Create a new password policy for users in power HMC
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      policy_name: '{{ password_policy_name }}'
+      policy_config: '{{ password_policy_configs }}'
+      state: present
+  register: result
+  when: found is false
+
+
+- name: Check active password policies in power HMC and deactivate if active
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      policy_type: status
+      state: facts
+  register: result
+  # when: result.policy_info['ACTIVE'] == "1"
+  notify: Deactivate pass policies
+  changed_when: "'policy_info' in result and 'ACTIVE' in result.policy_info and result.policy_info['ACTIVE'] == '1'"
+
+
+- name: Force deactivation handler to run immediately
+  ansible.builtin.meta: flush_handlers
+
+
+- name: Modify an existing password policy of power HMC
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: "{{ inventory_hostname }}"
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      policy_name: '{{ password_policy_name }}'
+      policy_config: '{{ password_policy_new_configs }}'
+      state: modified
+  when: found is true
+
+- name: Activate the password policy of power HMC
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      policy_name: '{{ password_policy_name }}'
+      state: activated
+
+- name: Check list of users present in power HMC for a specific taskrole
+  ibm.power_hmc.hmc_command:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      cmd: lshmcusr --filter taskroles=hmcviewer -F name
+  register: userslist
+
+- name: Change password for the users with the specified taskrole in power HMC
+  ibm.power_hmc.hmc_user:
+      state: updated
+      hmc_host: "{{ inventory_hostname }}"
+      name: '{{ item }}'
+      # with_items: "{{ item.pass_policy_users }}"
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      attributes: "{{ password_policy_user_pass }}"
+  loop: "{{ userslist.command_output }}"
