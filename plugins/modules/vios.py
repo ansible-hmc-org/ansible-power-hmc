@@ -677,14 +677,14 @@ def copy_vios_image(module, params):
         directory_name = params['directory_name']
         image = hmc.listViosImages(directory_name=directory_name)
         if image:
-            module.exit_json(changed=False, msg=f"The VIOS image with name '{directory_name}' already exists.")
+            module.exit_json(changed=False, msg=f"The VIOS directory with name '{directory_name}' already exists.")
         else:
             hmc.copyViosImage(params)
             image = hmc.listViosImages(directory_name=directory_name)
             if image:
-                module.exit_json(changed=True, msg=f"The VIOS image with name '{directory_name}' has been copied successfully.")
+                module.exit_json(changed=True, msg=f"The VIOS directory with name '{directory_name}' has been copied successfully.")
             else:
-                module.exit_json(changed=False, msg=f"The VIOS image with name '{directory_name}' has Not been copied successfully.")
+                module.exit_json(changed=False, msg=f"The VIOS directory with name '{directory_name}' has Not been copied successfully.")
     except Exception as e:
         module.fail_json(msg=str(e))
 
