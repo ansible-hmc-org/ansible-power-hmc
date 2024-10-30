@@ -360,9 +360,9 @@ def validate_parameters(params):
             sftp_password = params['sftp_auth']['password']
             ssh_key_file = params['ssh_key_file']
             if sftp_password and ssh_key_file:
-                raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exculsive")
+                raise ParameterError("Parameters 'password' and 'ssh_key_file' are mutually exculsive")
             elif not sftp_password and not ssh_key_file:
-                raise ParameterError("Please provide either 'sftp_password' or 'ssh_key_file' for authentication.")
+                raise ParameterError("Please provide either 'password' or 'ssh_key_file' for authentication.")
             mandatoryList += ['hmc_host', 'hmc_auth', 'directory_name', 'sftp_auth','server','files']
             unsupportedList = ['system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
