@@ -354,30 +354,29 @@ def validate_parameters(params):
                            'timeout', 'settings', 'virtual_optical_media','free_pvs', 'directory_name', 'sftp_auth','server','files','mount_location',
                            'ssh_key_file','remote_directory','options']
     elif opr == 'copy':
-        mandatoryList = ['media']
-        media = params['media'].lower()
+        if not params['media']:
+            raise ParameterError("mandatory parameter 'media' is missing")
+        else:
+            media = params['media'].lower()
         if media == 'sftp':
-            sftp_password = params['sftp_auth']['password']
-            ssh_key_file = params['ssh_key_file']
+            sftp_auth = params.get('sftp_auth')
+            if sftp_auth is None:
+                raise ParameterError("mandatory parameter 'sftp_auth' is missing")
+            if sftp_auth.get('username') is None:
+                raise ParameterError("mandatory parameter 'username' is missing")
+            sftp_password = sftp_auth.get('password')
+            ssh_key_file = params.get('ssh_key_file')
             if sftp_password and ssh_key_file:
                 raise ParameterError("Parameters 'password' and 'ssh_key_file' are mutually exculsive")
             elif not sftp_password and not ssh_key_file:
                 raise ParameterError("Please provide either 'password' or 'ssh_key_file' for authentication.")
-            mandatoryList += ['hmc_host', 'hmc_auth', 'directory_name', 'sftp_auth','server','files']
+            mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name','server','files']
             unsupportedList = ['system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
         elif media == 'nfs':
-            mandatoryList += ['hmc_host', 'hmc_auth', 'directory_name','server','files','mount_location']
+            mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name','server','files','mount_location']
             unsupportedList = ['sftp_auth','ssh_key_file', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
-        else:
-            raise ParameterError(f'Media type {media} is not supported')
-        
-        if len(params['files']) > 2:
-            raise ParameterError("Maximum 2 files can be copied to HMC")
-        for item in params['files']:
-            if not item.lower().endswith('.iso'):
-                raise ParameterError("Only ISO files can be copied to HMC")
                 
     elif opr == 'listimages':
         mandatoryList = ['hmc_host', 'hmc_auth']
@@ -679,6 +678,11 @@ def copy_vios_image(module, params):
         if image:
             module.exit_json(changed=False, msg=f"The VIOS directory with name '{directory_name}' already exists.")
         else:
+            if len(params['files']) > 2:
+                raise ParameterError("Maximum 2 files can be copied to HMC")
+            for item in params['files']:
+                if not item.lower().endswith('.iso'):
+                    raise ParameterError("Only ISO files can be copied to HMC")
             hmc.copyViosImage(params)
             image = hmc.listViosImages(directory_name=directory_name)
             if image:
@@ -748,7 +752,7 @@ def run_module():
         directory_name = dict(type='str'),
         system_name=dict(type='str'),
         name=dict(type='str'),
-        media=dict(type='str', choices=['nfs', 'sftp', 'usb']),
+        media=dict(type='str', choices=['nfs', 'sftp']),
         remote_directory=dict(type='str'),
         mount_location=dict(type='str'),
         ssh_key_file=dict(type='str'),
