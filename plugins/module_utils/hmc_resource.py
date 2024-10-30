@@ -810,7 +810,7 @@ class Hmc():
         media = params['media'].lower()
         mount_location = params['mount_location']
         server = params['server']
-        image_name = params['image_name']
+        directory_name = params['directory_name']
         files = params['files']
         remote_directory = params['remote_directory']
         options = params['options']
@@ -827,7 +827,7 @@ class Hmc():
             sftp_password = params['sftp_auth']['password']
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
-                self.OPT['CPVIOSIMG']['-N'] + image_name +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
                 self.OPT['CPVIOSIMG']['-H'] + server +\
                 self.OPT['CPVIOSIMG']['-U'] + sftp_user +\
                 self.OPT['CPVIOSIMG']['-F'] + files
@@ -840,7 +840,7 @@ class Hmc():
         elif media == 'nfs':
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['NFS'] +\
-                self.OPT['CPVIOSIMG']['-N'] + image_name +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
                 self.OPT['CPVIOSIMG']['-H'] + server +\
                 self.OPT['CPVIOSIMG']['-L'] + mount_location +\
                 self.OPT['CPVIOSIMG']['-F'] + files
@@ -851,10 +851,10 @@ class Hmc():
 
         self.hmcconn.execute(cpviosimgCmd)
 
-    def listViosImages(self, image_name=None):
-        if image_name:
+    def listViosImages(self, directory_name=None):
+        if directory_name:
             lsviosimgCmd = self.CMD['LSVIOSIMG'] +\
-                '| grep -w ' +  image_name +\
+                '| grep -w ' +  directory_name +\
                 ' || echo No results were found'
         else:
             lsviosimgCmd = self.CMD['LSVIOSIMG']
@@ -864,7 +864,7 @@ class Hmc():
             return None
         return self.cmdClass.parseMultiLineCSV(output)
 
-    def deleteViosImage(self, image_name):
+    def deleteViosImage(self, directory_name):
         rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
-            self.OPT['RMVIOSIMG']['-N'] + image_name
+            self.OPT['RMVIOSIMG']['-N'] + directory_name
         self.hmcconn.execute(rmviosimgCmd)

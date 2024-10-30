@@ -68,7 +68,7 @@ options:
         description:
             - The name of the VirtualIOServer.
         type: str
-    image_name:
+    directory_name:
         description:
             - The name to give the VIOS installation image on the HMC.
         type: str
@@ -265,7 +265,7 @@ EXAMPLES = '''
               hmc_host: '{{ inventory_hostname }}'
               hmc_auth: "{{ curr_hmc_auth }}"
               media: sftp
-              image_name: img_name
+              directory_name: dir_name
               server: server_IP
               sftp_auth:
                 username: username
@@ -282,7 +282,7 @@ EXAMPLES = '''
               hmc_host: '{{ inventory_hostname }}'
               hmc_auth: "{{ curr_hmc_auth }}"
               media: sftp
-              image_name: img_name
+              directory_name: dir_name
               server: server_IP
               remote_directory: <directory_path>
               mount_location: <mount_location>
@@ -297,7 +297,7 @@ EXAMPLES = '''
         ibm.power_hmc.vios:
               hmc_host: '{{ inventory_hostname }}'
               hmc_auth: "{{ curr_hmc_auth }}"
-              image_name: <img_name>
+              directory_name: <dir_name>
               action: delete
 '''
 
@@ -341,17 +341,17 @@ def validate_parameters(params):
 
     if opr == 'install':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']
-        unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'image_name', 'sftp_auth','server','files','mount_location','ssh_key_file',
+        unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'directory_name', 'sftp_auth','server','files','mount_location','ssh_key_file',
                            'remote_directory','options']
     elif opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name',
-                           'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'virtual_optical_media', 'free_pvs', 'image_name', 'sftp_auth','server',
+                           'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'virtual_optical_media', 'free_pvs', 'directory_name', 'sftp_auth','server',
                            'files','mount_location','ssh_key_file','remote_directory','options']
     elif opr == 'accept_license':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
-                           'timeout', 'settings', 'virtual_optical_media','free_pvs', 'image_name', 'sftp_auth','server','files','mount_location',
+                           'timeout', 'settings', 'virtual_optical_media','free_pvs', 'directory_name', 'sftp_auth','server','files','mount_location',
                            'ssh_key_file','remote_directory','options']
     elif opr == 'copy':
         mandatoryList = ['media']
@@ -363,27 +363,34 @@ def validate_parameters(params):
                 raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exculsive")
             elif not sftp_password and not ssh_key_file:
                 raise ParameterError("Please provide either 'sftp_password' or 'ssh_key_file' for authentication.")
-            mandatoryList += ['hmc_host', 'hmc_auth', 'image_name', 'sftp_auth','server','files']
+            mandatoryList += ['hmc_host', 'hmc_auth', 'directory_name', 'sftp_auth','server','files']
             unsupportedList = ['system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
         elif media == 'nfs':
-            mandatoryList += ['hmc_host', 'hmc_auth', 'image_name','server','files','mount_location']
+            mandatoryList += ['hmc_host', 'hmc_auth', 'directory_name','server','files','mount_location']
             unsupportedList = ['sftp_auth','ssh_key_file', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 
                                'location_code', 'nim_vlan_id', 'nim_vlan_priority','timeout', 'settings', 'virtual_optical_media', 'free_pvs']
         else:
             raise ParameterError(f'Media type {media} is not supported')
+        
+        if len(params['files']) > 2:
+            raise ParameterError("Maximum 2 files can be copied to HMC")
+        for item in params['files']:
+            if not item.lower().endswith('.iso'):
+                raise ParameterError("Only ISO files can be copied to HMC")
+                
     elif opr == 'listimages':
         mandatoryList = ['hmc_host', 'hmc_auth']
-        unsupportedList = ['ssh_key_file','remote_directory','image_name', 'sftp_auth','server','files','system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
+        unsupportedList = ['ssh_key_file','remote_directory','directory_name', 'sftp_auth','server','files','system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
                            'timeout', 'settings', 'virtual_optical_media', 'free_pvs','media']
     elif opr == 'delete':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'image_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name']
         unsupportedList = ['ssh_key_file','remote_directory','sftp_auth','server','files','system_name', 'name', 'mount_location','options','nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
                            'timeout', 'settings', 'virtual_optical_media', 'free_pvs','media']
     else:
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
-                           'timeout', 'settings', 'image_name', 'sftp_auth','server','files','mount_location','ssh_key_file','remote_directory','options']
+                           'timeout', 'settings', 'directory_name', 'sftp_auth','server','files','mount_location','ssh_key_file','remote_directory','options']
 
     collate = []
     for eachMandatory in mandatoryList:
@@ -667,17 +674,17 @@ def copy_vios_image(module, params):
     hmc = Hmc(hmc_conn)
 
     try:
-        image_name = params['image_name']
-        image = hmc.listViosImages(image_name=image_name)
+        directory_name = params['directory_name']
+        image = hmc.listViosImages(directory_name=directory_name)
         if image:
-            module.exit_json(changed=False, msg=f"The VIOS image with name '{image_name}' already exists.")
+            module.exit_json(changed=False, msg=f"The VIOS image with name '{directory_name}' already exists.")
         else:
             hmc.copyViosImage(params)
-            image = hmc.listViosImages(image_name=image_name)
+            image = hmc.listViosImages(directory_name=directory_name)
             if image:
-                module.exit_json(changed=True, msg=f"The VIOS image with name '{image_name}' has been copied successfully.")
+                module.exit_json(changed=True, msg=f"The VIOS image with name '{directory_name}' has been copied successfully.")
             else:
-                module.exit_json(changed=False, msg=f"The VIOS image with name '{image_name}' has Not been copied successfully.")
+                module.exit_json(changed=False, msg=f"The VIOS image with name '{directory_name}' has Not been copied successfully.")
     except Exception as e:
         module.fail_json(msg=str(e))
 
@@ -685,13 +692,13 @@ def delete_vios_image(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
-    image_name = params['image_name']
+    directory_name = params['directory_name']
     validate_parameters(params)
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
 
     try:
-        hmc.deleteViosImage(image_name)
+        hmc.deleteViosImage(directory_name)
     except Exception as e:
         module.fail_json(msg=str(e))
 
@@ -738,7 +745,7 @@ def run_module():
                       )
                       ),
         server = dict(type='str'),
-        image_name = dict(type='str'),
+        directory_name = dict(type='str'),
         system_name=dict(type='str'),
         name=dict(type='str'),
         media=dict(type='str', choices=['nfs', 'sftp', 'usb']),
@@ -772,8 +779,8 @@ def run_module():
                      ['state', 'listimages', ['hmc_host', 'hmc_auth']],
                      ['action', 'install', ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']],
                      ['action', 'accept_license', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
-                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'server', 'image_name']],
-                     ['action', 'delete', ['hmc_host', 'hmc_auth', 'image_name' ]],
+                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'server', 'directory_name']],
+                     ['action', 'delete', ['hmc_host', 'hmc_auth', 'directory_name' ]],
                      ],
     )
 
