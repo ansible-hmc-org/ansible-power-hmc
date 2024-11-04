@@ -175,6 +175,8 @@ class Hmc():
             self.OPT['LSUPDHMC']['-T'][locationType.upper()]
 
         result = self.hmcconn.execute(hmcCmd)
+        if 'No results were found.' in result:
+            return 'No PTFs are available'
         return self.cmdClass.parseMultiLineCSV(result)
 
     def configAltDisk(self, enable, mode):
