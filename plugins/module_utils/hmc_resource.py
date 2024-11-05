@@ -823,7 +823,6 @@ class Hmc():
             updviosbk_cmd += self.OPT['UPDVIOS']['--DISK'] + str(configDict['disks'])
         return self.hmcconn.execute(updviosbk_cmd)
 
-
     def getSystemNameFromMTMS(self, system_name):
         attr_dict = self.getManagedSystemDetails(system_name)
         return attr_dict.get('name')
