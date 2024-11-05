@@ -220,9 +220,6 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
 import sys
 
-USER_AUTHORITY_ERR = "HSCL350B The user does not have the appropriate authority"
-
-
 def init_logger():
     logging.basicConfig(
         filename=LOG_FILENAME,
@@ -409,7 +406,7 @@ def ensure_update_upgrade(module, params):
     try:
         hmc.updatevios(module.params['state'], configDict=attributes)
     except HmcError as error:
-        if USER_AUTHORITY_ERR in repr(error):
+        if  ‎HmcConstants.USER_AUTHORITY_ERR in repr(error):
             logger.debug(repr(error))
             return False, None, None
         else:
