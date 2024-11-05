@@ -63,7 +63,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system..
             - Optional for I(state=absent), I(state=facts), I(action=poweron), I(action=shutdown) and I(action=restart).
         type: str
     vm_name:
@@ -430,7 +430,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       vm_id: <lpar_id>
       proc: 4
@@ -455,7 +455,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       volume_config:
          - volume_size: <disk_size>
@@ -489,7 +489,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       retain_vios_cfg: True
       delete_vdisks: True
@@ -501,7 +501,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       action: shutdown
 
@@ -511,7 +511,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       prof_name: <profile_name>
       action: poweron
@@ -522,7 +522,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       keylock: 'normal'
       iIPLsource: 'd'
@@ -534,7 +534,7 @@ EXAMPLES = '''
       hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       all_resources: True
       os_type: aix_linux
@@ -544,7 +544,7 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth: "{{ curr_hmc_auth }}"
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
          vm_ip: <IP_address of the lpar>
@@ -557,7 +557,7 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth: "{{ curr_hmc_auth }}"
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
          vm_ip: <IP_address of the lpar>

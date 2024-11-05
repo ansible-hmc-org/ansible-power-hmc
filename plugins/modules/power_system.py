@@ -51,7 +51,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
     new_name:
@@ -126,7 +126,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     action: poweroff
 
 - name: poweron managed system
@@ -135,7 +135,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_sysystem_name>
+    system_name: <managed_sysystem_name/mtms>
     action: poweron
 
 - name: modify managed system name, powerOn lpar start policy and powerOff policy
@@ -144,7 +144,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     new_name: <system_name_to_be_changed>
     power_off_policy: '1'
     power_on_lpar_start_policy: autostart
@@ -156,7 +156,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     requested_num_sys_huge_pages: <sys_huge_pages_to_be_set>
     mem_mirroring_mode: sys_firmware_only
     pend_mem_region_size: auto
@@ -168,7 +168,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     state: facts
 
 - name: enable the long-term monitoring
@@ -177,7 +177,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     metrics:
          - LTM
     action: enable_pcm
@@ -188,7 +188,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     metrics:
          - STM
     action: disble_pcm
