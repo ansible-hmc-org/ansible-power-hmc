@@ -49,7 +49,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
     name:
@@ -148,7 +148,7 @@ EXAMPLES = '''
     hmc_auth:
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     name: <vios_partition_name>
     state: present
 
@@ -158,7 +158,7 @@ EXAMPLES = '''
     hmc_auth:
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     name: <vios_partition_name>
     settings:
       profile_name: <profileName>
@@ -171,7 +171,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     name: <vios name>
     nim_IP: <NIM Server IP>
     nim_gateway: <vios gateway ip>
@@ -185,7 +185,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     name: <vios_partition_name>
     action: accept_license
 
@@ -195,7 +195,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     name: <vios_partition_name>
     free_pvs: true
     virtual_optical_media: true
@@ -219,6 +219,8 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
+import re
 import sys
 import json
 
@@ -286,6 +288,16 @@ def fetchViosInfo(module, params):
     free_pvs = params['free_pvs']
     validate_parameters(params)
     lpar_config = {}
+    changed = False
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)

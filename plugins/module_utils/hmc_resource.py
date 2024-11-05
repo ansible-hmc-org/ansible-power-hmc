@@ -802,6 +802,7 @@ class Hmc():
 
         return lines
 
+
     def updatevios(self, state, configDict=None):
         updviosbk_cmd = ''
         if state == 'updated':
@@ -823,3 +824,9 @@ class Hmc():
         if state == 'upgraded':
             updviosbk_cmd += self.OPT['UPDVIOS']['--DISK'] + str(configDict['disks'])
         return self.hmcconn.execute(updviosbk_cmd)
+
+
+    def getSystemNameFromMTMS(self, system_name):
+        attr_dict = self.getManagedSystemDetails(system_name)
+        return attr_dict.get('name')
+

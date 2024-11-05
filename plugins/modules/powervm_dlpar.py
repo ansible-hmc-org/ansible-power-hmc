@@ -51,7 +51,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
     vm_name:
@@ -220,7 +220,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     proc_settings:
       proc: 3
@@ -238,7 +238,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     pv_settings:
       - vios_name: <vios1>
@@ -259,7 +259,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     npiv_settings:
       - vios_name: '<VIOS_NAME1>'
@@ -279,7 +279,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     vod_settings:
       - vios_name: '<VIOS_Name1>'
@@ -304,10 +304,15 @@ LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 import sys
 import json
+import re
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_cli_client import HmcCliConnection
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import HmcError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
 from itertools import groupby
 from operator import itemgetter
 
@@ -424,6 +429,15 @@ def update_proc_mem(module, params):
     newSharingMode = None
     newUncappedWeight = None
     newPoolID = None
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
@@ -598,6 +612,15 @@ def update_pv(module, params):
     counter = 0
     changed = False
 
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -693,6 +716,15 @@ def update_npiv(module, params):
     counter = 0
     changed = False
 
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -787,6 +819,15 @@ def update_vod(module, params):
     lpar_id = ""
     counter = 0
     changed = False
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)

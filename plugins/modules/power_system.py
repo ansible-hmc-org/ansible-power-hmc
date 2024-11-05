@@ -51,7 +51,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
     new_name:
@@ -126,7 +126,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     action: poweroff
 
 - name: poweron managed system
@@ -135,7 +135,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_sysystem_name>
+    system_name: <managed_sysystem_name/mtms>
     action: poweron
 
 - name: modify managed system name, powerOn lpar start policy and powerOff policy
@@ -144,7 +144,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     new_name: <system_name_to_be_changed>
     power_off_policy: '1'
     power_on_lpar_start_policy: autostart
@@ -156,7 +156,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     requested_num_sys_huge_pages: <sys_huge_pages_to_be_set>
     mem_mirroring_mode: sys_firmware_only
     pend_mem_region_size: auto
@@ -168,7 +168,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     state: facts
 
 - name: enable the long-term monitoring
@@ -177,7 +177,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     metrics:
          - LTM
     action: enable_pcm
@@ -188,7 +188,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <managed_system_name>
+    system_name: <managed_system_name/mtms>
     metrics:
          - STM
     action: disble_pcm
@@ -207,6 +207,7 @@ LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 import sys
 import json
+import re
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_cli_client import HmcCliConnection
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
@@ -214,6 +215,7 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
 
 
 def init_logger():
@@ -400,6 +402,16 @@ def fetchManagedSysDetails(module, params):
     system_uuid = None
     changed = False
     validate_parameters(params)
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -441,6 +453,16 @@ def updatePCM(module, params):
     changed = False
     warning = None
     validate_parameters(params)
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
