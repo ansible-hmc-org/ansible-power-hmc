@@ -51,7 +51,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
     vm_name:
@@ -220,7 +220,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     proc_settings:
       proc: 3
@@ -238,7 +238,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     pv_settings:
       - vios_name: <vios1>
@@ -259,7 +259,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     npiv_settings:
       - vios_name: '<VIOS_NAME1>'
@@ -279,7 +279,7 @@ EXAMPLES = '''
     hmc_auth:
          username: '{{ ansible_user }}'
          password: '{{ hmc_password }}'
-    system_name: <server name>
+    system_name: <server name/mtms>
     vm_name: <vm name>
     vod_settings:
       - vios_name: '<VIOS_Name1>'
