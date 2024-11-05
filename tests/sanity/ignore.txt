@@ -13,3 +13,4 @@ plugins/modules/firmware_update.py pylint:consider-using-f-string
 plugins/modules/powervm_dlpar.py pylint:consider-using-f-string
 plugins/modules/hmc_pwdpolicy.py pylint:consider-using-f-string
 plugins/modules/hmc_command.py pylint:consider-using-f-string
+plugins/modules/hmc_update_upgrade.py pylint:consider-using-f-string
