@@ -218,6 +218,7 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_cli_client impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import HmcError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
 import sys
 
 def init_logger():
