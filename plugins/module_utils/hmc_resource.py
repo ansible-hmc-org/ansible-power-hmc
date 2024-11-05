@@ -801,3 +801,7 @@ class Hmc():
         lines = raw_result.split()
 
         return lines
+
+    def getSystemNameFromMTMS(self, system_name):
+        attr_dict = self.getManagedSystemDetails(system_name)
+        return attr_dict.get('name')
