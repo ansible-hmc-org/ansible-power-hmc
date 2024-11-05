@@ -799,9 +799,7 @@ class Hmc():
         raw_result = self.hmcconn.execute(lssyscfgCmd)
         raw_result = raw_result.replace("Power Off", "Off")
         lines = raw_result.split()
-
         return lines
-
 
     def updatevios(self, state, configDict=None):
         updviosbk_cmd = ''
@@ -829,4 +827,3 @@ class Hmc():
     def getSystemNameFromMTMS(self, system_name):
         attr_dict = self.getManagedSystemDetails(system_name)
         return attr_dict.get('name')
-
