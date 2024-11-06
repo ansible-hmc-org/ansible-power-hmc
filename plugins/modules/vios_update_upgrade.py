@@ -408,7 +408,7 @@ def ensure_update_upgrade(module, params):
     try:
         hmc.updatevios(module.params['state'], configDict=attributes)
     except HmcError as error:
-        if HmcConstants.‎USER_AUTHORITY_ERR in repr(error):
+        if HmcConstants.USER_AUTHORITY_ERR in repr(error):
             logger.debug(repr(error))
             return False, None, None
         else:
