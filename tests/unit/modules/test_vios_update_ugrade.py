@@ -41,7 +41,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # user_id is missed
@@ -49,7 +49,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None,
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: mandatory parameter 'user_id' is missing"),
 
     # password and ssh_key_file are missed
@@ -57,7 +57,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': None, 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: Either 'ssh_key_file' or 'password' is mandatory"),
 
     # both password and ssh_key_file are provided
@@ -65,7 +65,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': 'data', 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: Parameters 'ssh_key_file' and 'password' are mutually exclusive"),
 
     # mount_loc is provided
@@ -73,7 +73,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: unsupported parameter: mount_loc"),
 
     # providing both vios_name and vios_id
@@ -89,7 +89,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # disks is provided
@@ -97,7 +97,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', \
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': None}},
      "ParameterError: unsupported parameter: disks"),
 
     # All nfs update related testcases
@@ -122,7 +122,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': 'data',
       'ssh_key_file': 'data', 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: unsupported parameters: password,ssh_key_file"),
 
     # password is provided
@@ -130,7 +130,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None,
       'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: unsupported parameter: password"),
 
     # providing both vios_name and vios_id
@@ -144,9 +144,9 @@ test_data = [
     # both vios_name and vios_id are missed
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'updated', 'attributes':
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': None,
-      'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
-      'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'image_name': 'data', 'host_name': 'data', 'user_id': None,
+      'password': None, 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # disks is provided
@@ -154,7 +154,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': None}},
      "ParameterError: unsupported parameter: disks")]
 
 test_data1 = [
