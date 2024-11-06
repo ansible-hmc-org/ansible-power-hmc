@@ -44,7 +44,7 @@ options:
                 type: str
     attributes:
         description:
-            - Configuration parameters required for VIOS backup and restore.
+            - Configuration parameters required for VIOS update and upgrade.
         type: dict
         required: true
         suboptions:
@@ -63,25 +63,25 @@ options:
             vios_id:
                 description:
                     - The ID of the VIOS to backup.
-                      vios_id, vios_name are mutually exclusive.
+                      C(vios_id) and C(vios_name) are mutually exclusive.
                 type: str
             vios_name:
                 description:
                     - The name of the VIOS to backup.
-                      vios_id, vios_name are mutually exclusive.
+                      C(vios_id) and C(vios_name) are mutually exclusive.
                 type: str
             image_name:
                 description:
                     - The name of the VIOS update image.
                     - When the VIOS update image is on the HMC hard disk or the IBM Fix Central website,
                       this option is required to specify the name of the image to use for the update.
-                    - When the VIOS update image is on a remote server or a USB data storage device and the --save option is specified,
+                    - When the VIOS update image is on a remote server and the --save option is specified,
                       this option is required to specify the name used to save the image to the HMC hard disk.
                 type: str
             files:
                 description:
                     - The list of the files that is required for update/upgrade
-                    - This option is required and only valid when the VIOS installation image is on a remote server.
+                    - This option is required and only valid when the VIOS update/upgrade image is on a remote server.
                 type: list
                 elements: str
             host_name:
@@ -116,20 +116,22 @@ options:
             directory:
                 description:
                     - The name of the directory on the remote server that contains the VIOS update image.
-                    - If this option is not specified when the VIOS update image is on a SFTP server,
-                      the image will be obtained from the user home directory.
-                    - If this option is not specified when the VIOS update image is in an NFS file system,
-                      the image will be obtained from the mount-location on the NFS server.
+                    - If this option is not specified when the VIOS update/upgrade image is on a SFTP server user home directory.
+                      In that case command obtains the image from the remote server's user home directory.
+                    - If this option is not specified when the VIOS update/upgrade image is on a NFS server mount directory.
+                      In that case command obtains the image from the mount directory.
                 type: str
             disks:
                 description:
                     - The name of one or more free VIOS disks to be used for the upgrade.
-                    - The total of the specified disk sizes must be a minimum of 30 GB.
+                    - The total of the specified disk sizes must be a minimum of I(30GB).
                 type: list
                 elements: str
             restart:
                 description:
                     - Restarts the VIOS after installing the update if the update requires a restart.
+                    - This parameter is valid only for C(updated).
+                    - Default value is False.
                 type: bool
             save:
                 description:
