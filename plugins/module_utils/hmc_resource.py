@@ -799,6 +799,7 @@ class Hmc():
         raw_result = self.hmcconn.execute(lssyscfgCmd)
         raw_result = raw_result.replace("Power Off", "Off")
         lines = raw_result.split()
+
         return lines
 
     def getSystemNameFromMTMS(self, system_name):
