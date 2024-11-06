@@ -224,6 +224,7 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
 import sys
 
+
 def init_logger():
     logging.basicConfig(
         filename=LOG_FILENAME,
