@@ -809,7 +809,7 @@ class Hmc():
     def copyViosImage(self, params):
         media = params['media'].lower()
         mount_location = params['mount_location']
-        server = params['server']
+        remote_server  = params['remote_server ']
         directory_name = params['directory_name']
         files = params['files']
         remote_directory = params['remote_directory']
@@ -828,7 +828,7 @@ class Hmc():
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
                 self.OPT['CPVIOSIMG']['-N'] + directory_name +\
-                self.OPT['CPVIOSIMG']['-H'] + server +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server  +\
                 self.OPT['CPVIOSIMG']['-U'] + sftp_user +\
                 self.OPT['CPVIOSIMG']['-F'] + files
             if remote_directory:
@@ -841,7 +841,7 @@ class Hmc():
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['NFS'] +\
                 self.OPT['CPVIOSIMG']['-N'] + directory_name +\
-                self.OPT['CPVIOSIMG']['-H'] + server +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server  +\
                 self.OPT['CPVIOSIMG']['-L'] + mount_location +\
                 self.OPT['CPVIOSIMG']['-F'] + files
             if remote_directory:
@@ -864,7 +864,10 @@ class Hmc():
             return None
         return self.cmdClass.parseMultiLineCSV(output)
 
-    def deleteViosImage(self, directory_name):
+    def deleteViosImage(self, directory_list):
+        if directory_list:
+            directory_list = ','.join(directory_list)
+
         rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
-            self.OPT['RMVIOSIMG']['-N'] + directory_name
+            self.OPT['RMVIOSIMG']['-N'] + directory_list
         self.hmcconn.execute(rmviosimgCmd)
