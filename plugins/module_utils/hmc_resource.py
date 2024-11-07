@@ -809,7 +809,7 @@ class Hmc():
     def copyViosImage(self, params):
         media = params['media'].lower()
         mount_location = params['mount_location']
-        remote_server  = params['remote_server ']
+        remote_server  = params['remote_server']
         directory_name = params['directory_name']
         files = params['files']
         remote_directory = params['remote_directory']
@@ -828,7 +828,7 @@ class Hmc():
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
                 self.OPT['CPVIOSIMG']['-N'] + directory_name +\
-                self.OPT['CPVIOSIMG']['-H'] + remote_server  +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server +\
                 self.OPT['CPVIOSIMG']['-U'] + sftp_user +\
                 self.OPT['CPVIOSIMG']['-F'] + files
             if remote_directory:
