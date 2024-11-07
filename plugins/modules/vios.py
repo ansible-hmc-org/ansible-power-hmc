@@ -286,7 +286,7 @@ EXAMPLES = '''
         ibm.power_hmc.vios:
               hmc_host: '{{ inventory_hostname }}'
               hmc_auth: "{{ curr_hmc_auth }}"
-              media: sftp
+              media: nfs
               directory_name: dir_name
               remote_server: remote_server_IP
               remote_directory: <directory_path>
@@ -667,7 +667,9 @@ def list_all_vios_image(module, params):
     try:
         vios_image_details = hmc.listViosImages()
         changed = False
-        return changed, vios_image_details, None
+        if vios_image_details is None:
+            vios_image_details = "No results were found."
+        module.exit_json(changed=changed, msg=vios_image_details)
     except Exception as e:
         module.fail_json(msg=str(e))
 
@@ -707,13 +709,16 @@ def delete_vios_image(module, params):
     validate_parameters(params)
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
-
+    
+    hmc.deleteViosImage(directory_list)
     try:
-        hmc.deleteViosImage(directory_list)
+        vios_image_details = hmc.listViosImages()
+        changed = False
+        if vios_image_details is None:
+            vios_image_details = "No results were found."
+        module.exit_json(changed=changed, msg=vios_image_details)
     except Exception as e:
         module.fail_json(msg=str(e))
-
-    return True, None, None
 
 def perform_task(module):
     params = module.params

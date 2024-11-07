@@ -865,9 +865,10 @@ class Hmc():
         return self.cmdClass.parseMultiLineCSV(output)
 
     def deleteViosImage(self, directory_list):
-        if directory_list:
-            directory_list = ','.join(directory_list)
-
-        rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
-            self.OPT['RMVIOSIMG']['-N'] + directory_list
-        self.hmcconn.execute(rmviosimgCmd)
+        for directory in directory_list:
+            rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
+                self.OPT['RMVIOSIMG']['-N'] + directory
+            try:
+                self.hmcconn.execute(rmviosimgCmd)
+            except Exception:
+                continue
