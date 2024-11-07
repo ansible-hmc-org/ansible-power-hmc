@@ -711,14 +711,7 @@ def delete_vios_image(module, params):
     hmc = Hmc(hmc_conn)
     
     hmc.deleteViosImage(directory_list)
-    try:
-        vios_image_details = hmc.listViosImages()
-        changed = False
-        if vios_image_details is None:
-            vios_image_details = "No results were found."
-        module.exit_json(changed=changed, msg=vios_image_details)
-    except Exception as e:
-        module.fail_json(msg=str(e))
+    list_all_vios_image(module, params)
 
 def perform_task(module):
     params = module.params
