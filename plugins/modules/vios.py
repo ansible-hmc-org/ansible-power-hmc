@@ -668,7 +668,7 @@ def list_all_vios_image(module, params):
         vios_image_details = hmc.listViosImages()
         changed = False
         if vios_image_details is None:
-            vios_image_details = "No results were found."
+            vios_image_details = "No directory names were found."
         module.exit_json(changed=changed, msg=vios_image_details)
     except Exception as e:
         module.fail_json(msg=str(e))
