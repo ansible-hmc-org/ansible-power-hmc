@@ -463,7 +463,7 @@ test_data4 = [
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
       'media': 'sftp', 'directory_name': 'test', 'remote_server': "0.0.0.0", 'sftp_auth': sftp_auth, 'mount_location': '/images', 'files': ['flash.iso'],
       'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None,
-      'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout':None, 'settings': None, 'virtual_optical_media': None,
+      'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'settings': None, 'virtual_optical_media': None,
       "free_pvs": None},
      "ParameterError: unsupported parameter: mount_location"),
     # when media is 'nfs' and unsupported param sftp_auth
