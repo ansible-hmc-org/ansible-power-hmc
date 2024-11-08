@@ -129,7 +129,6 @@ options:
         description:
             - The name to give the VIOS installation image on the HMC.
         type: str
-        elements: str
     files:
         description:
             - Specify one or two comma-separated VIOS ISO files.
@@ -140,10 +139,12 @@ options:
         description:
             - The name of one or more VIOS installation images to remove
         type: list
+        elements: str
     media:
         description:
             - Media type for the VIOS installation (e.g., nfs, sftp, usb).
         type: str
+        choices: ['nfs', 'sftp']
     remote_server:
         description:
             - The host name or IP address of the remote server.
@@ -167,6 +168,7 @@ options:
             - Specify options for the NFS mount command in double quotes.
             - Default is version 3; use vers=4 for version 4. Valid only for VIOS image imports from NFS.
         type: str
+        choices: ['3', '4']
     sftp_auth:
         description:
             - Username and Password credential of the SFTP.
