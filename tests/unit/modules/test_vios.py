@@ -9,6 +9,7 @@ IMPORT_HMC_VIOS = "ansible_collections.ibm.power_hmc.plugins.modules.vios"
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
 
 hmc_auth = {'username': 'hscroot', 'password': 'password_value'}
+sftp_auth = {'username': 'hmcct', 'passwprd': 'password_value'}
 test_data = [
     # ALL vios partition testdata
     # system name is missing
@@ -358,6 +359,49 @@ test_data3 = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': True},
      "ParameterError: unsupported parameter: free_pvs")]
 
+test_data4 = [
+    # ALL Copy Vios Image via SFTP and NFS testdata
+    # media param is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': None, 'image_name': 'test', 'sftp_auth': sftp_auth, 'files': 'flash.iso'},
+     "ParameterError: mandatory parameter 'media' is missing"),
+    # hmc_host param is missing
+    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': sftp_auth, 'files': 'flash.iso'},
+     "ParameterError: mandatory parameter 'hmc_host' is missing"),
+     # image_name param is missing
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': None, 'sftp_auth': sftp_auth, 'files': 'flash.iso'},
+     "ParameterError: mandatory parameter 'image_name' is missing"),
+     # files param is missing
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': sftp_auth, 'files': None},
+     "ParameterError: mandatory parameter 'files' is missing"),
+     # when media is 'sftp' sftp_auth is missing
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': None, 'files': 'flash.iso'},
+     "ParameterError: mandatory parameter 'sftp_auth' is missing for 'sftp'"),
+     # when media is 'nfs' and mount_location is missing
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'mount_location':None, 'files': 'flash.iso'},
+     "ParameterError: mandatory parameter 'mount_location' is missing for 'nfs'"),
+     # when media is 'sftp' and unsupported param mount_location
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': None, 'mount_location':'/images', 'files': 'flash.iso'},
+     "ParameterError: unsupported parameter: mount_location for 'sftp'"),
+     # when media is 'nfs' and unsupported param sftp_auth
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': sftp_auth, 'mount_location':'/images', 'files': 'flash.iso'},
+     "ParameterError: unsupported parameter: 'sftp_auth' for 'nfs"),
+     # when media is 'sftp' and unsupported param options
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'sftp_auth': sftp_auth, 'options':'"vers=4"', 'files': 'flash.iso'},
+     "ParameterError: unsupported parameter: 'options' for 'sftp"),
+     # when media is 'nfs' and unsupported param ssh_key_file
+     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
+      'media': 'sftp', 'image_name': 'test', 'mount_location':'/images', 'ssh_key_file':'/home/hmcuser/keys/id_rsa', 'files': 'flash.iso'},
+     "ParameterError: unsupported parameter: 'ssh_key_file' for 'nfs"),
+]
 
 def common_mock_setup(mocker):
     hmc_vios = importlib.import_module(IMPORT_HMC_VIOS)
@@ -401,6 +445,16 @@ def test_call_inside_fetchViosInfo(mocker, vios_test_input, expectedError):
 
 @pytest.mark.parametrize("vios_test_input, expectedError", test_data3)
 def test_call_inside_(mocker, vios_test_input, expectedError):
+    hmc_vios = common_mock_setup(mocker)
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            hmc_vios.viosLicenseAccept(hmc_vios, vios_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        hmc_vios.viosLicenseAccept(hmc_vios, vios_test_input)
+
+@pytest.mark.parametrize("vios_test_input, expectedError", test_data4)
+def test_call_inside_copy_vios_image(mocker, vios_test_input, expectedError):
     hmc_vios = common_mock_setup(mocker)
     if 'ParameterError' in expectedError:
         with pytest.raises(ParameterError) as e:

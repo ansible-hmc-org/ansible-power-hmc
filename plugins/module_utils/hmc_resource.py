@@ -807,3 +807,70 @@ class Hmc():
     def getSystemNameFromMTMS(self, system_name):
         attr_dict = self.getManagedSystemDetails(system_name)
         return attr_dict.get('name')
+
+    def copyViosImage(self, params):
+        media = params['media'].lower()
+        mount_location = params['mount_location']
+        remote_server  = params['remote_server']
+        directory_name = params['directory_name']
+        files = params['files']
+        remote_directory = params['remote_directory']
+        options = params['options']
+        ssh_key_file = params['ssh_key_file']
+
+        if files:
+            files = ','.join(files)
+
+        if options:
+            options = f'"ver={options}"'
+
+        if media == 'sftp':
+            sftp_user = params['sftp_auth']['username']
+            sftp_password = params['sftp_auth']['password']
+            cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
+                self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server +\
+                self.OPT['CPVIOSIMG']['-U'] + sftp_user +\
+                self.OPT['CPVIOSIMG']['-F'] + files
+            if remote_directory:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-D'] + remote_directory
+            if sftp_password:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['--PASSWD'] + sftp_password
+            elif ssh_key_file:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-K'] + ssh_key_file
+        elif media == 'nfs':
+            cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
+                self.OPT['CPVIOSIMG']['-R']['NFS'] +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server  +\
+                self.OPT['CPVIOSIMG']['-L'] + mount_location +\
+                self.OPT['CPVIOSIMG']['-F'] + files
+            if remote_directory:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-D'] + remote_directory
+            if options:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['--OPTIONS'] + options
+
+        self.hmcconn.execute(cpviosimgCmd)
+
+    def listViosImages(self, directory_name=None):
+        if directory_name:
+            lsviosimgCmd = self.CMD['LSVIOSIMG'] +\
+                '| grep -w ' +  directory_name +\
+                ' || echo No results were found'
+        else:
+            lsviosimgCmd = self.CMD['LSVIOSIMG']
+        
+        output = self.hmcconn.execute(lsviosimgCmd)
+        if 'No results' in output:
+            return None
+        return self.cmdClass.parseMultiLineCSV(output)
+
+    def deleteViosImage(self, directory_list):
+        for directory in directory_list:
+            rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
+                self.OPT['RMVIOSIMG']['-N'] + directory
+            try:
+                self.hmcconn.execute(rmviosimgCmd)
+            except Exception:
+                continue
