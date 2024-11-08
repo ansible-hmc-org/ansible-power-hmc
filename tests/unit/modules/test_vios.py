@@ -99,7 +99,7 @@ test_data = [
      "ParameterError: unsupported parameter: virtual_optical_media")]
 
 test_data1 = [
-    # ALL vios install testdata
+    # ALL vios install using nim testdata
     # system name is missing
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
       'system_name': None, 'name': 'vmname', 'nim_IP': '1.1.1.1',
@@ -176,7 +176,14 @@ test_data1 = [
       'nim_gateway': 'ab', 'vios_IP': 'bc', 'nim_subnetmask': 'cd', 'prof_name': 'ef',
       'location_code': 'fg', 'nim_vlan_id': 'dh', 'nim_vlan_priority': 'hi', 'timeout': 'ij',
       'virtual_optical_media': False, 'free_pvs': True},
-     "ParameterError: unsupported parameter: free_pvs")]
+     "ParameterError: unsupported parameter: free_pvs")
+     # unsupported parameter img_dir
+    ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'sysName', 'name': 'viosName', 'settings': None, 'nim_IP': '1.1.1.1',
+      'nim_gateway': 'ab', 'vios_IP': 'bc', 'nim_subnetmask': 'cd', 'prof_name': 'ef',
+      'location_code': 'fg', 'nim_vlan_id': 'dh', 'nim_vlan_priority': 'hi', 'timeout': 'ij',
+      'img_dir':'myvios'},
+     "ParameterError: unsupported parameter: img_dir")]
 
 test_data2 = [
     # ALL fetchviosInfo testdata
@@ -358,6 +365,95 @@ test_data3 = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': True},
      "ParameterError: unsupported parameter: free_pvs")]
 
+test_data4 = [
+    # ALL vios install using disk testdata
+    # system name is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': None, 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'system_name' is missing"),
+    # vios name is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'vios_name' is missing"),
+    # host is missing
+    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'hmc_host' is missing"),
+      # system_name and vios_name are missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': None, 'vios_name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'system_name, vios_name' are missing"),
+      # img_dir is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': None, 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'img_dir' is missing"),
+      # prof_name is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': None, 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'prof_name' is missing"),
+    # vios_IP is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': None, 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'vios_IP' is missing"),
+    # vios_gateway is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': None, 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'vios_gateway' is missing"),
+    # vios_subnetmask is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': None,
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'vios_subnetmask' is missing"),
+    # vios_subnetmask and vios_gateway are missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': None, 'vios_IP': '12.13.14.15', 'vios_subnetmask': None,
+      'prof_name': 'default', 'label': 'viostest'},
+     "ParameterError: mandatory parameter 'vios_subnetmask, vios_gateway' are missing"),
+    # unsupported parameter nim_IP
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest', 'nim_IP': '1.1.1.1'},
+     "ParameterError: unsupported parameter: nim_IP ")
+     # unsupported parameter nim_gateway
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest', 'nim_gateway': '1.1.1.1'},
+     "ParameterError: unsupported parameter: nim_gateway ")
+     # unsupported parameter nim_subnetmask
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest', 'nim_subnetmask': '1.1.1.1'},
+     "ParameterError: unsupported parameter: nim_subnetmask ")
+     # unsupported parameter name
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
+      'prof_name': 'default', 'label': 'viostest', 'name': 'viosname'},
+     "ParameterError: unsupported parameter: name ")
+     ]
+    
+
 
 def common_mock_setup(mocker):
     hmc_vios = importlib.import_module(IMPORT_HMC_VIOS)
@@ -382,10 +478,10 @@ def test_call_inside_installVios(mocker, vios_test_input, expectedError):
     hmc_vios = common_mock_setup(mocker)
     if 'ParameterError' in expectedError:
         with pytest.raises(ParameterError) as e:
-            hmc_vios.installVios(hmc_vios, vios_test_input)
+            hmc_vios.install(hmc_vios, vios_test_input)
         assert expectedError == repr(e.value)
     else:
-        hmc_vios.installVios(hmc_vios, vios_test_input)
+        hmc_vios.install(hmc_vios, vios_test_input)
 
 
 @pytest.mark.parametrize("vios_test_input, expectedError", test_data2)
@@ -408,3 +504,14 @@ def test_call_inside_(mocker, vios_test_input, expectedError):
         assert expectedError == repr(e.value)
     else:
         hmc_vios.viosLicenseAccept(hmc_vios, vios_test_input)
+
+
+@pytest.mark.parametrize("vios_test_input, expectedError", test_data4)
+def test_call_inside_installViosDisk(mocker, vios_test_input, expectedError):
+    hmc_vios = common_mock_setup(mocker)
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            hmc_vios.install(hmc_vios, vios_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        hmc_vios.install(hmc_vios, vios_test_input)

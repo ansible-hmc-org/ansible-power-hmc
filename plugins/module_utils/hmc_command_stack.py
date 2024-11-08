@@ -53,6 +53,7 @@ class HmcCommandStack():
                'RSTVIOSBK': 'rstviosbk',
                'RMVIOSBK': 'rmviosbk',
                'CHVIOSBK': 'chviosbk',
+               'INSTALLIOS': 'installios'
                }
 
     HMC_CMD_OPT = {'LSHMC': {'-N': ' -n ',
@@ -451,6 +452,7 @@ class HmcCommandStack():
                    'RSTVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-R': '-r '},
                    'RMVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid '},
                    'CHVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-O': '-o ', '-A': '-a '},
+                   'INSTALLIOS': {'-d':' -d ', '-i': ' -i ', '-g': ' -g ', '-S': ' -S ', '-m': ' -m ', '-s': ' -s ', '-p': ' -p ', '-r': ' -r ', '-R': ' -R '}
                    }
 
     def filterBuilder(self, cmdKey, configOptionsDict):
