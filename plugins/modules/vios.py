@@ -47,68 +47,13 @@ options:
                 description:
                     - Password of the HMC.
                 type: str
-    sftp_auth:
-        description:
-            - Username and Password credential of the SFTP.
-        type: dict
-        suboptions:
-            username:
-                description:
-                    - Username of the SFTP to login.
-                type: str
-            password:
-                description:
-                    - Password of the SFTP.
-                type: str
     system_name:
         description:
             - The name or mtms (machine type model serial) of the managed system.
-        required: true
         type: str
     name:
         description:
             - The name of the VirtualIOServer.
-        type: str
-    directory_name:
-        description:
-            - The name to give the VIOS installation image on the HMC.
-        type: str
-    directory_list:
-        description:
-            - The name of one or more VIOS installation images to remove
-        type: list
-    media:
-        description:
-            - Media type for the VIOS installation (e.g., nfs, sftp, usb).
-        type: str
-    remote_server:
-        description:
-            - The host name or IP address of the remote server.
-        type: str
-    files:
-        description:
-            - Specify one or two comma-separated VIOS ISO files. 
-            - For DVDs, list the first file first. Required for remote imports; not valid for USB.
-        type: list
-    ssh_key_file:
-        description:
-            - Specify the SSH private key file name. 
-            - If not fully qualified, it must be in the user's home directory on the HMC. 
-            - Use ssh-keygen to generate it. A passphrase prompts during HMC commands.
-        type: str
-    mount_location:
-         description:
-            - Required for VIOS image imports from NFS; specify the NFS server mount location.
-        type: str
-    remote_directory:
-        description:
-            - Specify the directory on the remote server for the VIOS installation image. 
-            - If not provided for SFTP, the user's home directory is used; for NFS, the mount location is used.
-        type: str
-    options:
-        description:
-            - Specify options for the NFS mount command in double quotes. 
-            - Default is version 3; use vers=4 for version 4. Valid only for VIOS image imports from NFS.
         type: str
     settings:
         description:
@@ -180,6 +125,60 @@ options:
             - Default value is False.
             - Valid only for C(state) = I(facts)
         type: bool
+    directory_name:
+        description:
+            - The name to give the VIOS installation image on the HMC.
+        type: str
+    files:
+        description:
+            - Specify one or two comma-separated VIOS ISO files. 
+            - For DVDs, list the first file first. Required for remote imports; not valid for USB.
+        type: list
+    directory_list:
+        description:
+            - The name of one or more VIOS installation images to remove
+        type: list
+    media:
+        description:
+            - Media type for the VIOS installation (e.g., nfs, sftp, usb).
+        type: str
+    remote_server:
+        description:
+            - The host name or IP address of the remote server.
+        type: str
+    ssh_key_file:
+        description:
+            - Specify the SSH private key file name. 
+            - If not fully qualified, it must be in the user's home directory on the HMC.
+        type: str
+    mount_location:
+        description:
+            - Required for VIOS image imports from NFS; specify the NFS server mount location.
+        type: str
+    remote_directory:
+        description:
+            - Specify the directory on the remote server for the VIOS installation image. 
+            - If not provided for SFTP, the user's home directory is used; for NFS, the mount location is used.
+        type: str
+    options:
+        description:
+            - Specify options for the NFS mount command in double quotes. 
+            - Default is version 3; use vers=4 for version 4. Valid only for VIOS image imports from NFS.
+        type: str
+    sftp_auth:
+        description:
+            - Username and Password credential of the SFTP.
+        type: dict
+        suboptions:
+            username:
+                description:
+                    - Username of the SFTP to login.
+                required: true
+                type: str
+            password:
+                description:
+                    - Password of the SFTP.
+                type: str
     state:
         description:
             - C(facts) fetch details of specified I(VIOS).
@@ -349,17 +348,17 @@ def validate_parameters(params):
     if opr == 'install':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']
         unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'directory_name', 'sftp_auth','remote_server','files','mount_location','ssh_key_file',
-                           'remote_directory','options', 'directory_list']
+                           'remote_directory','options', 'directory_list', 'media']
     elif opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name',
-                           'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'virtual_optical_media', 'free_pvs', 'directory_name','directory_list', 'sftp_auth','server',
-                           'files','mount_location','ssh_key_file','remote_directory','options']
+                           'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'virtual_optical_media', 'free_pvs', 'directory_name','directory_list', 'sftp_auth','remote_server',
+                           'files','mount_location','ssh_key_file','remote_directory','options', 'media']
     elif opr == 'accept_license':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
                            'timeout', 'settings', 'virtual_optical_media','free_pvs', 'directory_name','directory_list', 'sftp_auth','remote_server','files','mount_location',
-                           'ssh_key_file','remote_directory','options']
+                           'ssh_key_file','remote_directory','options', 'media']
     elif opr == 'copy':
         if not params['media']:
             raise ParameterError("mandatory parameter 'media' is missing")
@@ -396,7 +395,7 @@ def validate_parameters(params):
     else:
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
-                           'timeout', 'settings', 'directory_name', 'directory_list', 'sftp_auth','remote_server','files','mount_location','ssh_key_file','remote_directory','options']
+                           'timeout', 'settings', 'directory_name', 'directory_list', 'sftp_auth','remote_server','files','mount_location','ssh_key_file','remote_directory','options', 'media']
 
     collate = []
     for eachMandatory in mandatoryList:
