@@ -9,7 +9,7 @@ IMPORT_HMC_VIOS = "ansible_collections.ibm.power_hmc.plugins.modules.vios"
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
 
 hmc_auth = {'username': 'hscroot', 'password': 'password_value'}
-sftp_auth = {'username': 'hmcct', 'password': 'password_value'}
+sftp_auth = {'sftp_username': 'hmcct', 'sftp_password': 'password_value'}
 test_data = [
     # ALL vios partition testdata
     # system name is missing

@@ -132,7 +132,7 @@ options:
     files:
         description:
             - Specify one or two comma-separated VIOS ISO files.
-            - For DVDs, list the first file first. Required for remote imports; not valid for USB.
+            - Required for remote imports ['sftp', 'nfs']; not valid for USB.
         type: list
         elements: str
     directory_list:
@@ -142,17 +142,18 @@ options:
         elements: str
     media:
         description:
-            - Media type for the VIOS installation (e.g., nfs, sftp, usb).
+            - Media type for the VIOS installation (e.g., nfs, sftp).
         type: str
         choices: ['nfs', 'sftp']
     remote_server:
         description:
-            - The host name or IP address of the remote server.
+            - The host name or IP address of the remote server ['sftp', 'nfs'].
         type: str
     ssh_key_file:
         description:
             - Specify the SSH private key file name.
             - If not fully qualified, it must be in the user's home directory on the HMC.
+            - This option is only valid for sftp and is mutually exclusive with password.
         type: str
     mount_location:
         description:
@@ -171,16 +172,16 @@ options:
         choices: ['3', '4']
     sftp_auth:
         description:
-            - Username and Password credential of the SFTP.
+            - Username and Password credential of the SFTP Server.
         type: dict
         suboptions:
-            username:
+            sftp_username:
                 description:
-                    - Username of the SFTP to login.
+                    - Username of the SFTP server to login.
                 type: str
-            password:
+            sftp_password:
                 description:
-                    - Password of the SFTP.
+                    - Password of the SFTP sever.
                 type: str
     state:
         description:
@@ -269,7 +270,7 @@ EXAMPLES = '''
   debug:
     msg: '{{ images_info }}'
 
-- name: Copy Vios Image via SFTP
+- name: Copy Vios Image via SFTP Server
   vios:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth:
@@ -279,8 +280,8 @@ EXAMPLES = '''
     directory_name: dir_name
     remote_server: remote_server_IP
     sftp_auth:
-    username: username
-    password: password
+        sftp_username: username
+        sftp_password: password
     remote_directory: <directory_path>
     files:
     - file1
@@ -379,14 +380,14 @@ def validate_parameters(params):
             sftp_auth = params.get('sftp_auth')
             if sftp_auth is None:
                 raise ParameterError("mandatory parameter 'sftp_auth' is missing")
-            if sftp_auth.get('username') is None:
-                raise ParameterError("mandatory parameter 'username' is missing")
-            sftp_password = sftp_auth.get('password')
+            if sftp_auth.get('sftp_username') is None:
+                raise ParameterError("mandatory parameter 'sftp_username' is missing")
+            sftp_password = sftp_auth.get('sftp_password')
             ssh_key_file = params.get('ssh_key_file')
             if sftp_password and ssh_key_file:
-                raise ParameterError("Parameters 'password' and 'ssh_key_file' are mutually exculsive")
+                raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exculsive")
             elif not sftp_password and not ssh_key_file:
-                raise ParameterError("Please provide either 'password' or 'ssh_key_file' for authentication.")
+                raise ParameterError("Please provide either 'sftp_password' or 'ssh_key_file' for authentication.")
             mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name', 'remote_server', 'files']
             unsupportedList = ['system_name', 'directory_list', 'name', 'mount_location', 'options', 'nim_IP', 'nim_gateway', 'vios_IP',
                                'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings',
@@ -672,18 +673,16 @@ def viosLicenseAccept(module, params):
     return changed, None, None
 
 
-def list_all_vios_image(module, params):
+def list_all_vios_image(module, params, changed=False):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
-    changed = False
     validate_parameters(params)
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
 
     try:
         vios_image_details = hmc.listViosImages()
-        changed = False
         if vios_image_details is None:
             vios_image_details = "No directory names were found."
         module.exit_json(changed=changed, msg=vios_image_details)
@@ -729,8 +728,12 @@ def delete_vios_image(module, params):
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
 
-    hmc.deleteViosImage(directory_list)
-    list_all_vios_image(module, params)
+    try:
+        changed_status = hmc.deleteViosImage(directory_list)
+        list_all_vios_image(module, params,changed=changed_status)
+    except Exception as e:
+        logger.debug('entered the exception block')
+        return False, repr(e), None
 
 
 def perform_task(module):
@@ -769,8 +772,8 @@ def run_module():
         sftp_auth=dict(type='dict',
                        no_log=True,
                        options=dict(
-                           username=dict(type='str'),
-                           password=dict(type='str', no_log=True),
+                           sftp_username=dict(type='str'),
+                           sftp_password=dict(type='str', no_log=True),
                        )
                        ),
         remote_server=dict(type='str'),

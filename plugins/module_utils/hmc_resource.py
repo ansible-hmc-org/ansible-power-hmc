@@ -825,8 +825,8 @@ class Hmc():
             options = f'"ver={options}"'
 
         if media == 'sftp':
-            sftp_user = params['sftp_auth']['username']
-            sftp_password = params['sftp_auth']['password']
+            sftp_user = params['sftp_auth']['sftp_username']
+            sftp_password = params['sftp_auth']['sftp_password']
             cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
                 self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
                 self.OPT['CPVIOSIMG']['-N'] + directory_name +\
@@ -866,10 +866,18 @@ class Hmc():
         return self.cmdClass.parseMultiLineCSV(output)
 
     def deleteViosImage(self, directory_list):
+        changed = False
         for directory in directory_list:
             rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
                 self.OPT['RMVIOSIMG']['-N'] + directory
             try:
                 self.hmcconn.execute(rmviosimgCmd)
-            except Exception:
-                continue
+                changed = True
+            except HmcError as list_error:
+                if 'HSCLC464' in repr(list_error):
+                    continue
+                else:
+                    raise Exception(f"Error deleting VIOS image: {repr(list_error)}") from list_error
+            except Exception as e:
+                raise Exception(f"Unexpected error occurred while deleting VIOS image: {repr(e)}") from e
+        return changed
