@@ -730,7 +730,7 @@ def delete_vios_image(module, params):
 
     try:
         changed_status = hmc.deleteViosImage(directory_list)
-        list_all_vios_image(module, params,changed=changed_status)
+        list_all_vios_image(module, params, changed=changed_status)
     except Exception as e:
         logger.debug('entered the exception block')
         return False, repr(e), None
