@@ -1,0 +1,12 @@
+---
+# Main playbook for HMC Password policy Management
+- name: HMC Password Policy Management
+  hosts: hmcs
+  connection: local
+  collections:
+    - ibm.power_hmc
+  gather_facts: false
+  vars_files:
+    - vars/secrets.yml
+  roles:
+    - password_policy

@@ -1,0 +1,10 @@
+---
+# handlers file for test_pass
+
+- name: Deactivate pass policies
+  ibm.power_hmc.hmc_pwdpolicy:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: "{{ password_policy_username }}"
+          password: "{{ password_policy_hmc_pass }}"
+      state: deactivated
