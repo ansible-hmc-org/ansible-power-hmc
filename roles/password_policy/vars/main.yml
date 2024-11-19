@@ -2,9 +2,9 @@
 # vars file
 
 # username of HMC that the password policy role is using
-password_policy_username: hscroot
+password_policy_hmc_username: hscroot
 
-# password policy configurations for a new policy
+# password policy configurations for a new policy or updated password policy
 password_policy_configs:
       min_pwage: "2"
       pwage: "150"
@@ -16,22 +16,5 @@ password_policy_configs:
       min_lowercase_chars: "3"
       min_special_chars: "1"
 
-# updated password policy configurations for an existing policy
-password_policy_new_configs:
-      pwage: 60
-      hist_size: 9
-      min_uppercase_chars: "3"
-
 # password policy name for which we want the role to execute
-password_policy_name: testpolicytest1
-
-# list of users present in the HMC
-password_policy_users:
-      - name: manya1
-        taskrole: hmcsuperadmin
-        authentication_type: local
-        remote_ssh_access: 1
-      - name: manya2
-        taskrole: hmcviewer
-        authentication_type: local
-        remote_ssh_access: 1
+password_policy_name: testnew
