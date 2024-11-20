@@ -472,7 +472,7 @@ class HmcCommandStack():
                                '--OPTIONS': ' --options ',
                                '--RESTART': ' --restart ',
                                '--SAVE': ' --save ',
-                               '--DISK': ' --disk '}
+                               '--DISK': ' --disk '},
                    'CPVIOSIMG': {'-R': {'SFTP': ' -r sftp ', 'NFS': ' -r nfs '},
                                  '-N': ' -n ',
                                  '-H': ' -h ',
