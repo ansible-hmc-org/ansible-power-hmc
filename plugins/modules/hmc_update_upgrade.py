@@ -425,7 +425,8 @@ def list_ptf(module, params):
         raise VersionError("List ptf is supported from V10 R2 M1030 version onwards.")
     else:
         ptf_details = hmc.listHMCPTF('ibmwebsite')
-
+    if 'No PTFs are available' in ptf_details:
+        return False, {"info": ptf_details}, None
     return changed, ptf_details, None
 
 

@@ -54,7 +54,11 @@ class HmcCommandStack():
                'RMVIOSBK': 'rmviosbk',
                'CHVIOSBK': 'chviosbk',
                'UPDVIOS': 'updvios',
-               'UPGVIOS': 'upgvios'}
+               'UPGVIOS': 'upgvios',
+               'LSVIOSIMG': 'lsviosimg',
+               'CPVIOSIMG': 'cpviosimg',
+               'RMVIOSIMG': 'rmviosimg',
+               }
 
     HMC_CMD_OPT = {'LSHMC': {'-N': ' -n ',
                              '-v': ' -v ',
@@ -469,6 +473,17 @@ class HmcCommandStack():
                                '--RESTART': ' --restart ',
                                '--SAVE': ' --save ',
                                '--DISK': ' --disk '}
+                   'CPVIOSIMG': {'-R': {'SFTP': ' -r sftp ', 'NFS': ' -r nfs '},
+                                 '-N': ' -n ',
+                                 '-H': ' -h ',
+                                 '-U': ' -u ',
+                                 '-F': ' -f ',
+                                 '--PASSWD': ' --passwd ',
+                                 '-K': ' -k ',
+                                 '-D': ' -d ',
+                                 '-L': ' -l ',
+                                 '--OPTIONS': ' --options '},
+                   'RMVIOSIMG': {'-N': ' -n '}
                    }
 
     def filterBuilder(self, cmdKey, configOptionsDict):
