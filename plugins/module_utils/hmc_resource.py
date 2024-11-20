@@ -808,7 +808,6 @@ class Hmc():
         attr_dict = self.getManagedSystemDetails(system_name)
         return attr_dict.get('name')
 
-    
     def getviosversion(self, configDict=None):
         vios_version = ''
         vios_version += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
@@ -840,7 +839,6 @@ class Hmc():
         if state == 'upgraded':
             updviosbk_cmd += self.OPT['UPDVIOS']['--DISK'] + str(configDict['disks'])
         return self.hmcconn.execute(updviosbk_cmd)
-
 
     def copyViosImage(self, params):
         media = params['media'].lower()
