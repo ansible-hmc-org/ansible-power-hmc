@@ -124,8 +124,8 @@ options:
             disks:
                 description:
                     - The name of one or more free VIOS disks to be used for the upgrade.
-                    - You may need to free or add new disks to perform the upgrade. 
-                    - Depending on the existing VIOS rootvg size, the disk space needed may be greater than 30GB. 
+                    - You may need to free or add new disks to perform the upgrade.
+                    - Depending on the existing VIOS rootvg size, the disk space needed may be greater than 30GB.
                     - This option is only valid for C(upgraded)
                 type: list
                 elements: str
@@ -355,7 +355,7 @@ def facts(module, params, changed=False):
         vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
         if attributes['vios_name'] is not None:
             vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
-        elif  attributes['vios_id'] is not None:
+        elif attributes['vios_id'] is not None:
             vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
         if vios_details:
             if vios_details[1] != 'Running':
@@ -391,7 +391,7 @@ def ensure_update_upgrade(module, params):
         vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
         if attributes['vios_name'] is not None:
             vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
-        elif  attributes['vios_id'] is not None:
+        elif attributes['vios_id'] is not None:
             vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
         if vios_details:
             if vios_details[1] != 'Running':
