@@ -86,7 +86,7 @@ options:
                 elements: str
             host_name:
                 description:
-                    - The host name or IP address of the remote server.
+                    - The host name or IP address of the SFTP/NFS remote server.
                 type: str
             user_id:
                 description:
@@ -124,7 +124,9 @@ options:
             disks:
                 description:
                     - The name of one or more free VIOS disks to be used for the upgrade.
-                    - The total of the specified disk sizes must be a minimum of I(30GB).
+                    - You may need to free or add new disks to perform the upgrade. 
+                    - Depending on the existing VIOS rootvg size, the disk space needed may be greater than 30GB. 
+                    - This option is only valid for C(upgraded)
                 type: list
                 elements: str
             restart:
@@ -151,16 +153,20 @@ EXAMPLES = '''
 - name: Get the current version of VIOS
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
-    hmc_auth: '{{ curr_hmc_auth }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
       vios_name: <vios_name>
       system_name: <sys/MTMS>
     state: facts
 
-- name: Update VIOS using sftp
+- name: Update the VIOS from the HMC using the image available on remote SFTP server
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
-    hmc_auth: '{{ curr_hmc_auth }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
       repository: sftp
       vios_id: <vios_id>
@@ -172,10 +178,12 @@ EXAMPLES = '''
         - <iso file1>
     state: updated
 
-- name: Update VIOS using nfs
+- name: Update the VIOS from the HMC using the image available on remote NFS server
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
-    hmc_auth: '{{ curr_hmc_auth }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
       repository: nfs
       vios_id: <vios_id>
@@ -188,10 +196,12 @@ EXAMPLES = '''
         - <bff file>
     state: updated
 
-- name: Upgrade VIOS using disk
+- name: Upgrade the VIOS from the HMC using the image available on HMC hard disk
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
-    hmc_auth: '{{ curr_hmc_auth }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
       repository: disk
       vios_id: <vios_id>
@@ -326,39 +336,7 @@ def validate_parameters(params):
     validate_sub_params(params)
 
 
-def facts(module, params):
-    hmc_host = params['hmc_host']
-    hmc_user = params['hmc_auth']['username']
-    password = params['hmc_auth']['password']
-    validate_parameters(params)
-    attributes = params.get('attributes')
-    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
-    vios_name = attributes['vios_name'] or attributes['vios_id']
-    m_system = attributes['system_name']
-    sys_list = (
-        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
-    )
-    if m_system not in sys_list:
-        module.fail_json(msg="The managed system is not available in HMC")
-    else:
-        if attributes['vios_name'] is not None:
-            vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(m_system)).splitlines())
-        elif attributes['vios_id'] is not None:
-            vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F lpar_id".format(m_system)).splitlines())
-        if vios_name not in vios_list:
-            module.fail_json(msg="The vios is not available in the managed system")
-    if attributes['vios_name'] is not None:
-        version = hmc_conn.execute("viosvrcmd -p {0} -m {1} -c ioslevel".format(vios_name, m_system)).strip()
-    elif attributes['vios_id'] is not None:
-        version = hmc_conn.execute("viosvrcmd --id {0} -m {1} -c ioslevel".format(vios_name, m_system)).strip()
-    version = {
-        "vios": vios_name,
-        "system": m_system,
-        "version": version}
-    return False, version, None
-
-
-def ensure_update_upgrade(module, params):
+def facts(module, params, changed=False):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
@@ -366,7 +344,6 @@ def ensure_update_upgrade(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
-
     vios_name = attributes['vios_name'] or attributes['vios_id']
     m_system = attributes['system_name']
     sys_list = (
@@ -375,37 +352,61 @@ def ensure_update_upgrade(module, params):
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
     else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
         if attributes['vios_name'] is not None:
-            vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(m_system)).splitlines())
-        elif attributes['vios_id'] is not None:
-            vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F lpar_id".format(m_system)).splitlines())
-        if vios_name not in vios_list:
-            module.fail_json(msg="The vios is not available in the managed system")
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif  attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
+    version = hmc.getviosversion(configDict=attributes).strip()
+    version = {
+        "vios": vios_name,
+        "system": m_system,
+        "version": version}
+    return changed, version, None
+
+
+def ensure_update_upgrade(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    changed = False
+    validate_parameters(params)
+    attributes = params.get('attributes')
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    _, curr_version, _ = facts(module, params)
+    vios_name = attributes['vios_name'] or attributes['vios_id']
+    m_system = attributes['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if m_system not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
+        if attributes['vios_name'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif  attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
 
     if attributes['repository'] in ['nfs', 'sftp']:
         if attributes['save'] is not None and attributes['image_name'] is None:
             raise ParameterError("To save the image to the HMC hard disk, 'image_name' parameter is required")
         if attributes['save'] is None and attributes['image_name'] is not None:
             raise ParameterError("For remote server repository'image_name' parameter is only required if 'save' option is set to 'true'")
-
-    files = ''
-    if attributes['files'] is not None:
-        for each in attributes['files']:
-            files += each + ','
-    if files[:-1] != '':
-        attributes['files'] = files[:-1]
-
-    disk = ''
-    if attributes['disks'] is not None:
-        for each in attributes['disks']:
-            disk += each + ','
-    if disk[:-1] != '':
-        attributes['disks'] = disk[:-1]
-
-    option = ''
-    if attributes['option'] is not None:
-        option += '"ver=' + attributes['option'] + '"'
-        attributes['option'] = option
+    attributes['files'] = ','.join(attributes['files']) if attributes.get('files') else None
+    attributes['disks'] = ','.join(attributes['disks']) if attributes.get('disks') else None
+    attributes['option'] = f'"ver={attributes["option"]}"' if attributes.get('option') else None
 
     try:
         hmc.updatevios(module.params['state'], configDict=attributes)
@@ -415,8 +416,13 @@ def ensure_update_upgrade(module, params):
             return False, None, None
         else:
             raise
-    changed = True
-    return changed, None, None
+    _, latest_version, _ = facts(module, params, changed)
+    if curr_version != latest_version:
+        changed = True
+    else:
+        msg = "The vios is already in required version"
+        module.exit_json(changed=changed, msg=msg)
+    return changed, latest_version, None
 
 
 def perform_task(module):

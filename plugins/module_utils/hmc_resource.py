@@ -805,6 +805,16 @@ class Hmc():
     def getSystemNameFromMTMS(self, system_name):
         attr_dict = self.getManagedSystemDetails(system_name)
         return attr_dict.get('name')
+    
+    def getviosversion(self, configDict=None):
+        vios_version = ''
+        vios_version += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + 'ioslevel'
+        if configDict['vios_name'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_version)
 
     def updatevios(self, state, configDict=None):
         updviosbk_cmd = ''
