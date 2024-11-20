@@ -340,6 +340,7 @@ def ensure_present(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
+    vios_list = []
 
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
@@ -399,6 +400,7 @@ def ensure_restore(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
+    vios_list = []
 
     m_system = attributes['system']
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']

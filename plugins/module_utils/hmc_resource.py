@@ -881,3 +881,35 @@ class Hmc():
             except Exception as e:
                 raise Exception(f"Unexpected error occurred while deleting VIOS image: {repr(e)}") from e
         return changed
+
+    def getviosversion(self, configDict=None):
+        vios_version = ''
+        vios_version += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + 'ioslevel'
+        if configDict['vios_name'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_version)
+
+    def updatevios(self, state, configDict=None):
+        updviosbk_cmd = ''
+        if state == 'updated':
+            updviosbk_cmd += self.CMD['UPDVIOS']
+        elif state == 'upgraded':
+            updviosbk_cmd += self.CMD['UPGVIOS']
+        updviosbk_cmd += self.OPT['UPDVIOS']['-R'] + configDict['repository'] + \
+            self.OPT['UPDVIOS']['-M'] + configDict['system_name']
+        option_map = {'vios_name': '-P', 'vios_id': '--ID', 'image_name': '-N', 'files': '-F',
+                      'host_name': '-H', 'user_id': '-U', 'password': '--PASSWD', 'ssh_key_file': '-K',
+                      'directory': '-D', 'mount_loc': '-L', 'option': '--OPTIONS'}
+        for key in option_map:
+            if configDict[key] is not None:
+                updviosbk_cmd += self.OPT['UPDVIOS'][option_map[key]] + configDict[key]
+        if configDict['restart'] is not None:
+            updviosbk_cmd += self.OPT['UPDVIOS']['--RESTART']
+        if configDict['save'] is not None:
+            updviosbk_cmd += self.OPT['UPDVIOS']['--SAVE']
+        if state == 'upgraded':
+            updviosbk_cmd += self.OPT['UPDVIOS']['--DISK'] + str(configDict['disks'])
+        return self.hmcconn.execute(updviosbk_cmd)

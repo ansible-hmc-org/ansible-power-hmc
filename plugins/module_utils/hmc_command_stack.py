@@ -56,6 +56,8 @@ class HmcCommandStack():
                'LSVIOSIMG': 'lsviosimg',
                'CPVIOSIMG': 'cpviosimg',
                'RMVIOSIMG': 'rmviosimg',
+               'UPDVIOS': 'updvios',
+               'UPGVIOS': 'upgvios',
                }
 
     HMC_CMD_OPT = {'LSHMC': {'-N': ' -n ',
@@ -343,7 +345,8 @@ class HmcCommandStack():
                                  '--FILTER': {'LPAR_NAMES': 'lpar_names'}},
                    'VIOSVRCMD': {'-M': ' -m ',
                                  '-P': ' -p ',
-                                 '-C': ' -c '},
+                                 '-C': ' -c ',
+                                 '--ID': ' --id '},
                    'MKAUTHKEYS': {'-G': ' -g ',
                                   '--IP': ' --ip ',
                                   '-U': ' -u ',
@@ -464,7 +467,23 @@ class HmcCommandStack():
                                  '-D': ' -d ',
                                  '-L': ' -l ',
                                  '--OPTIONS': ' --options '},
-                   'RMVIOSIMG': {'-N': ' -n '}
+                   'RMVIOSIMG': {'-N': ' -n '},
+                   'UPDVIOS': {'-R': ' -r ',
+                               '-M': ' -m ',
+                               '-P': ' -p ',
+                               '--ID': ' --id ',
+                               '-N': ' -n ',
+                               '-F': ' -f ',
+                               '-H': ' -h ',
+                               '-U': ' -u ',
+                               '--PASSWD': ' --passwd ',
+                               '-K': ' -k ',
+                               '-D': ' -d ',
+                               '-L': ' -l ',
+                               '--OPTIONS': ' --options ',
+                               '--RESTART': ' --restart ',
+                               '--SAVE': ' --save ',
+                               '--DISK': ' --disk '}
                    }
 
     def filterBuilder(self, cmdKey, configOptionsDict):
