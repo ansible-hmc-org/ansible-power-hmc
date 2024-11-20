@@ -1,49 +1,43 @@
----
-- name: Demo HMC update
+- name: Demo HMC upgrade
   hosts: hmcs
   connection: local
   gather_facts: false
-
   vars:
       curr_hmc_auth:
           username: "{{ ansible_user }}"
-          password: "etmZST6Z29BS7!"
-      hmc_ip: "{{ inventory_hostname }}"
+          password: !vault |
+                    $ANSIBLE_VAULT;1.1;AES256
+                    36353734613030613032623330333864326631323135623863303864313033316536316234656138
+                    6233643263373837366163336633396338613166633630610a333538393465616235303631383637
+                    31376166636238383436393232663066616137373436353631386266333031373332396465376361
+                    3133313737353730610a333234613935323432313036363238396530613965383935303936326637
+                    3533
+      config:
+          location_type: nfs
+          hostname: 9.3.147.72
+          mount_location: /HMCImages
+          build_file: /HMC9.1.910.0/1803052221/x86_64/network_install
 
   tasks:
-      - name: Current version
-        ibm.power_hmc.vios_update_upgrade:
-            hmc_host: '{{ hmc_ip }}'
+      - name: List the HMC current build level
+        ibm.power_hmc.hmc_update_upgrade:
+            hmc_host: '{{ inventory_hostname }}'
             hmc_auth: '{{ curr_hmc_auth }}'
-            attributes:
-                vios_id: 1
-                #vios_name: hmc-zz1-vios1
-                system_name: hmc-zz1
             state: facts
-        register: fact
-      
-      - name: Output fact
-        ansible.builtin.debug:
-          msg: "{{ fact }}"
+        register: build_info
 
-      - name: update vios
-        ibm.power_hmc.vios_update_upgrade:
-            hmc_host: '{{ hmc_ip }}'
+      - name: Stdout the probed HMC build info
+        ansible.builtin.debug:
+            msg: '{{ build_info }}'
+
+      - name: Upgrade the HMC from 870 to 910 using NFS server
+        ibm.power_hmc.hmc_update_upgrade:
+            hmc_host: '{{ inventory_hostname }}'
             hmc_auth: '{{ curr_hmc_auth }}'
-            attributes:
-              repository: sftp
-              #vios_name: hmc-zeppelin4-vios1
-              vios_id: 1
-              system_name: hmc-zz1
-              password: Onep@sswd4power
-              user_id: hmcct
-              host_name: 9.3.115.83
-              directory: sreenidhi
-              files:
-                  - H87538085.iso
-            state: updated
-        register: output
+            build_config: '{{ config }}'
+            state: upgraded
+        register: upgraded_hmc_build_info
 
-      - name: Output updated
+      - name: Stdout the upgraded Probed HMC build info
         ansible.builtin.debug:
-          msg: "{{ output }}"
+            msg: '{{ upgraded_hmc_build_info }}'
