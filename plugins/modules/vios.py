@@ -54,7 +54,7 @@ options:
         type: str
     name:
         description:
-            - The name of the VirtualIOServer for installation through nim.
+            - The name of the VirtualIOServer for installation through nim server and disk.
         required: true
         type: str
     settings:
@@ -73,6 +73,7 @@ options:
         description:
             - VIOS gateway IP Address.
             - valid only for C(action) = I(install)
+            - supports installation through nim server and disk.
         type: str
     nim_gateway:
         description:
@@ -100,6 +101,7 @@ options:
         description:
             - Subnetmask IP Address to be configured to VIOS.
             - valid only for C(action) = I(install)
+            - supports installation through nim server and disk.
         type: str
     nim_subnetmask:
         description:
@@ -137,7 +139,27 @@ options:
             - Default value is False.
             - Valid only for C(state) = I(facts)
         type: bool
-    state:
+    image_dir:
+        description:
+            - Specifies the directory on the remote server for the VIOS installation image.
+        type: str
+    label:
+        description:
+            - Specifies a label name for installed vios to use instead of creating a default label name.
+        required: false
+        type: str
+    network_macaddr:
+        description:
+            - Specifies the client MAC address through which the network installation of the Virtual I/O Server will take place.
+            - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
+            - valid only for C(action) = I(install)
+        type: str
+    vios_iso:
+        description:
+            - The vios iso file to be installed.
+        required: true
+        type: str
+     state:
         description:
             - C(facts) fetch details of specified I(VIOS).
             - C(present) creates VIOS with specified I(settings).
@@ -149,31 +171,6 @@ options:
             - C(accept_license) Accept license after fresh installation of VIOS.
         type: str
         choices: ['install', 'accept_license']
-    image_dir:
-        description:
-            - The name to give the VIOS installation image on the HMC.
-        type: str
-    label:
-        description:
-            - Specifies a label name for installed vios
-        required: false
-        type: str
-    network_macaddr:
-        description:
-            - Specifies the client MAC address through which the network installation of the Virtual I/O Server will take place.
-            - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
-            - valid only for C(action) = I(install)
-        type: str
-    vios_name:
-        description:
-            - The name of the VirtualIOServer for installation through disk.
-        required: true
-        type: str
-    vios_iso:
-        description:
-            - The vios iso file to be installed.
-        required: true
-        type: str
 '''
 
 EXAMPLES = '''
@@ -227,8 +224,9 @@ EXAMPLES = '''
     vios_gateway: <vios gateway ip>
     vios_subnetmask: <subnetmask>
     network_macaddr: <mac address>
-    vios_name: <vios name>
+    name: <vios name>
     prof_name: <profile name>
+    timeout: <timeout>
     label: <label>
     action: install
   
@@ -297,12 +295,27 @@ def validate_parameters(params):
     if opr == 'install':
         if params['nim_IP'] and params['image_dir']:
             raise ParameterError("Cannot provide both nim_IP and image_dir. Provide one of them.")
+        
         elif params['nim_IP'] and not params['image_dir']:
-            mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','nim_gateway', 'name' ]
-            unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'prof_name', 'label']
+            if params['nim_gateway'] and params['nim_subnetmask']:
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','nim_gateway', 'name' ]
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway', 'vios_subnetmask']
+            elif params['nim_gateway'] and params['vios_subnetmask']:
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','nim_gateway', 'name' ]
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway','nim_subnetmask']
+            elif params['vios_gateway'] and params['nim_subnetmask']:
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','vios_gateway', 'name' ]
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','vios_subnetmask']
+            elif params['vios_gateway'] and params['vios_subnetmask']:
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','vios_gateway', 'name' ]
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','nim_subnetmask']
+            else:
+                raise ParameterError("Provide 'nim_gateway'/'vios_gateway' and 'nim_subnetmask'/'vios_subnetmask'")
+            
         elif params['image_dir'] and not params['nim_IP']:
-            mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'vios_gateway', 'vios_subnetmask', 'system_name', 'vios_name', 'prof_name']
-            unsupportedList = [ 'nim_IP', 'name', 'nim_gateway', 'nim_subnetmask']
+            mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'vios_gateway', 'vios_subnetmask', 'system_name', 'name']
+            unsupportedList = [ 'nim_IP', 'nim_gateway', 'nim_subnetmask']
+
         else:
             raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir")
 
@@ -508,11 +521,11 @@ def installViosUsingNim(module, params):
     system_name = params['system_name']
     name = params['name'] 
     nim_IP = params['nim_IP']
-    nim_gateway = params['nim_gateway'] 
+    nim_gateway = params['nim_gateway'] or params['vios_gateway']
     vios_IP = params['vios_IP']
     prof_name = params['prof_name'] or 'default_profile'
     location_code = params['location_code']
-    nim_subnetmask = params['nim_subnetmask'] 
+    nim_subnetmask = params['nim_subnetmask'] or params['vios_subnetmask']
     nim_vlan_id = params['nim_vlan_id'] or '0'
     nim_vlan_priority = params['nim_vlan_priority'] or '0'
     timeout = params['timeout'] or 60
@@ -564,10 +577,10 @@ def installViosUsingDisk(module, params):
     vios_subnetmask = params['vios_subnetmask']
     network_macaddr = params['network_macaddr']
     system_name= params['system_name']
-    vios_name = params['vios_name']
-    prof_name = params['prof_name']
+    name = params['name']
+    prof_name = params['prof_name'] or 'default_profile'
     label = params['label']
-    timeout = params['timeout']
+    timeout = params['timeout'] or 60
     validate_parameters(params)
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
@@ -579,19 +592,19 @@ def installViosUsingDisk(module, params):
         module.fail_json(msg="timeout should be more than 10mins")
     try:
         if network_macaddr:
-            hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, vios_name, prof_name, label)
+            hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label)
         else:
-            dvcdictlt = hmc.fetchIODetailsForNetboot(hmc_host, vios_gateway, vios_IP, vios_name, prof_name, system_name, vios_subnetmask)
+            dvcdictlt = hmc.fetchIODetailsForNetboot(hmc_host, vios_gateway, vios_IP, name, prof_name, system_name, vios_subnetmask)
             for dvcdict in dvcdictlt:
                 if dvcdict['Ping Result'] == 'successful':
                     network_macaddr = dvcdict['MAC Address']
                     break
             if network_macaddr:
-                hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, vios_name, prof_name, label)
+                hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label)
             else:
                 module.fail_json(msg="Mac address not retrievable.") 
 
-        rmc_state, vios_property, ref_code = hmc.checkForOSToBootUpFully(system_name, vios_name, timeout)
+        rmc_state, vios_property, ref_code = hmc.checkForOSToBootUpFully(system_name, name, timeout)
         if rmc_state:
             changed = True
             warn_msg = "VIOS installation has been successfull"
@@ -600,8 +613,6 @@ def installViosUsingDisk(module, params):
             warn_msg = "VIOS installation has been successfull but RMC didnt come up, please check the HMC firewall and security"
         else:
             module.fail_json(msg="VIOS Installation failed even after waiting for " + str(timeout) + " mins and the reference code is " + ref_code)
-
-        module.exit_json(changed=True, msg=f"The VIOS image has been installed successfully.")
 
     except HmcError as install_error:
         return False, repr(install_error), None
@@ -616,16 +627,20 @@ def install(module, params):
     image_dir = params['image_dir']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
-
+    changed = False
+    vios_property = None
+    warn_msg = None
+    
     if image_dir:
-        installViosUsingDisk(module, params)
+        changed, vios_property, warn_msg = installViosUsingDisk(module, params)
         
     elif nim_IP:
-        installViosUsingNim(module, params)
+        changed, vios_property, warn_msg = installViosUsingNim(module, params)
       
     else:
         raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir to perform vios installation")
-
+    
+    return changed, vios_property, warn_msg
 
 def viosLicenseAccept(module, params):
     hmc_host = params['hmc_host']
@@ -701,7 +716,6 @@ def run_module():
         vios_iso= dict(type='str'),
         image_dir=dict(type='str'),
         network_macaddr=dict(type='str'),
-        vios_name=dict(type='str'),
         label=dict(type='str'),
     )
 
@@ -712,7 +726,7 @@ def run_module():
         required_if=[['state', 'facts', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
                      ['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
                      ['action', 'accept_license', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
-                     ['action', 'install', ['hmc_host', 'hmc_auth', 'vios_IP', 'system_name']]
+                     ['action', 'install', ['hmc_host', 'hmc_auth', 'vios_IP', 'system_name', 'name']]
                      ],
     )
 

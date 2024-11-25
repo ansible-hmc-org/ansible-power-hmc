@@ -368,89 +368,83 @@ test_data3 = [
 test_data4 = [
     # ALL vios install using disk testdata
     # system name is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': None, 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': None, 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'system_name' is missing"),
     # vios name is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
-     "ParameterError: mandatory parameter 'vios_name' is missing"),
+     "ParameterError: mandatory parameter 'name' is missing"),
     # host is missing
-    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
-      # system_name and vios_name are missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': None, 'vios_name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      # system_name and name are missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': None, 'name': None, 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
-     "ParameterError: mandatory parameter 'system_name, vios_name' are missing"),
+     "ParameterError: mandatory parameter 'system_name, name' are missing"),
       # img_dir is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': None, 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': None, 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'img_dir' is missing"),
-      # prof_name is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+      # vios_iso is missing
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': None,
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': None, 'label': 'viostest'},
-     "ParameterError: mandatory parameter 'prof_name' is missing"),
+     "ParameterError: mandatory parameter 'vios_iso' is missing"),
     # vios_IP is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': None, 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'vios_IP' is missing"),
     # vios_gateway is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': None, 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'vios_gateway' is missing"),
     # vios_subnetmask is missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': None,
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'vios_subnetmask' is missing"),
     # vios_subnetmask and vios_gateway are missing
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': None, 'vios_IP': '12.13.14.15', 'vios_subnetmask': None,
       'prof_name': 'default', 'label': 'viostest'},
      "ParameterError: mandatory parameter 'vios_subnetmask, vios_gateway' are missing"),
-    # unsupported parameter nim_IP
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
+     # unsupported parameter nim_IP
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
       'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest', 'nim_IP': '1.1.1.1'},
      "ParameterError: unsupported parameter: nim_IP ")
      # unsupported parameter nim_gateway
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest', 'nim_gateway': '1.1.1.1'},
      "ParameterError: unsupported parameter: nim_gateway ")
      # unsupported parameter nim_subnetmask
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+      'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest', 'nim_subnetmask': '1.1.1.1'},
      "ParameterError: unsupported parameter: nim_subnetmask ")
-     # unsupported parameter name
-    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
-      'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
-      'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
-      'prof_name': 'default', 'label': 'viostest', 'name': 'viosname'},
-     "ParameterError: unsupported parameter: name ")
      ]
     
 

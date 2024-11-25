@@ -523,7 +523,7 @@ class Hmc():
             " " + viosName + " " + profName + " " + systemName
         self.hmcconn.execute(lpar_netboot)
 
-    def installOSFromDisk(self, vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, vios_name, prof_name, label):
+    def installOSFromDisk(self, vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label=None):
         default_path = "/extra/viosimages/"
         installiosCmd= ''
         installiosCmd = self.CMD['INSTALLIOS'] +\
@@ -533,12 +533,14 @@ class Hmc():
             self.OPT['INSTALLIOS']['-S'] + vios_subnetmask +\
             self.OPT['INSTALLIOS']['-m'] + network_macaddr +\
             self.OPT['INSTALLIOS']['-s'] + system_name +\
-            self.OPT['INSTALLIOS']['-p'] + vios_name +\
-            self.OPT['INSTALLIOS']['-r'] + prof_name +\
-            self.OPT['INSTALLIOS']['-R'] + label +\
+            self.OPT['INSTALLIOS']['-p'] + name +\
+            self.OPT['INSTALLIOS']['-r'] + prof_name
+        if label is not None:
+            installiosCmd+= self.OPT['INSTALLIOS']['-R'] + label
         self.hmcconn.execute(installiosCmd)
         logger.debug(installiosCmd)
-
+        
+        
     def getconsolelog(self, module, lpar_hmc, userid, hmc_password, systemName, lparName):
         conn = HmcCliConnection(module, lpar_hmc, userid, hmc_password)
         cmd = 'rmvterm -m ' + systemName + ' -p ' + lparName
