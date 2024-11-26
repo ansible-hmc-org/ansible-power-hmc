@@ -231,6 +231,7 @@ def init_logger():
 def validate_parameters(params):
     '''Check that the input parameters satisfy the mutual exclusiveness of HMC'''
     opr = params['action']
+    unsupportedList = []
 
     if opr == 'recover':
         mandatoryList = ['hmc_host', 'hmc_auth', 'src_system']
