@@ -516,6 +516,7 @@ test_data4 = [
      "ParameterError: unsupported parameter: nim_subnetmask ")
      ]
 
+test_data5=[
     # ALL Copy Vios Image via SFTP and NFS testdata
     # media param is missing
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
@@ -659,14 +660,14 @@ test_data4 = [
      "ParameterError: unsupported parameter: free_pvs"),
 ]
 
-test_data5 = [
+test_data6 = [
     # All List Vios Image testdata
     #  hmc_host param missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': None, 'action': 'listimages'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
 ]
 
-test_data6 = [
+test_data7 = [
     # All Delete Vios Image testdata
     #  hmc_host param missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'directory_list': ['test'], 'state': None, 'action': 'delete'},
@@ -738,6 +739,8 @@ def test_call_inside_installViosDisk(mocker, vios_test_input, expectedError):
     else:
         hmc_vios.install(hmc_vios, vios_test_input)
 
+
+@pytest.mark.parametrize("vios_test_input, expectedError", test_data5)
 def test_call_inside_copy_vios_image(mocker, vios_test_input, expectedError):
     hmc_vios = common_mock_setup(mocker)
     if 'ParameterError' in expectedError:
@@ -748,7 +751,7 @@ def test_call_inside_copy_vios_image(mocker, vios_test_input, expectedError):
         hmc_vios.copy_vios_image(hmc_vios, vios_test_input)
 
 
-@pytest.mark.parametrize("vios_test_input, expectedError", test_data5)
+@pytest.mark.parametrize("vios_test_input, expectedError", test_data6)
 def test_call_inside_listimages(mocker, vios_test_input, expectedError):
     hmc_vios = common_mock_setup(mocker)
     if 'ParameterError' in expectedError:
@@ -759,7 +762,7 @@ def test_call_inside_listimages(mocker, vios_test_input, expectedError):
         hmc_vios.list_all_vios_image(hmc_vios, vios_test_input)
 
 
-@pytest.mark.parametrize("vios_test_input, expectedError", test_data6)
+@pytest.mark.parametrize("vios_test_input, expectedError", test_data7)
 def test_call_inside_deleteimages(mocker, vios_test_input, expectedError):
     hmc_vios = common_mock_setup(mocker)
     if 'ParameterError' in expectedError:

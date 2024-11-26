@@ -418,29 +418,30 @@ def validate_parameters(params):
         elif params['nim_IP'] and not params['image_dir']:
             if params['nim_gateway'] and params['nim_subnetmask']:
                 mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','nim_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway', 'vios_subnetmask']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway', 'vios_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
+                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
             elif params['nim_gateway'] and params['vios_subnetmask']:
                 mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','nim_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway','nim_subnetmask']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway','nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
+                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
             elif params['vios_gateway'] and params['nim_subnetmask']:
                 mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','vios_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','vios_subnetmask']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','vios_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
+                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
             elif params['vios_gateway'] and params['vios_subnetmask']:
                 mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','vios_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','nim_subnetmask']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
+                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
             else:
                 raise ParameterError("Provide 'nim_gateway'/'vios_gateway' and 'nim_subnetmask'/'vios_subnetmask'")
             
         elif params['image_dir'] and not params['nim_IP']:
             mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'vios_gateway', 'vios_subnetmask', 'system_name', 'name']
-            unsupportedList = [ 'nim_IP', 'nim_gateway', 'nim_subnetmask']
+            unsupportedList = [ 'nim_IP', 'nim_gateway', 'nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
+                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
 
         else:
             raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir")
-
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask']
-        unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'directory_name', 'sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
 
     elif opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
@@ -972,7 +973,7 @@ def run_module():
         required_if=[['state', 'facts', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
                      ['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
                      ['action', 'accept_license', ['hmc_host', 'hmc_auth', 'system_name', 'name']],
-                     ['action', 'install', ['hmc_host', 'hmc_auth', 'vios_IP', 'system_name', 'name']]
+                     ['action', 'install', ['hmc_host', 'hmc_auth', 'vios_IP', 'system_name', 'name']],
                      ['state', 'listimages', ['hmc_host', 'hmc_auth']],
                      ['action', 'copy', ['hmc_host', 'hmc_auth', 'remote_server', 'directory_name']],
                      ['action', 'delete', ['hmc_host', 'hmc_auth', 'directory_list']],

@@ -527,18 +527,18 @@ class Hmc():
         default_path = "/extra/viosimages/"
         installiosCmd= ''
         installiosCmd = self.CMD['INSTALLIOS'] +\
-            self.OPT['INSTALLIOS']['-d'] + default_path + image_dir + "/" + vios_iso +\
-            self.OPT['INSTALLIOS']['-i'] + vios_IP +\
-            self.OPT['INSTALLIOS']['-g'] + vios_gateway +\
+            self.OPT['INSTALLIOS']['-D'] + default_path + image_dir + "/" + vios_iso +\
+            self.OPT['INSTALLIOS']['-I'] + vios_IP +\
+            self.OPT['INSTALLIOS']['-G'] + vios_gateway +\
             self.OPT['INSTALLIOS']['-S'] + vios_subnetmask +\
-            self.OPT['INSTALLIOS']['-m'] + network_macaddr +\
+            self.OPT['INSTALLIOS']['-M'] + network_macaddr +\
             self.OPT['INSTALLIOS']['-s'] + system_name +\
-            self.OPT['INSTALLIOS']['-p'] + name +\
+            self.OPT['INSTALLIOS']['-P'] + name +\
             self.OPT['INSTALLIOS']['-r'] + prof_name
         if label is not None:
             installiosCmd+= self.OPT['INSTALLIOS']['-R'] + label
-        self.hmcconn.execute(installiosCmd)
         logger.debug(installiosCmd)
+        self.hmcconn.execute(installiosCmd)
         
         
     def getconsolelog(self, module, lpar_hmc, userid, hmc_password, systemName, lparName):

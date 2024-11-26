@@ -53,7 +53,7 @@ class HmcCommandStack():
                'RSTVIOSBK': 'rstviosbk',
                'RMVIOSBK': 'rmviosbk',
                'CHVIOSBK': 'chviosbk',
-               'INSTALLIOS': 'installios'
+               'INSTALLIOS': 'installios',
                'LSVIOSIMG': 'lsviosimg',
                'CPVIOSIMG': 'cpviosimg',
                'RMVIOSIMG': 'rmviosimg',
@@ -458,7 +458,7 @@ class HmcCommandStack():
                    'RSTVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-R': '-r '},
                    'RMVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid '},
                    'CHVIOSBK': {'-T': ' -t ', '-M': ' -m ', '-P': ' -p ', '-F': ' -f ', '--ID': '--id ', '--UUID': '--uuid ', '-O': '-o ', '-A': '-a '},
-                   'INSTALLIOS': {'-d':' -d ', '-i': ' -i ', '-g': ' -g ', '-S': ' -S ', '-m': ' -m ', '-s': ' -s ', '-p': ' -p ', '-r': ' -r ', '-R': ' -R '}
+                   'INSTALLIOS': {'-D':' -d ', '-I': ' -i ', '-G': ' -g ', '-S': ' -S ', '-M': ' -m ', '-s': ' -s ', '-P': ' -p ', '-r': ' -r ', '-R': ' -R '},
                    'CPVIOSIMG': {'-R': {'SFTP': ' -r sftp ', 'NFS': ' -r nfs '},
                                  '-N': ' -n ',
                                  '-H': ' -h ',
