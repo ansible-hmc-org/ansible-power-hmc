@@ -20,6 +20,8 @@ author:
 short_description: Creation and management of Virtual I/O Server partition
 notes:
     - Only state=present, action=install and action=accept_license operations support passwordless authentication.
+    - I(install) action parameters C(nim_gateway) and C(nim_subnetmask) will be deprecated from future versions
+      and as a replacement C(vios_gateway) and C(vios_subnetmask) can be used from now onwards.
 description:
     - "Creates VIOS partition"
     - "Installs VIOS"
@@ -53,9 +55,8 @@ options:
         type: str
     name:
         description:
-            - The name of the VirtualIOServer for installation through nim server and disk.
+            - The name of the VirtualIOServer for installation through nim server or image available on HMC local disk.
         required: true
-            - The name of the VirtualIOServer.
         type: str
     settings:
         description:
@@ -66,46 +67,14 @@ options:
         type: dict
     nim_IP:
         description:
+            - This parameter determines whether to use Network Installation Manager (NIM) rather than relying on the HMC based image for VIOS installation.
             - IP Address of the NIM Server.
-            - valid only for C(action) = I(install)
-        type: str
-    vios_gateway:
-        description:
-            - VIOS gateway IP Address.
-            - valid only for C(action) = I(install)
-            - supports installation through nim server and disk.
-        type: str
-    nim_gateway:
-        description:
-            - VIOS gateway IP Address.
-            - valid only for C(action) = I(install)
-        type: str
-    vios_IP:
-        description:
-            - IP Address to be configured to VIOS.
-            - valid only for C(action) = I(install)
-        type: str
-    prof_name:
-        description:
-            - Profile Name to be used for VIOS install.
-            - Default profile name 'default_profile'.
             - valid only for C(action) = I(install)
         type: str
     location_code:
         description:
-            - Network adapter location code to be used while installing VIOS.
+            - Network adapter location code to be used while installing VIOS through nim server.
             - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
-            - valid only for C(action) = I(install)
-        type: str
-    vios_subnetmask:
-        description:
-            - Subnetmask IP Address to be configured to VIOS.
-            - valid only for C(action) = I(install)
-            - supports installation through nim server and disk.
-        type: str
-    nim_subnetmask:
-        description:
-            - Subnetmask IP Address to be configured to VIOS.
             - valid only for C(action) = I(install)
         type: str
     nim_vlan_id:
@@ -120,6 +89,43 @@ options:
             - Default value is 0
             - valid only for C(action) = I(install)
         type: str
+    nim_gateway:
+        description:
+            - VIOS gateway IP Address.
+            - valid only for C(action) = I(install)
+            - supports installation through nim server.
+            - This parameter will be deprecated from future versions and as a replacement C(vios_gateway) can be used now onwards.
+        type: str
+    nim_subnetmask:
+        description:
+            - Subnetmask IP Address to be configured to VIOS.
+            - valid only for C(action) = I(install)
+            - supports installation through nim server.
+            - This parameter will be deprecated from future versions and as a replacement C(vios_subnetmask) can be used now onwards.
+        type: str
+    vios_gateway:
+        description:
+            - VIOS gateway IP Address.
+            - valid only for C(action) = I(install)
+            - supports installation through nim server and image available on the HMC local disk.
+        type: str
+    vios_subnetmask:
+        description:
+            - Subnetmask IP Address to be configured to VIOS.
+            - valid only for C(action) = I(install)
+            - supports installation through nim server and image available on the HMC local disk.
+        type: str
+    vios_IP:
+        description:
+            - IP Address to be configured to VIOS.
+            - valid only for C(action) = I(install)
+        type: str
+    prof_name:
+        description:
+            - Profile Name to be used for VIOS install.
+            - Default profile name 'default_profile'.
+            - valid only for C(action) = I(install)
+        type: str
     timeout:
         description:
             - Max waiting time in mins for VIOS to bootup fully.
@@ -127,6 +133,33 @@ options:
             - Default value is 60 min.
             - valid only for C(action) = I(install)
         type: int
+    image_dir:
+        description:
+            - This parameter determines whether to use the HMC based image for VIOS installation, rather than relying on the Network Installation Manager (NIM).
+            - Name of the directory on which VIOS image is available on HMC.
+            - This represent the same parameter C(directory_name) that is used during the copy action.
+            - valid only for C(action) = I(install)
+        type: str
+    label:
+        description:
+            - Specifies a label name for installed vios to use instead of creating a default label name.
+            - supports only installation through image available on the HMC local disk.
+            - valid only for C(action) = I(install)
+        required: false
+        type: str
+    network_macaddr:
+        description:
+            - Specifies the client MAC address through which the network installation of the Virtual I/O Server will take place.
+            - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
+            - valid only for C(action) = I(install)
+        type: str
+    vios_iso:
+        description:
+            - The vios iso file to be installed.
+            - supports only installation through image available on the HMC local disk.
+            - valid only for C(action) = I(install)
+        required: true
+        type: str
     virtual_optical_media:
         description:
             - Provides the virtual optical media details.
@@ -139,26 +172,6 @@ options:
             - Default value is False.
             - Valid only for C(state) = I(facts)
         type: bool
-    image_dir:
-        description:
-            - Specifies the directory on the remote server for the VIOS installation image.
-        type: str
-    label:
-        description:
-            - Specifies a label name for installed vios to use instead of creating a default label name.
-        required: false
-        type: str
-    network_macaddr:
-        description:
-            - Specifies the client MAC address through which the network installation of the Virtual I/O Server will take place.
-            - If user doesn't provide, it automatically picks the first pingable adapter attached to the partition.
-            - valid only for C(action) = I(install)
-        type: str
-    vios_iso:
-        description:
-            - The vios iso file to be installed.
-        required: true
-        type: str
     directory_name:
         description:
             - The name to give the VIOS installation image on the HMC.
@@ -269,7 +282,7 @@ EXAMPLES = '''
     nim_subnetmask: <subnetmask>
     action: install
 
-- name: Install VIOS through disk
+- name: Install VIOS using the image available on the HMC local disk
   vios:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth: 
@@ -288,7 +301,6 @@ EXAMPLES = '''
     label: <label>
     action: install
   
-
 - name: Accept License after VIOS Installation.
   vios:
     hmc_host: "{{ inventory_hostname }}"
