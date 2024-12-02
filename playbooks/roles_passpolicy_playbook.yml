@@ -7,6 +7,9 @@
     - ibm.power_hmc
   gather_facts: false
   vars_files:
-    - ../roles/password_policy/vars/secrets.yml
+    - "{{ role_path }}/vars/secrets.yml"
   roles:
     - password_policy
+    # - role: password_policy
+    #   vars:
+    #     password_policy_name: testnewfinal6

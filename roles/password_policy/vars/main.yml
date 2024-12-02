@@ -4,7 +4,7 @@
 # username of HMC that the password policy role is using
 password_policy_hmc_username: hscroot
 
-# password policy configurations for a new policy or updated password policy
+# password policy configurations for a new policy or password policy to be modified
 password_policy_configs:
       min_pwage: "2"
       pwage: "150"
@@ -13,8 +13,11 @@ password_policy_configs:
       warn_pwage: "10"
       min_digits: "2"
       min_uppercase_chars: "1"
-      min_lowercase_chars: "3"
+      min_lowercase_chars: "2"
       min_special_chars: "1"
 
 # password policy name for which we want the role to execute
-password_policy_name: testnew
+password_policy_name: testnewagain
+
+# boolean option for the users to choose if they want to change the password of the users present in the power HMC or not
+password_policy_password_change: false
