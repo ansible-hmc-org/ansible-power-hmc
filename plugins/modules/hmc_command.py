@@ -124,7 +124,7 @@ def run_module():
         hmc_host=dict(type='str', required=True),
         hmc_auth=dict(type='dict',
                       required=True,
-                    #   no_log=True,
+                      no_log=True,
                       options=dict(
                           username=dict(required=True, type='str'),
                           password=dict(type='str', no_log=True),

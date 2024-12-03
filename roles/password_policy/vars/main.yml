@@ -17,7 +17,7 @@ password_policy_configs:
       min_special_chars: "1"
 
 # password policy name for which we want the role to execute
-password_policy_name: testnewagain
+password_policy_name: testnewagain2
 
 # boolean option for the users to choose if they want to change the password of the users present in the power HMC or not
-password_policy_password_change: false
+password_policy_password_change: true

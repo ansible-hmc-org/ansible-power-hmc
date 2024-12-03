@@ -49,20 +49,15 @@
       policy_name: '{{ password_policy_name }}'
       state: activated
 
-- name: Check the list of users present in power HMC and store it in a variable
+- name: Check the list of users present in power HMC and store it in a variable excluding root, hscpe and logged in user
   ibm.power_hmc.hmc_command:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
           username: "{{ password_policy_hmc_username }}"
           password: "{{ password_policy_hmc_password }}"
-      cmd: lshmcusr -F name
+      cmd: lshmcusr -F name | grep -Ev "(root|hscpe|VALUE_SPECIFIED_IN_NO_LOG_PARAMETER\s*)$"
   when: password_policy_password_change is true
   register: userslist
-
-- name: Filter out the logged in user and the root, hscpe user from userslist
-  ansible.builtin.set_fact:
-      filtered_users: "{{ userslist.command_output | difference([password_policy_hmc_username, 'root', 'hscpe']) }}"
-  when: password_policy_password_change is true
 
 - name: Change password for all the remaining users in power HMC
   ibm.power_hmc.hmc_user:
@@ -73,5 +68,5 @@
           username: "{{ password_policy_hmc_username }}"
           password: "{{ password_policy_hmc_password }}"
       attributes: "{{ password_policy_user_password }}"
-  loop: "{{ filtered_users }}"
+  loop: "{{ userslist.command_output }}"
   when: password_policy_password_change is true
