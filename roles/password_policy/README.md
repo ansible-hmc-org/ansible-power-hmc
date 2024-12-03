@@ -44,11 +44,14 @@ Role Variables
       - min_special_chars
 
 - password_policy_user_password:
-    type: str
-    description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted vault file.
+    type: dict
+    description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted vault file. Required only when password_policy_password_change is true.
+    options:
+      - passwd
 
 - password_policy_password_change:
     type: boolean
+    required: false
     description: specifies whether to change the password for all the users in power HMC except the root, hscpe and logged in user according to the activated password policy. Default value is true.
 
 
