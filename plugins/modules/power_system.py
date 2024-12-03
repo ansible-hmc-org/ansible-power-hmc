@@ -115,8 +115,9 @@ options:
     state:
         description:
             - C(facts) fetch details of specified I(system_name)
+            - C(pcm_facts) fetch Performance and Capacity Monitoring details of specified I(system_name)
         type: str
-        choices: ['facts']
+        choices: ['facts', 'pcm_facts']
 '''
 
 EXAMPLES = '''
@@ -170,6 +171,15 @@ EXAMPLES = '''
          password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     state: facts
+
+- name: Fetch facts about monitoring metrics
+  power_system:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+         username: '{{ ansible_user }}'
+         password: '{{ hmc_password }}'
+    system_name: <managed_system_name/mtms>
+    state: pcm_facts
 
 - name: enable the long-term monitoring
   power_system:
@@ -257,6 +267,10 @@ def validate_parameters(params):
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'metrics']
         unsupportedList = ['new_name', 'power_off_policy', 'power_on_lpar_start_policy', 'requested_num_sys_huge_pages',
                            'mem_mirroring_mode', 'pend_mem_region_size']
+    elif opr == 'list_pcm':
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name']
+        unsupportedList = ['new_name', 'power_off_policy', 'power_on_lpar_start_policy', 'requested_num_sys_huge_pages',
+                           'mem_mirroring_mode', 'pend_mem_region_size', 'metrics']
     else:
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name']
         unsupportedList = ['new_name', 'power_off_policy', 'power_on_lpar_start_policy', 'requested_num_sys_huge_pages',
@@ -439,6 +453,48 @@ def fetchManagedSysDetails(module, params):
     return changed, system_prop, None
 
 
+def listPCM(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    system_name = params['system_name']
+    system_prop = None
+    system_uuid = None
+    changed = False
+    validate_parameters(params)
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+    try:
+        rest_conn = HmcRestClient(hmc_host, hmc_user, password)
+    except Exception as error:
+        error_msg = parse_error_response(error)
+        module.fail_json(msg=error_msg)
+
+    try:
+        system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
+        if not system_uuid:
+            module.fail_json(msg="Given system is not present")
+        else:
+            system_prop = rest_conn.getPCM(system_uuid, params['state'])
+    except (Exception, HmcError) as error:
+        error_msg = parse_error_response(error)
+        logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
+        module.fail_json(msg=error_msg)
+    finally:
+        try:
+            rest_conn.logoff()
+        except Exception as logoff_error:
+            error_msg = parse_error_response(logoff_error)
+            module.warn(error_msg)
+
+    return changed, system_prop, None
+
+
 def updatePCM(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -507,7 +563,8 @@ def perform_task(module):
         "modify_syscfg": modifySystemConfiguration,
         "modify_hwres": modifySystemHardwareResources,
         "enable_pcm": updatePCM,
-        "disable_pcm": updatePCM
+        "disable_pcm": updatePCM,
+        "pcm_facts": listPCM,
     }
     oper = 'action'
     if params['action'] is None:
@@ -540,7 +597,7 @@ def run_module():
         metrics=dict(type='list', elements='str', choices=['LTM', 'STM', 'AM', 'CLTM', 'EM']),
         pend_mem_region_size=dict(type='str', choices=['auto', '16', '32', '64', '128', '256']),
         action=dict(type='str', choices=['poweron', 'poweroff', 'modify_syscfg', 'modify_hwres', 'enable_pcm', 'disable_pcm']),
-        state=dict(type='str', choices=['facts']),
+        state=dict(type='str', choices=['facts', 'pcm_facts']),
     )
 
     module = AnsibleModule(
@@ -554,6 +611,7 @@ def run_module():
                      ['action', 'modify_hwres', ['hmc_host', 'hmc_auth', 'system_name']],
                      ['action', 'enable_pcm', ['hmc_host', 'hmc_auth', 'system_name', 'metrics']],
                      ['action', 'disable_pcm', ['hmc_host', 'hmc_auth', 'system_name', 'metrics']],
+                     ['state', 'pcm_facts', ['hmc_host', 'hmc_auth', 'system_name']],
                      ],
     )
 
