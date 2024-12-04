@@ -425,7 +425,7 @@ def validate_parameters(params):
 
     if opr == 'install':
         if params['nim_IP'] and params['image_dir']:
-            raise ParameterError("Cannot provide both nim_IP and image_dir. Provide one of them.")
+            raise ParameterError("nim_IP and image_dir are mutually exclusive.")
         
         elif params['nim_IP'] and not params['image_dir']:
             if params['nim_gateway'] and params['nim_subnetmask']:
@@ -445,7 +445,7 @@ def validate_parameters(params):
                 unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
                            'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
             else:
-                raise ParameterError("Provide 'nim_gateway'/'vios_gateway' and 'nim_subnetmask'/'vios_subnetmask'")
+                raise ParameterError("Provide gateway and subnetmask details")
             
         elif params['image_dir'] and not params['nim_IP']:
             mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'vios_gateway', 'vios_subnetmask', 'system_name', 'name']
@@ -453,7 +453,7 @@ def validate_parameters(params):
                            'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
 
         else:
-            raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir")
+            raise ParameterError("Provide either nim_IP or image_dir for vios installation")
 
     elif opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
@@ -768,6 +768,15 @@ def installViosUsingDisk(module, params):
     if timeout < 10:
         module.fail_json(msg="timeout should be more than 10mins")
     try:
+        image = hmc.listViosImages()
+        logger.debug(image)
+        if image_dir != image[0]['NAME']:
+            module.exit_json(changed=False, msg=f"The VIOS directory with name '{image_dir}' doesn't exist.")
+        else:
+            if vios_iso not in (image[0]['IMAGE_FILES']).split(','):
+                module.exit_json(changed=False, msg=f"'{vios_iso}' is not available in image_dir location.")
+            elif vios_iso == 'flash.iso':
+                module.exit_json(changed=False, msg=f"flash.iso is not a valid iso to copy. Please check if your iso file has been copied completely to the HMC.")
         if network_macaddr:
             hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label)
         else:
@@ -810,12 +819,12 @@ def install(module, params):
     
     if image_dir:
         changed, vios_property, warn_msg = installViosUsingDisk(module, params)
-        
+               
     elif nim_IP:
         changed, vios_property, warn_msg = installViosUsingNim(module, params)
       
     else:
-        raise ParameterError("Provide atleast one parameter out of nim_IP and image_dir to perform vios installation")
+        raise ParameterError("Provide either nim_IP or image_dir to perform vios installation")
     
     return changed, vios_property, warn_msg
 

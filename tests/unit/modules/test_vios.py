@@ -201,7 +201,7 @@ test_data1 = [
       'nim_gateway': 'ab', 'vios_IP': 'bc', 'nim_subnetmask': 'cd', 'prof_name': 'ef',
       'location_code': 'fg', 'nim_vlan_id': 'dh', 'nim_vlan_priority': 'hi', 'timeout': 'ij',
       'virtual_optical_media': False, 'free_pvs': True},
-     "ParameterError: unsupported parameter: free_pvs")
+     "ParameterError: unsupported parameter: free_pvs"),
      # unsupported parameter img_dir
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
       'system_name': 'sysName', 'name': 'viosName', 'settings': None, 'nim_IP': '1.1.1.1',
@@ -501,13 +501,13 @@ test_data4 = [
       'system_name': 'hmc-zz', 'vios_name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest', 'nim_IP': '1.1.1.1'},
-     "ParameterError: unsupported parameter: nim_IP ")
+     "ParameterError: unsupported parameter: nim_IP "),
      # unsupported parameter nim_gateway
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
       'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4',
       'prof_name': 'default', 'label': 'viostest', 'nim_gateway': '1.1.1.1'},
-     "ParameterError: unsupported parameter: nim_gateway ")
+     "ParameterError: unsupported parameter: nim_gateway "),
      # unsupported parameter nim_subnetmask
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
       'system_name': 'hmc-zz', 'name': 'lpar1', 'img_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
