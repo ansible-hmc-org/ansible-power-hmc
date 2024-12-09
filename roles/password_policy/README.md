@@ -21,7 +21,7 @@ Role Variables
 - password_policy_hmc_password:
     type: str
     required: true
-    description: specifies the logged in user's HMC password. For security purposes, it is highly recommended to store this sensitive information in an encrypted vault file.
+    description: specifies the logged in user's HMC password. For security purposes, it is highly recommended to store this sensitive information in an encrypted secret vault file.
 
 - password_policy_name:
     type: str
@@ -45,7 +45,7 @@ Role Variables
 
 - password_policy_user_password:
     type: dict
-    description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted vault file. Required only when password_policy_password_change is true.
+    description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted secret vault file. Required only when password_policy_password_change is true.
     options:
       - passwd
 
@@ -62,14 +62,28 @@ None
 
 Example Playbook
 ----------------
-- name: HMC Password Policy Management
-  hosts: localhost
+- name: Create/update/apply a password policy, and modify the credentials of the local power HMC users if desired
+  hosts: hmcs
+  connection: local
+  collections:
+    - ibm.power_hmc
   gather_facts: false
   vars_files:
-    - <secret_vars_path>
+    - <secretvault_file_path>
   roles:
-    - <role_name>
-
+    - role: password_policy
+      vars:
+        password_policy_name: <password_policy_name>
+        password_policy_configs:
+            min_pwage: <min_password_age>
+            pwage: <password_age>
+            min_length: <min_pass_length>
+            hist_size: <history_size>
+            warn_pwage: <warning_password_age>
+            min_digits: <min_digits>
+            min_uppercase_chars: <min_uppercase_chars>
+            min_lowercase_chars: <min_lowercase_chars>
+            min_special_chars: <min_special_chars>
 
 License
 -------

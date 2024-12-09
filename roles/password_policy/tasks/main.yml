@@ -18,7 +18,7 @@
       policy_type: policies
   register: policy_check
 
-- name: Create a new password policy in power HMC if the policy name doesn't already exists
+- name: Create a new password policy in power HMC if the policy name doesn't exist
   ibm.power_hmc.hmc_pwdpolicy:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
