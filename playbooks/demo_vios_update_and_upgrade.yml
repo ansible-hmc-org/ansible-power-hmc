@@ -1,4 +1,4 @@
-- name: HMC VIOS update and upgrade
+- name: Demonstration of upgrading the VIOS version to 4.1.0.10 and then updating the minor patch version 4.1.0.21
   hosts: hmcs
   connection: local
   vars:
@@ -22,7 +22,7 @@
             system_name: hmc-zz1
           state: facts
 
-      - name: Update the VIOS version to 4.1.0.10 using a VIOS update image from an NFS file system
+      - name: Upgarde the VIOS version from 3.1.0.21 to 4.1.0.10 using a VIOS update image from NFS
         ibm.power_hmc.vios_update_upgrade:
           hmc_host: '{{ inventory_hostname }}'
           hmc_auth: '{{ curr_hmc_auth }}'
@@ -30,7 +30,7 @@
             repository: nfs
             system_name: hmc-zz1
             vios_name: hmc-zz1-vios1
-            host_name: hmc-driver.rch.tadn.ibm.com
+            host_name: <nfs server>
             mount_loc: /HMCImages/vios-test
             save: true
             image_name: test
@@ -38,7 +38,7 @@
               - H88366311.iso
           state: updated
         
-      - name: Upgrade the VIOS version to 4.1.0.21 using a VIOS update image from an NFS file system
+      - name: Update the VIOS version to 4.1.0.21 using a VIOS update image from NFS
         ibm.power_hmc.vios_update_upgrade:
           hmc_host: '{{ inventory_hostname }}'
           hmc_auth: '{{ curr_hmc_auth }}'
@@ -46,7 +46,7 @@
             repository: nfs
             system_name: hmc-alpine4-fsp
             vios_name: hmc-alpine4-vios1
-            host_name: hmc-driver.rch.tadn.ibm.com
+            host_name: <nfs server>
             mount_loc: /HMCImages/vios-test
             files:
               - H06412454.iso
