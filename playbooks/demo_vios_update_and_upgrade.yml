@@ -18,8 +18,8 @@
           hmc_host: '{{ inventory_hostname }}'
           hmc_auth: '{{ curr_hmc_auth }}'
           attributes:
-            vios_name: hmc-zz1-vios1
-            system_name: hmc-zz1
+            vios_name: <vios-name>
+            system_name: <system-name>
           state: facts
 
       - name: Upgarde the VIOS version from 3.1.0.21 to 4.1.0.10 using a VIOS update image from NFS
@@ -28,15 +28,16 @@
           hmc_auth: '{{ curr_hmc_auth }}'
           attributes:
             repository: nfs
-            system_name: hmc-zz1
-            vios_name: hmc-zz1-vios1
+            system_name: <system-name>
+            vios_name: <vios-name>
             host_name: <nfs server>
-            mount_loc: /HMCImages/vios-test
-            save: true
-            image_name: test
+            mount_loc: /extras/viosimages
+            options: 4
             files:
-              - H88366311.iso
-          state: updated
+              - dvdimage.v1.iso
+            disks:
+              - hdisk5
+          state: upgraded
         
       - name: Update the VIOS version to 4.1.0.21 using a VIOS update image from NFS
         ibm.power_hmc.vios_update_upgrade:
@@ -44,12 +45,11 @@
           hmc_auth: '{{ curr_hmc_auth }}'
           attributes:
             repository: nfs
-            system_name: hmc-alpine4-fsp
-            vios_name: hmc-alpine4-vios1
+            system_name: <system-name>
+            vios_name: <vios-name>
             host_name: <nfs server>
-            mount_loc: /HMCImages/vios-test
+            mount_loc: /extras/viosimages
+            directory: vios/update/VIOS_FP_3.1.3.14
             files:
               - H06412454.iso
-            disks:
-              - hdisk5
-          state: upgraded
+          state: updated
