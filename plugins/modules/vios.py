@@ -20,7 +20,7 @@ author:
 short_description: Creation and management of Virtual I/O Server partition
 notes:
     - Only state=present, action=install and action=accept_license operations support passwordless authentication.
-    - I(install) action parameters C(nim_gateway) and C(nim_subnetmask) will be deprecated from future versions
+    - I(install) action parameters C(nim_gateway) and C(nim_subnetmask) are deprecated now and will be removed from future versions
       and as a replacement C(vios_gateway) and C(vios_subnetmask) can be used from now onwards.
 description:
     - "Creates VIOS partition"
@@ -94,14 +94,14 @@ options:
             - VIOS gateway IP Address.
             - valid only for C(action) = I(install)
             - supports installation through nim server.
-            - This parameter will be deprecated from future versions and as a replacement C(vios_gateway) can be used now onwards.
+            - This parameter is deprecated now and will be removed from future versions and as a replacement C(vios_gateway) can be used now onwards.
         type: str
     nim_subnetmask:
         description:
             - Subnetmask IP Address to be configured to VIOS.
             - valid only for C(action) = I(install)
             - supports installation through nim server.
-            - This parameter will be deprecated from future versions and as a replacement C(vios_subnetmask) can be used now onwards.
+            - This parameter is deprecated now and will be removed from future versions and as a replacement C(vios_subnetmask) can be used now onwards.
         type: str
     vios_gateway:
         description:
@@ -285,7 +285,7 @@ EXAMPLES = '''
 - name: Install VIOS using the image available on the HMC local disk
   vios:
     hmc_host: '{{ inventory_hostname }}'
-    hmc_auth: 
+    hmc_auth:
         username: '{{ ansible_user }}'
         password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
@@ -300,7 +300,7 @@ EXAMPLES = '''
     timeout: <timeout>
     label: <label>
     action: install
-  
+
 - name: Accept License after VIOS Installation.
   vios:
     hmc_host: "{{ inventory_hostname }}"
@@ -426,32 +426,34 @@ def validate_parameters(params):
     if opr == 'install':
         if params['nim_IP'] and params['image_dir']:
             raise ParameterError("nim_IP and image_dir are mutually exclusive.")
-        
         elif params['nim_IP'] and not params['image_dir']:
             if params['nim_gateway'] and params['nim_subnetmask']:
-                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','nim_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway', 'vios_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask', 'nim_gateway', 'name']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'vios_iso', 'image_dir', 'network_macaddr', 'label',
+                                   'vios_gateway', 'vios_subnetmask', 'sftp_auth', 'remote_server', 'files', 'mount_location',
+                                   'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media','directory_name']
             elif params['nim_gateway'] and params['vios_subnetmask']:
-                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','nim_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','vios_gateway','nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask', 'nim_gateway', 'name']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'vios_iso', 'image_dir', 'network_macaddr', 'label',
+                                   'vios_gateway', 'nim_subnetmask', 'sftp_auth', 'remote_server', 'files', 'mount_location',
+                                   'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media', 'directory_name']
             elif params['vios_gateway'] and params['nim_subnetmask']:
-                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask','vios_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','vios_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'nim_subnetmask', 'vios_gateway', 'name']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label',
+                                   'nim_gateway', 'vios_subnetmask', 'sftp_auth', 'remote_server', 'files', 'mount_location',
+                                   'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media', 'directory_name']
             elif params['vios_gateway'] and params['vios_subnetmask']:
-                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','vios_gateway', 'name' ]
-                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs','vios_iso', 'image_dir', 'network_macaddr', 'label','nim_gateway','nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
+                mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'nim_IP', 'vios_IP', 'vios_subnetmask','vios_gateway', 'name']
+                unsupportedList = ['settings', 'virtual_optical_media', 'free_pvs', 'vios_iso', 'image_dir', 'network_macaddr', 'label',
+                                   'nim_gateway', 'nim_subnetmask', 'sftp_auth', 'remote_server', 'files', 'mount_location',
+                                   'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media', 'directory_name']
             else:
                 raise ParameterError("Provide gateway and subnetmask details")
-            
         elif params['image_dir'] and not params['nim_IP']:
             mandatoryList = ['hmc_host', 'hmc_auth', 'vios_iso', 'image_dir', 'vios_IP', 'vios_gateway', 'vios_subnetmask', 'system_name', 'name']
-            unsupportedList = [ 'nim_IP', 'nim_gateway', 'nim_subnetmask','sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media']
-
+            unsupportedList = ['nim_IP', 'nim_gateway', 'nim_subnetmask','directory_name','sftp_auth', 'remote_server', 'files', 'mount_location',
+                               'ssh_key_file', 'remote_directory', 'options', 'directory_list', 'media','settings', 'virtual_optical_media', 
+                               'free_pvs','location_code', 'nim_vlan_id', 'nim_vlan_priority']
         else:
             raise ParameterError("Provide either nim_IP or image_dir for vios installation")
 
@@ -459,12 +461,14 @@ def validate_parameters(params):
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name',
                            'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'virtual_optical_media', 'free_pvs', 'directory_name',
-                           'directory_list', 'sftp_auth', 'remote_server', 'files', 'mount_location', 'ssh_key_file', 'remote_directory', 'options', 'media']
+                           'directory_list', 'sftp_auth', 'remote_server', 'files', 'mount_location', 'ssh_key_file', 'remote_directory', 'options', 'media',
+                           'vios_iso', 'image_dir', 'vios_gateway', 'vios_subnetmask']
     elif opr == 'accept_license':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
                            'timeout', 'settings', 'virtual_optical_media', 'free_pvs', 'directory_name', 'directory_list', 'sftp_auth', 'remote_server',
-                           'files', 'mount_location', 'ssh_key_file', 'remote_directory', 'options', 'media']
+                           'files', 'mount_location', 'ssh_key_file', 'remote_directory', 'options', 'media',
+                           'vios_iso', 'image_dir', 'vios_gateway', 'vios_subnetmask']
     elif opr == 'copy':
         if not params['media']:
             raise ParameterError("mandatory parameter 'media' is missing")
@@ -479,35 +483,36 @@ def validate_parameters(params):
             sftp_password = sftp_auth.get('sftp_password')
             ssh_key_file = params.get('ssh_key_file')
             if sftp_password and ssh_key_file:
-                raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exculsive")
+                raise ParameterError("Parameters 'sftp_password' and 'ssh_key_file' are mutually exclusive")
             elif not sftp_password and not ssh_key_file:
                 raise ParameterError("Please provide either 'sftp_password' or 'ssh_key_file' for authentication.")
             mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name', 'remote_server', 'files']
             unsupportedList = ['system_name', 'directory_list', 'name', 'mount_location', 'options', 'nim_IP', 'nim_gateway', 'vios_IP',
                                'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings',
-                               'virtual_optical_media', 'free_pvs']
+                               'virtual_optical_media', 'free_pvs','image_dir','vios_iso', 'vios_gateway', 'vios_subnetmask']
         elif media == 'nfs':
             mandatoryList = ['hmc_host', 'hmc_auth', 'directory_name', 'remote_server', 'files', 'mount_location']
             unsupportedList = ['sftp_auth', 'directory_list', 'ssh_key_file', 'system_name', 'name', 'nim_IP', 'nim_gateway', 'vios_IP',
                                'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings',
-                               'virtual_optical_media', 'free_pvs']
+                               'virtual_optical_media', 'free_pvs','image_dir','vios_iso', 'vios_gateway', 'vios_subnetmask']
 
     elif opr == 'listimages':
         mandatoryList = ['hmc_host', 'hmc_auth']
         unsupportedList = ['ssh_key_file', 'remote_directory', 'directory_name', 'directory_list', 'sftp_auth', 'remote_server', 'files',
                            'system_name', 'name', 'mount_location', 'options', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name',
                            'location_code', 'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings', 'virtual_optical_media', 'free_pvs',
-                           'media']
+                           'media','image_dir','vios_iso', 'vios_gateway', 'vios_subnetmask']
     elif opr == 'delete':
         mandatoryList = ['hmc_host', 'hmc_auth', 'directory_list']
         unsupportedList = ['ssh_key_file', 'remote_directory', 'sftp_auth', 'directory_name', 'remote_server', 'files', 'system_name', 'name',
                            'mount_location', 'options', 'nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code',
-                           'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings', 'virtual_optical_media', 'free_pvs', 'media']
+                           'nim_vlan_id', 'nim_vlan_priority', 'timeout', 'settings', 'virtual_optical_media', 'free_pvs', 'media',
+                           'image_dir','vios_iso', 'vios_gateway', 'vios_subnetmask']
     else:
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'name']
         unsupportedList = ['nim_IP', 'nim_gateway', 'vios_IP', 'nim_subnetmask', 'prof_name', 'location_code', 'nim_vlan_id', 'nim_vlan_priority',
                            'timeout', 'settings', 'directory_name', 'directory_list', 'sftp_auth', 'remote_server', 'files', 'mount_location',
-                           'ssh_key_file', 'remote_directory', 'options', 'media']
+                           'ssh_key_file', 'remote_directory', 'options', 'media','image_dir','vios_iso', 'vios_gateway', 'vios_subnetmask']
 
     collate = []
     for eachMandatory in mandatoryList:
@@ -696,7 +701,7 @@ def installViosUsingNim(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    name = params['name'] 
+    name = params['name']
     nim_IP = params['nim_IP']
     nim_gateway = params['nim_gateway'] or params['vios_gateway']
     vios_IP = params['vios_IP']
@@ -725,7 +730,7 @@ def installViosUsingNim(module, params):
                     location_code = dvcdict['Location Code']
                     break
             if location_code:
-                hmc.installOSFromNIM(location_code, nim_IP, nim_gateway, vios_IP, nim_vlan_id, nim_vlan_priority,nim_subnetmask,
+                hmc.installOSFromNIM(location_code, nim_IP, nim_gateway, vios_IP, nim_vlan_id, nim_vlan_priority, nim_subnetmask,
                                      name, prof_name, system_name)
             else:
                 module.fail_json(msg="None of adapters part of the profile is reachable through network. Please attach correct network adapter")
@@ -743,6 +748,7 @@ def installViosUsingNim(module, params):
 
     return changed, vios_property, warn_msg
 
+
 def installViosUsingDisk(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -753,7 +759,7 @@ def installViosUsingDisk(module, params):
     vios_gateway = params['vios_gateway']
     vios_subnetmask = params['vios_subnetmask']
     network_macaddr = params['network_macaddr']
-    system_name= params['system_name']
+    system_name = params['system_name']
     name = params['name']
     prof_name = params['prof_name'] or 'default_profile'
     label = params['label']
@@ -764,7 +770,7 @@ def installViosUsingDisk(module, params):
     changed = False
     vios_property = None
     warn_msg = None
-    
+
     if timeout < 10:
         module.fail_json(msg="timeout should be more than 10mins")
     try:
@@ -774,9 +780,9 @@ def installViosUsingDisk(module, params):
             module.exit_json(changed=False, msg=f"The VIOS directory with name '{image_dir}' doesn't exist.")
         else:
             if vios_iso not in (image[0]['IMAGE_FILES']).split(','):
-                module.exit_json(changed=False, msg=f"'{vios_iso}' is not available in image_dir location.")
+                module.exit_json(changed=False, msg=f"The '{vios_iso}' is not available in image_dir location.")
             elif vios_iso == 'flash.iso':
-                module.exit_json(changed=False, msg=f"flash.iso is not a valid iso to copy. Please check if your iso file has been copied completely to the HMC.")
+                module.exit_json(changed=False, msg=f"flash.iso is not a valid iso to copy.Please check if your iso file has been copied completely to the HMC.")
         if network_macaddr:
             hmc.installOSFromDisk(vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label)
         else:
@@ -802,8 +808,9 @@ def installViosUsingDisk(module, params):
 
     except HmcError as install_error:
         return False, repr(install_error), None
-    
+
     return changed, vios_property, warn_msg
+
 
 def install(module, params):
     hmc_host = params['hmc_host']
@@ -816,17 +823,18 @@ def install(module, params):
     changed = False
     vios_property = None
     warn_msg = None
-    
+
     if image_dir:
         changed, vios_property, warn_msg = installViosUsingDisk(module, params)
-               
+        
     elif nim_IP:
         changed, vios_property, warn_msg = installViosUsingNim(module, params)
-      
+ 
     else:
         raise ParameterError("Provide either nim_IP or image_dir to perform vios installation")
-    
+
     return changed, vios_property, warn_msg
+
 
 def viosLicenseAccept(module, params):
     hmc_host = params['hmc_host']
