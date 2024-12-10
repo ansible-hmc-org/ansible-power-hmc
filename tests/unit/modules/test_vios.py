@@ -35,7 +35,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_IP"),
     # unsupported parameter nim_gateway
@@ -44,7 +44,7 @@ test_data = [
       'nim_gateway': '1.1.1.1', 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
-      'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None, 'vios_iso': None, 'image_dir': None, 
+      'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None,
       'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None},
      "ParameterError: unsupported parameter: nim_gateway"),
@@ -55,7 +55,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: vios_IP"),
     # unsupported parameter nim_subnetmask
@@ -65,7 +65,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_subnetmask"),
     # unsupported parameter prof_name
@@ -75,7 +75,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: prof_name"),
     # unsupported parameter location_code
@@ -85,7 +85,7 @@ test_data = [
       'location_code': 'abc:xyz:123', 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: location_code"),
     # unsupported parameter nim_vlan_id
@@ -95,7 +95,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': '2', 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_id"),
     # unsupported parameter nim_vlan_priority
@@ -105,7 +105,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': '2', 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_priority"),
     # unsupported parameter timeout
@@ -115,7 +115,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': 50,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: timeout"),
     # unsupported parameter virtual_optical_media
@@ -125,7 +125,7 @@ test_data = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': True, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: virtual_optical_media")]
 
@@ -194,7 +194,7 @@ test_data1 = [
       'location_code': 'fg', 'nim_vlan_id': 'dh', 'nim_vlan_priority': 'hi', 'timeout': 'ij',
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'image_dir': None,
       'vios_iso': None, 'vios_subnetmask': None, 'vios_gateway': None, 'network_macaddr': None,
       'label': None},
      "ParameterError: unsupported parameter: settings"),
@@ -205,7 +205,7 @@ test_data1 = [
       'location_code': 'fg', 'nim_vlan_id': 'dh', 'nim_vlan_priority': 'hi', 'timeout': 'ij',
       'virtual_optical_media': True, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'image_dir': None,
       'vios_iso': None, 'vios_subnetmask': None, 'vios_gateway': None, 'network_macaddr': None,
       'label': None},
      "ParameterError: unsupported parameter: virtual_optical_media"),
@@ -217,9 +217,9 @@ test_data1 = [
       'virtual_optical_media': False, 'free_pvs': True, 'image_dir': None, 'vios_iso': None, 'media': None,
       'vios_subnetmask': None, 'vios_gateway': None, 'network_macaddr': None, 'sftp_auth': None,
       'files': None, 'mount_location': None, 'ssh_key_file': None, 'remote_directory': None, 'options': None,
-      'label': None, 'remote_server': None, 'directory_name': None, 'directory_list': None,},
+      'label': None, 'remote_server': None, 'directory_name': None, 'directory_list': None},
      "ParameterError: unsupported parameter: free_pvs"),
-     # Both image_dir and nim_ip are provided
+    # Both image_dir and nim_ip are provided
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'action': 'install', 'state': None,
       'system_name': 'sysName', 'name': 'viosName', 'settings': None, 'nim_IP': '1.1.1.1',
       'nim_gateway': 'ab', 'vios_IP': 'bc', 'nim_subnetmask': 'cd', 'prof_name': 'ef',
@@ -262,7 +262,7 @@ test_data2 = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None, 'image_dir': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None,
       'vios_iso': None, 'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_gateway"),
     # unsupported parameter viosIP
@@ -282,7 +282,7 @@ test_data2 = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None, 'image_dir': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None,
       'vios_iso': None, 'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_subnetmask"),
     # unsupported parameter prof_name
@@ -292,7 +292,7 @@ test_data2 = [
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
       'virtual_optical_media': False, 'free_pvs': False, 'directory_name': None, 'directory_list': None,
       'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None, 'image_dir': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None,
       'vios_iso': None, 'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: prof_name"),
     # unsupported parameter location_code
@@ -370,7 +370,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_IP"),
     # unsupported parameter nim_gateway
@@ -379,7 +379,7 @@ test_data3 = [
       'nim_gateway': '1.1.1.1', 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_gateway"),
     # unsupported parameter nim_viosIP
@@ -388,7 +388,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': '1.1.1.1', 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: vios_IP"),
     # unsupported parameter nim_subnetmask
@@ -397,7 +397,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': '255.255.256.254', 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_subnetmask"),
     # unsupported parameter prof_name
@@ -406,7 +406,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': 'pfnam',
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: prof_name"),
     # unsupported parameter location_code
@@ -415,7 +415,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': 'abc:xyz:123', 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: location_code"),
     # unsupported parameter nim_vlan_id
@@ -424,7 +424,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': '2', 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_id"),
     # unsupported parameter nim_vlan_priority
@@ -433,7 +433,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': '2', 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_priority"),
     # unsupported parameter timeout
@@ -442,7 +442,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': 50, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: timeout"),
     # unsupported parameter settings
@@ -451,7 +451,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: settings"),
     # unsupported parameter virtual_optical_media
@@ -460,7 +460,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': True, 'free_pvs': False,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: virtual_optical_media"),
     # unsupported parameter free_pvs
@@ -469,7 +469,7 @@ test_data3 = [
       'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None,
       'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None, 'virtual_optical_media': False, 'free_pvs': True,
       'directory_name': None, 'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: free_pvs")]
 
@@ -540,9 +540,9 @@ test_data4 = [
       'system_name': 'hmc-zz', 'name': 'lpar1', 'image_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4', 'timeout': '60',
       'prof_name': 'default', 'label': 'viostest', 'nim_gateway': '1.1.1.1', 'nim_IP': None, 'settings': None,
-      'nim_subnetmask': None, 'directory_name': None, 'virtual_optical_media': False, 'free_pvs': False, 
+      'nim_subnetmask': None, 'directory_name': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None,
       'nim_vlan_id': None, 'nim_vlan_priority': None},
      "ParameterError: unsupported parameter: nim_gateway"),
     # unsupported parameter nim_subnetmask
@@ -550,19 +550,19 @@ test_data4 = [
       'system_name': 'hmc-zz', 'name': 'lpar1', 'image_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4', 'timeout': '60',
       'prof_name': 'default', 'label': 'viostest', 'nim_subnetmask': '1.1.1.1', 'nim_IP': None, 'settings': None,
-      'nim_gateway': None, 'directory_name': None, 'virtual_optical_media': False, 'free_pvs': False, 
+      'nim_gateway': None, 'directory_name': None, 'virtual_optical_media': False, 'free_pvs': False,
       'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None,
       'nim_vlan_id': None, 'nim_vlan_priority': None},
      "ParameterError: unsupported parameter: nim_subnetmask"),
     # unsupported parameter directory_name
-     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'action': 'install', 'state': None, 'vios_iso': 'flash.iso',
       'system_name': 'hmc-zz', 'name': 'lpar1', 'image_dir': 'myvios', 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4', 'nim_IP': None,
       'prof_name': 'default', 'label': 'viostest', 'nim_subnetmask': None, 'nim_gateway': None, 'settings': None,
-      'directory_name': 'vios_dir', 'nim_IP': None, 'timeout': '60', 'virtual_optical_media': False, 'free_pvs': False, 
+      'directory_name': 'vios_dir', 'timeout': '60', 'virtual_optical_media': False, 'free_pvs': False,
       'directory_list': None, 'sftp_auth': None, 'remote_server': None, 'files': None, 'mount_location': None,
-      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None, 
+      'ssh_key_file': None, 'remote_directory': None, 'options': None, 'media': None, 'location_code': None,
       'nim_vlan_id': None, 'nim_vlan_priority': None},
      "ParameterError: unsupported parameter: directory_name"),
     # missing both nim_IP and img_dir
@@ -570,10 +570,9 @@ test_data4 = [
       'system_name': 'hmc-zz', 'name': 'lpar1', 'image_dir': None, 'network_macaddr': 'tdbvw45rdvt',
       'vios_gateway': '1.1.1.1', 'vios_IP': '12.13.14.15', 'vios_subnetmask': '2.5.5.4', 'timeout': '60',
       'prof_name': 'default', 'label': 'viostest', 'nim_IP': None},
-     "ParameterError: Provide either nim_IP or image_dir for vios installation")
-    ]
+     "ParameterError: Provide either nim_IP or image_dir for vios installation")]
 
-test_data5=[
+test_data5 = [
     # ALL Copy Vios Image via SFTP and NFS testdata
     # media param is missing
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'copy',
@@ -629,7 +628,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0",
       'ssh_key_file': '/home/hmcuser/keys/id_rsa', 'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None,
       'nim_IP': None, 'nim_gateway': None, 'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': None,
-      'nim_vlan_priority': None, 'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'nim_vlan_priority': None, 'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: ssh_key_file"),
     # unsupported param nim_IP
@@ -659,7 +658,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': '8.8.8.8', 'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None,
-      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_subnetmask"),
     # unsupported param prof_name
@@ -667,7 +666,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': 'prfname', 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None,
-      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: prof_name"),
     # unsupported param location_code
@@ -675,7 +674,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': '121', 'nim_vlan_id': None, 'nim_vlan_priority': None,
-      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: location_code"),
     # unsupported param nim_vlan_id
@@ -683,7 +682,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': 1, 'nim_vlan_priority': None, 'timeout': None,
-      'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_id"),
     # unsupported param nim_vlan_priority
@@ -691,7 +690,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': 1, 'timeout': None,
-      'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'settings': None, 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: nim_vlan_priority"),
     # unsupported param timeout
@@ -706,7 +705,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None, 'timeout': None,
-      'settings': 'settings', 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'settings': 'settings', 'virtual_optical_media': None, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: settings"),
     # unsupported param virtual_optical_media
@@ -714,7 +713,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None,
-      'timeout': None, 'settings': None, 'virtual_optical_media': True, "free_pvs": None, 'vios_iso': None, 'image_dir': None, 
+      'timeout': None, 'settings': None, 'virtual_optical_media': True, "free_pvs": None, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: virtual_optical_media"),
     # unsupported param free_pvs
@@ -722,7 +721,7 @@ test_data5=[
       'media': 'nfs', 'directory_name': 'test', 'sftp_auth': None, 'mount_location': '/images', 'remote_server': "0.0.0.0", 'ssh_key_file': None,
       'files': ['flash.iso'], 'system_name': None, 'directory_list': None, 'name': None, 'options': None, 'nim_IP': None, 'nim_gateway': None,
       'vios_IP': None, 'nim_subnetmask': None, 'prof_name': None, 'location_code': None, 'nim_vlan_id': None, 'nim_vlan_priority': None,
-      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": True, 'vios_iso': None, 'image_dir': None, 
+      'timeout': None, 'settings': None, 'virtual_optical_media': None, "free_pvs": True, 'vios_iso': None, 'image_dir': None,
       'vios_gateway': None, 'vios_subnetmask': None},
      "ParameterError: unsupported parameter: free_pvs"),
 ]
