@@ -811,9 +811,6 @@ def installViosUsingDisk(module, params):
 
 
 def install(module, params):
-    hmc_host = params['hmc_host']
-    hmc_user = params['hmc_auth']['username']
-    password = params['hmc_auth']['password']
     nim_IP = params['nim_IP']
     image_dir = params['image_dir']
     changed = False
