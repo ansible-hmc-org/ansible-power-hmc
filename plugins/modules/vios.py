@@ -816,8 +816,6 @@ def install(module, params):
     password = params['hmc_auth']['password']
     nim_IP = params['nim_IP']
     image_dir = params['image_dir']
-    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
-    hmc = Hmc(hmc_conn)
     changed = False
     vios_property = None
     warn_msg = None
