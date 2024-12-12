@@ -1,9 +1,9 @@
 Role Name
 =========
-This role is named as Password Policy management for power HMC. The scope of this role encompasses managing typical password policy requirements for the client's power Hardware Management Console (HMC). 
-Key responsibilities include:Creating and enforcing new password policies across multiple HMCs
-Applying new password policy configurations to existing policies
-Updating credentials for all locally authenticated HMC users except root and hscpe to comply with new policy
+This role is named as Password Policy management for power HMC. The scope of this role encompasses managing typical password policy requirements for the client's power Hardware Management Console (HMC). Key responsibilities include:
+- Creating and enforcing new password policies across multiple HMCs
+- Applying new password policy configurations to existing policies
+- Updating credentials for all locally authenticated HMC users except root and hscpe to comply with new policy
 
 
 Requirements
