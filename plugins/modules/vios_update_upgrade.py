@@ -19,7 +19,7 @@ notes:
 description:
     - Updates the VIOS by installing the VIOS installation image located on an NFS/SFTP/HMC hard disk.
     - Upgrades the VIOS by obtaining  the required  files  from NFS/SFTP/HMC hard disk.
-    - Update the VIOS from IBM Fix Central website
+    - Update the VIOS from IBM Fix Central website.
 version_added: 1.0.0
 options:
     hmc_host:
@@ -51,9 +51,9 @@ options:
             repository:
                 description:
                     - The repository that contains the VIOS installation image.
-                    - Valid values are C(sftp)for a secure FTP server, C(ibmwebsite) for the IBM Fix Central website,
+                    - Valid values are C(sftp) for a secure FTP server, C(ibmwebsite) for the IBM Fix Central website,
                       C(nfs) for an NFS file system, C(disk) for the Hardware Management Console (HMC).
-                    - C(ibmwebsite) is only valid for updation of VIOS
+                    - C(ibmwebsite) is only valid for updating of VIOS.
                 type: str
                 choices: ['nfs', 'sftp', 'disk', 'ibmwebsite']
             system_name:
@@ -62,12 +62,12 @@ options:
                 type: str
             vios_id:
                 description:
-                    - The ID of the VIOS to backup.
+                    - The ID of the VIOS to update/upgrade.
                       C(vios_id) and C(vios_name) are mutually exclusive.
                 type: str
             vios_name:
                 description:
-                    - The name of the VIOS to backup.
+                    - The name of the VIOS to update/upgrade.
                       C(vios_id) and C(vios_name) are mutually exclusive.
                 type: str
             image_name:
@@ -80,8 +80,8 @@ options:
                 type: str
             files:
                 description:
-                    - The list of the files that is required for update/upgrade
-                    - This option is required and only valid when the VIOS update/upgrade image is on a remote server.
+                    - The list of the files that is required for update/upgrade.
+                    - This option is required and only valid when the VIOS update/upgrade image is on SFTP/NFS remote server.
                 type: list
                 elements: str
             host_name:
@@ -95,12 +95,12 @@ options:
             password:
                 description:
                     - The password to use to log in to the remote SFTP server.
-                    - password, ssh_key_file are mutually exclusive.
+                    - C(password), C(ssh_key_file) are mutually exclusive.
                 type: str
             ssh_key_file:
                 description:
                     - The name of the file that contains the SSH private key.
-                    - password, ssh_key_file are mutually exclusive.
+                    - C(password), C(ssh_key_file) are mutually exclusive.
                 type: str
             mount_loc:
                 description:
@@ -150,7 +150,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: Get the current version of VIOS
+- name: Get the current version of VIOS.
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
     hmc_auth:
@@ -161,7 +161,7 @@ EXAMPLES = '''
       system_name: <sys/MTMS>
     state: facts
 
-- name: Update the VIOS from the HMC using the image available on remote SFTP server
+- name: Update the VIOS from the HMC using the image available on remote SFTP server.
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
     hmc_auth:
@@ -178,7 +178,7 @@ EXAMPLES = '''
         - <iso file1>
     state: updated
 
-- name: Update the VIOS from the HMC using the image available on remote NFS server
+- name: Update the VIOS from the HMC using the image available on remote NFS server.
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
     hmc_auth:
@@ -196,7 +196,7 @@ EXAMPLES = '''
         - <bff file>
     state: updated
 
-- name: Upgrade the VIOS from the HMC using the image available on HMC hard disk
+- name: Upgrade the VIOS from the HMC using the image available on HMC hard disk.
   vios_update_upgrade:
     hmc_host: '{{ hmc_ip }}'
     hmc_auth:
