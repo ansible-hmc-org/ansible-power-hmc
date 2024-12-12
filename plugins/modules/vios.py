@@ -774,10 +774,12 @@ def installViosUsingDisk(module, params):
     try:
         image = hmc.listViosImages()
         logger.debug(image)
-        if image_dir != image[0]['NAME']:
+        if image == None:
+            module.exit_json(changed=False, msg=f"There are no viosimages in the HMC")
+        elif not any(entry['NAME'] == image_dir for entry in image):
             module.exit_json(changed=False, msg=f"The VIOS directory with name '{image_dir}' doesn't exist.")
         else:
-            if vios_iso not in (image[0]['IMAGE_FILES']).split(','):
+            if not any(vios_iso in entry['IMAGE_FILES'].split(',') for entry in image):
                 module.exit_json(changed=False, msg=f"The '{vios_iso}' is not available in image_dir location.")
             elif vios_iso == 'flash.iso':
                 module.exit_json(changed=False, msg="flash.iso cannot be copied.Please check if your iso file has been copied completely to the HMC.")
