@@ -77,7 +77,7 @@ options:
                     - The name of the VIOS update image.
                     - When the VIOS update image is on the HMC hard disk or the IBM Fix Central website,
                       this option is required to specify the name of the image to use for the update.
-                    - This parameter is used along with the C(save) option to specify the image that 
+                    - This parameter is used along with the C(save) option to specify the image that
                       will be saved to the HMC's hard disk
                 type: str
             files:
@@ -93,31 +93,31 @@ options:
             user_id:
                 description:
                     - The user ID to use to log in to the remote SFTP server.
-                    - Only valid if the remote image repository is SFTP
+                    - Only valid if the remote image repository is SFTP.
                 type: str
             password:
                 description:
                     - The password to use to log in to the remote SFTP server.
                     - C(password), C(ssh_key_file) are mutually exclusive.
-                    - Only valid if the remote image repository is SFTP
+                    - Only valid if the remote image repository is SFTP.
                 type: str
             ssh_key_file:
                 description:
                     - The name of the file that contains the SSH private key.
                     - C(password), C(ssh_key_file) are mutually exclusive.
-                    - Only valid if the remote image repository is SFTP
+                    - Only valid if the remote image repository is SFTP.
                 type: str
             mount_loc:
                 description:
                     - The mount location defined on the NFS server that contains the VIOS update image.
-                    - Only valid if the remote image repository is NFS
+                    - Only valid if the remote image repository is NFS.
                 type: str
             option:
                 description:
                     - Options to be passed to the mount command used to mount the NFS file system that contains the VIOS update image.
                     - The HMC supports NFS versions 3 and 4.
                     - Default version is 3.
-                    - Only valid if the remote image repository is NFS
+                    - Only valid if the remote image repository is NFS.
                 type: str
                 choices: ['3', '4']
             directory:
