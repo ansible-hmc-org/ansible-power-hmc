@@ -13,10 +13,12 @@ DOCUMENTATION = '''
 module: vios_update_upgrade
 author:
     - Sreenidhi S(@SreenidhiS1)
-short_description: Manages the update and upgrade of the VIOS
+short_description: Manages the update and upgrade of the VIOS from the HMC
 notes:
     - All Operations support passwordless authentication.
 description:
+    - When the Virtual I/O Server (VIOS) partition is running and has an active Resource Monitoring and Control (RMC) connection,
+      this module enables the updating or upgrading of VIOS directly from the Hardware Management Console (HMC)
     - Updates the VIOS by installing the VIOS installation image located on an NFS/SFTP/HMC hard disk.
     - Upgrades the VIOS by obtaining  the required  files  from NFS/SFTP/HMC hard disk.
     - Update the VIOS from IBM Fix Central website.
@@ -75,8 +77,8 @@ options:
                     - The name of the VIOS update image.
                     - When the VIOS update image is on the HMC hard disk or the IBM Fix Central website,
                       this option is required to specify the name of the image to use for the update.
-                    - When the VIOS update image is on a remote server and the --save option is specified,
-                      this option is required to specify the name used to save the image to the HMC hard disk.
+                    - This parameter is used along with the C(save) option to specify the image that 
+                      will be saved to the HMC's hard disk
                 type: str
             files:
                 description:
@@ -91,26 +93,31 @@ options:
             user_id:
                 description:
                     - The user ID to use to log in to the remote SFTP server.
+                    - Only valid if the remote image repository is SFTP
                 type: str
             password:
                 description:
                     - The password to use to log in to the remote SFTP server.
                     - C(password), C(ssh_key_file) are mutually exclusive.
+                    - Only valid if the remote image repository is SFTP
                 type: str
             ssh_key_file:
                 description:
                     - The name of the file that contains the SSH private key.
                     - C(password), C(ssh_key_file) are mutually exclusive.
+                    - Only valid if the remote image repository is SFTP
                 type: str
             mount_loc:
                 description:
                     - The mount location defined on the NFS server that contains the VIOS update image.
+                    - Only valid if the remote image repository is NFS
                 type: str
             option:
                 description:
                     - Options to be passed to the mount command used to mount the NFS file system that contains the VIOS update image.
                     - The HMC supports NFS versions 3 and 4.
                     - Default version is 3.
+                    - Only valid if the remote image repository is NFS
                 type: str
                 choices: ['3', '4']
             directory:
