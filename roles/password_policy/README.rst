@@ -19,25 +19,25 @@ None
 Role Variables
 --------------
 
--  password_policy_hmc_username:
+-  **password_policy_hmc_username**
 
    -  type: str
    -  required: true
    -  description: specifies the username of HMC that the password policy role is using.
 
--  password_policy_hmc_password:
+-  **password_policy_hmc_password**
 
    -  type: str
    -  required: true
    -  description: specifies the logged in user HMC password. For security purposes, it is highly recommended to store this sensitive information in an encrypted secret vault file.
 
--  password_policy_name:
+-  **password_policy_name**
 
    -  type: str
    -  required: true
    -  description: specifies the password policy name for which we want the role to execute.
 
--  password_policy_configs:
+-  **password_policy_configs**
 
    -  type: dict
    -  required: true
@@ -55,7 +55,7 @@ Role Variables
       -  min_lowercase_chars
       -  min_special_chars
 
--  password_policy_user_password:
+-  **password_policy_user_password**
 
    -  type: dict
    -  description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted secret vault file. Required only when password_policy_password_change is true. 
@@ -64,7 +64,7 @@ Role Variables
 
       -  passwd
 
--  password_policy_password_change:
+-  **password_policy_password_change**
 
    -  type: boolean
    -  required: false
