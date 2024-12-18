@@ -25,14 +25,15 @@ DOC_BLD_DIR="$DIR/docs/build"
 [[ ! -d "$DOC_SRC_DIR"/modules ]] && mkdir -p "$DOC_SRC_DIR"/modules && mkdir -p "$DOC_SRC_DIR"/plugins
 [[ ! -d "$DOC_SRC_DIR"/roles ]] && mkdir -p "$DOC_SRC_DIR"/roles
 [[ ! -d "$DOC_BLD_DIR" ]] && mkdir -p "$DOC_BLD_DIR"
-ansible-doc-extractor "$DOC_SRC_DIR"/modules "$MODULE_DIR"/*.py
-ansible-doc-extractor "$DOC_SRC_DIR"/plugins "$INV_PLUGIN_DIR"/*.py
 
 # generate the updated role documentations
 for role in $ROLE_LIST
 do
-	cp $ROLE_DIR/$role/README.md $DOC_SRC_DIR/roles/$role.md
+        cp $ROLE_DIR/$role/README.md $DOC_SRC_DIR/roles/$role.md
 done
+ansible-doc-extractor "$DOC_SRC_DIR"/modules "$MODULE_DIR"/*.py
+ansible-doc-extractor "$DOC_SRC_DIR"/plugins "$INV_PLUGIN_DIR"/*.py
+
 
 # create the html files
 sphinx-build -b html $DOC_SRC_DIR $DOC_BLD_DIR
