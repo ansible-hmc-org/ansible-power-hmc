@@ -87,21 +87,21 @@ Example Playbook
        - ibm.power_hmc
      gather_facts: false
      vars_files:
-       - 
+       - <secretvault_file_path> 
      roles:
        - role: password_policy
          vars:
-           password_policy_name: 
+           password_policy_name: <password_policy_name> 
            password_policy_configs:
-               min_pwage: 
-               pwage: 
-               min_length: 
-               hist_size: 
-               warn_pwage: 
-               min_digits: 
-               min_uppercase_chars: 
-               min_lowercase_chars: 
-               min_special_chars: 
+               min_pwage: <min_password_age>
+               pwage: <password_age>
+               min_length: <min_pass_length>
+               hist_size: <history_size>
+               warn_pwage: <warning_password_age>
+               min_digits: <min_digits>
+               min_uppercase_chars: <min_uppercase_chars>
+               min_lowercase_chars: <min_lowercase_chars>
+               min_special_chars: <min_special_chars>
 
 License
 -------
