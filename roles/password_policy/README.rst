@@ -1,9 +1,9 @@
-Role Name
-=========
+PASSWORD POLICY
+===============
 
 This role is named as Password Policy management for power HMC. The
 scope of this role encompasses managing typical password policy
-requirements for the client’s power Hardware Management Console (HMC).
+requirements for the client power Hardware Management Console (HMC).
 Key responsibilities include: - Creating and enforcing new password
 policies across multiple HMCs - Applying new password policy
 configurations to existing policies - Updating credentials for all
@@ -29,7 +29,7 @@ Role Variables
 
    -  type: str
    -  required: true
-   -  description: specifies the logged in user’s HMC password. For
+   -  description: specifies the logged in user HMC password. For
       security purposes, it is highly recommended to store this
       sensitive information in an encrypted secret vault file.
 
