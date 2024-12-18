@@ -1,5 +1,5 @@
-RoleName: password policy
-=========================
+Ansible Role: password_policy
+=============================
 
 This role is named as Password Policy management for power HMC. The
 scope of this role encompasses managing typical password policy
