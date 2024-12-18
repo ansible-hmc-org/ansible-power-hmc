@@ -44,6 +44,7 @@ Role Variables
    -  description: specifies the password policy configurations for a new policy or existing policy that needs to be changed. 
 
    -  options:
+
       -  min_pwage
       -  pwage
       -  min_length
@@ -60,6 +61,7 @@ Role Variables
    -  description: specifies the new password for the users in the HMC. For security purposes, it is highly recommended to store this sensitive information in an encrypted secret vault file. Required only when password_policy_password_change is true. 
 
    -  options:
+
       -  passwd
 
 -  password_policy_password_change:

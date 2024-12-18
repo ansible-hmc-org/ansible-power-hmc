@@ -264,3 +264,24 @@ Notes
 
 .. _GitHub v1.10.0:
    https://github.com/IBM/ansible-power-hmc/releases/download/v1.10.0/ibm-power_hmc-1.10.0.tar.gz
+
+Version 1.11.0
+-------------
+Notes
+  * vios: Support for VIOS install through HMC local disk
+  * vios: Support for VIOS image copy, delete and list from HMC
+  * vios_update_upgrade: Support for VIOS update and upgrade (Issue: #104)
+  * power_system: Support for PCM status listing (Issue: #136)
+  * hmc_update_upgrade: Fix for list ptf failing for fully patched HMC (Issue: #130)
+  * Introduced a role for password policy management
+  * MTMS Support for all the modules
+
+  Availability
+    * `Galaxy v1.11.0`_
+    * `GitHub v1.11.0`_
+
+.. _Galaxy v1.11.0:
+   https://galaxy.ansible.com/download/ibm-power_hmc-1.11.0.tar.gz
+
+.. _GitHub v1.11.0:
+   https://github.com/IBM/ansible-power-hmc/releases/download/v1.11.0/ibm-power_hmc-1.11.0.tar.gz
