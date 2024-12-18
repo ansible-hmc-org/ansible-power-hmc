@@ -19,7 +19,7 @@ parameters and their expected values.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Contents
    :glob:
 
    roles/*
