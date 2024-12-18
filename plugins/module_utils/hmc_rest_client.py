@@ -510,7 +510,9 @@ class HmcRestClient:
         response = resp.read()
         return response
 
-    def getPCM(self, system_uuid):
+    def getPCM(self, system_uuid, action):
+        preference_map = {'LTM': 'LongTermMonitorEnabled', 'STM': 'ShortTermMonitorEnabled',
+                          'AM': 'AggregationEnabled', 'CLTM': 'ComputeLTMEnabled', 'EM': 'EnergyMonitorEnabled'}
         url = "https://{0}/rest/api/pcm/ManagedSystem/{1}/preferences".format(self.hmc_ip, system_uuid)
         header = {'X-API-Session': self.session,
                   'Content-Type': 'application/xml'}
@@ -524,6 +526,17 @@ class HmcRestClient:
             logger.debug("Get of preferences failed. Respsonse code: %d", resp.code)
             return None
         response = resp.read()
+        if action is not None:
+            doc = xml_strip_namespace(response)
+            path = doc.xpath("//ManagedSystemPcmPreference")[0]
+            output = dict()
+            for item in preference_map:
+                if (path.xpath(preference_map[item])[0].text == "true"):
+                    value = "Enabled"
+                else:
+                    value = "Disabled"
+                output[preference_map[item]] = value
+            return output
         return response
 
     def updatePCM(self, system_uuid, metrics, disable):
@@ -531,7 +544,7 @@ class HmcRestClient:
         url = "https://{0}/rest/api/pcm/ManagedSystem/{1}/preferences".format(self.hmc_ip, system_uuid)
         header = {'Content-Type': 'application/xml',
                   'X-API-Session': logon_res}
-        sys_details = self.getPCM(system_uuid)
+        sys_details = self.getPCM(system_uuid, None)
         doc = xml_strip_namespace(sys_details)
         preference_map = {'LTM': 'LongTermMonitorEnabled', 'STM': 'ShortTermMonitorEnabled',
                           'AM': 'AggregationEnabled', 'CLTM': 'ComputeLTMEnabled', 'EM': 'EnergyMonitorEnabled'}
