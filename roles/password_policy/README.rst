@@ -76,7 +76,7 @@ None
 Example Playbook
 ----------------
 
-::
+.. code-block:: yaml+jinja
 
    - name: Create/update/apply a password policy, and modify the credentials of the local power HMC users if desired
      hosts: hmcs
