@@ -125,8 +125,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     action: poweroff
 
@@ -134,8 +134,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_sysystem_name/mtms>
     action: poweron
 
@@ -143,8 +143,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     new_name: <system_name_to_be_changed>
     power_off_policy: '1'
@@ -155,8 +155,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     requested_num_sys_huge_pages: <sys_huge_pages_to_be_set>
     mem_mirroring_mode: sys_firmware_only
@@ -167,8 +167,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     state: facts
 
@@ -176,8 +176,8 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     state: pcm_facts
 
@@ -185,24 +185,23 @@ EXAMPLES = '''
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     metrics:
-         - LTM
+      - LTM
     action: enable_pcm
 
 - name: disable the short-term monitoring
   power_system:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <managed_system_name/mtms>
     metrics:
-         - STM
+      - STM
     action: disble_pcm
-
 '''
 
 RETURN = '''
