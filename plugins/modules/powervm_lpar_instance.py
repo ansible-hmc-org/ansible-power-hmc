@@ -428,8 +428,8 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       vm_id: <lpar_id>
@@ -437,13 +437,13 @@ EXAMPLES = '''
       proc_unit: 4
       mem: 20480
       volume_config:
-         - vios_name: <viosname1>
-           volume_name: <volumename1>
-         - vios_name: <viosname2>
-           volume_name: <volumename2>
+          - vios_name: <viosname1>
+            volume_name: <volumename1>
+          - vios_name: <viosname2>
+            volume_name: <volumename2>
       physical_io:
-         - <physicalIO location code>
-         - <physicalio location code>
+          - <physicalIO location code>
+          - <physicalio location code>
       max_virtual_slots: 50
       os_type: ibmi
       state: present
@@ -453,33 +453,33 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       volume_config:
-         - volume_size: <disk_size>
-         - volume_size: <disk_size>
+          - volume_size: <disk_size>
+          - volume_size: <disk_size>
       virt_network_config:
-         - network_name: <virtual_nw_name>
-           slot_number: <client_slot_no>
+          - network_name: <virtual_nw_name>
+            slot_number: <client_slot_no>
       npiv_config:
-         - vios_name: <viosname>
-           fc_port: <fc_port_name/loc_code>
-           wwpn_pair: <wwpn1;wwpn2>
+          - vios_name: <viosname>
+            fc_port: <fc_port_name/loc_code>
+            wwpn_pair: <wwpn1;wwpn2>
       vnic_config:
-         - vnic_adapter_id: <vnic_adapter_id>
-           backing_devices:
-              - location_code: XXXXX.XXX.XXXXXXX-P1-T1
-                capacity: <capacity>
-                hosting_partition: <vios_name>
-              - location_code: P1-T2
-         - backing_devices:
-              - location_code: P1-T3
-                hosting_partition: <vios_name>
-              - location_code: P1-T4
-                capacity: <capacity>
-         - vnic_adapter_id: <vnic_adapter_id>
+          - vnic_adapter_id: <vnic_adapter_id>
+            backing_devices:
+                - location_code: XXXXX.XXX.XXXXXXX-P1-T1
+                  capacity: <capacity>
+                  hosting_partition: <vios_name>
+                - location_code: P1-T2
+          - backing_devices:
+                - location_code: P1-T3
+                  hosting_partition: <vios_name>
+                - location_code: P1-T4
+                  capacity: <capacity>
+          - vnic_adapter_id: <vnic_adapter_id>
       os_type: aix_linux
       state: present
 
@@ -487,20 +487,20 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
-      retain_vios_cfg: True
-      delete_vdisks: True
+      retain_vios_cfg: true
+      delete_vdisks: true
       state: absent
 
 - name: Shutdown a logical partition.
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       action: shutdown
@@ -509,8 +509,8 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       prof_name: <profile_name>
@@ -520,8 +520,8 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       keylock: 'normal'
@@ -532,11 +532,11 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       system_name: <system_name/mtms>
       vm_name: <vm_name>
-      all_resources: True
+      all_resources: true
       os_type: aix_linux
       state: present
 
@@ -547,10 +547,10 @@ EXAMPLES = '''
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
-         vm_ip: <IP_address of the lpar>
-         nim_ip: <IP_address of the NIM Server>
-         nim_gateway: <Gateway IP_Addres>
-         nim_subnetmask: <Subnetmask IP_Address>
+          vm_ip: <IP_address of the lpar>
+          nim_ip: <IP_address of the NIM Server>
+          nim_gateway: <Gateway IP_Addres>
+          nim_subnetmask: <Subnetmask IP_Address>
       action: install_os
 
 - name: Install Linux OS on LPAR from NIM Server.
@@ -560,13 +560,12 @@ EXAMPLES = '''
       system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
-         vm_ip: <IP_address of the lpar>
-         nim_ip: <IP_address of the NIM Server>
-         nim_gateway: <Gateway IP_Addres>
-         nim_subnetmask: <Subnetmask IP_Address>
-         vm_mac: <mac address of lpar>
+          vm_ip: <IP_address of the lpar>
+          nim_ip: <IP_address of the NIM Server>
+          nim_gateway: <Gateway IP_Addres>
+          nim_subnetmask: <Subnetmask IP_Address>
+          vm_mac: <mac address of lpar>
       action: install_os
-
 '''
 
 RETURN = '''
