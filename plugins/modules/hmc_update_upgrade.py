@@ -142,16 +142,16 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       state: facts
 
 - name: Update the HMC to the V10R2M1040 build level from nfs location
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: nfs
           hostname: <NFS_Server_IP/Hostname>
@@ -163,8 +163,8 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: sftp
           hostname: <SFTP_Server_IP/Hostname>
@@ -177,16 +177,16 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       action: listptf
 
 - name: Update the HMC to the V10R2M1041(ifix) build level from ibmwebsite
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: ibmwebsite
           ptf: vMF71409
