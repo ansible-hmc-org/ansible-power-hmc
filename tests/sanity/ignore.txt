@@ -1,4 +1,6 @@
 plugins/inventory/powervm_inventory.py pylint:consider-using-f-string
+plugins/inventory/source.power_hmc.yml validate-modules!skip
+plugins/inventory/partitions.power_hmc.yml validate-modules!skip
 plugins/module_utils/hmc_cli_client.py pylint:consider-using-f-string
 plugins/module_utils/hmc_exceptions.py pylint:consider-using-f-string
 plugins/module_utils/hmc_rest_client.py pylint:consider-using-f-string
