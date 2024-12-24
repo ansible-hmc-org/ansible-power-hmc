@@ -3,8 +3,6 @@
 - name: Create/update/apply a password policy, and modify the credentials of the local power HMC users if desired
   hosts: hmcs
   connection: local
-  collections:
-    - ibm.power_hmc
   gather_facts: false
   vars_files:
     - secrets.yml
