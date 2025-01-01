@@ -218,8 +218,8 @@ EXAMPLES = '''
   powervm_dlpar:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <server name/mtms>
     vm_name: <vm name>
     proc_settings:
@@ -236,15 +236,15 @@ EXAMPLES = '''
   powervm_dlpar:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <server name/mtms>
     vm_name: <vm name>
     pv_settings:
       - vios_name: <vios1>
         disk_name: <hdiskA>
-      - vios_name:  <vios2>
-        disk_name:  <hdiskB>
+      - vios_name: <vios2>
+        disk_name: <hdiskB>
         target_name: <TargetName>
       - vios_name: <vios1>
         disk_name: <hdiskC>
@@ -257,8 +257,8 @@ EXAMPLES = '''
   powervm_dlpar:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <server name/mtms>
     vm_name: <vm name>
     npiv_settings:
@@ -277,8 +277,8 @@ EXAMPLES = '''
   powervm_dlpar:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     system_name: <server name/mtms>
     vm_name: <vm name>
     vod_settings:
