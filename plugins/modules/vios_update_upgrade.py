@@ -416,7 +416,7 @@ def ensure_update_upgrade(module, params):
             raise ParameterError("For remote server repository'image_name' parameter is only required if 'save' option is set to 'true'")
     attributes['files'] = ','.join(attributes['files']) if attributes.get('files') else None
     attributes['disks'] = ','.join(attributes['disks']) if attributes.get('disks') else None
-    attributes['option'] = f'"ver={attributes["option"]}"' if attributes.get('option') else None
+    attributes['option'] = '"ver={}"'.format(attributes["option"]) if attributes.get('option') else None
 
     try:
         hmc.updatevios(module.params['state'], configDict=attributes)
