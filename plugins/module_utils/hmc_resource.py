@@ -643,7 +643,7 @@ class Hmc():
         output = ""
         for each in optional:
             if configDict.get(each) is not None:
-                opt.append(f"{each}={configDict[each]}")
+                opt.append("{}={}".format(each, configDict[each]))
         output = ','.join(opt)
         viosbk_cmd = self.CMD['MKVIOSBK'] + \
             self.OPT['MKVIOSBK']['-T'] + configDict['types'] + \

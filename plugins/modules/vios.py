@@ -777,7 +777,7 @@ def installViosUsingDisk(module, params):
         if image is None:
             module.exit_json(changed=False, msg="There are no viosimages in the HMC")
         elif not any(entry['NAME'] == image_dir for entry in image):
-            module.exit_json(changed=False, msg=f"The VIOS directory with name '{image_dir}' doesn't exist.")
+            module.exit_json(changed=False, msg="The VIOS directory with name '{}' doesn't exist.".format(image_dir))
         else:
             if not any(vios_iso in entry['IMAGE_FILES'].split(',') for entry in image):
                 module.exit_json(changed=False, msg=f"The '{vios_iso}' is not available in image_dir location.")
