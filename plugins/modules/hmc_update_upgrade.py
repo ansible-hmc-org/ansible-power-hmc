@@ -119,7 +119,7 @@ options:
                     - The name of the PTF to install.
                       This option is required when the ISO image is located on the IBM Fix Central website. Otherwise, this option is not valid.
                       This option is required only when the location_type is 'ibmwebsite'.
-                      This option is available for HMC versions from V10 R2 M1030 onwards.
+                      This option is available for HMC versions from V10 R2 M1030 onwards for update and V10 R3 M1060 onwards for upgrade.
                 type: str
     state:
         description:
@@ -133,8 +133,10 @@ options:
         description:
             - C(listptf) lists available Hardware Management Console (HMC) updates from the IBM Fix Central website.
             - This option is available for HMC versions from V10 R2 M1030 onwards
+            - C(listupg) lists available Hardware Management Console (HMC) upgrades from the IBM Fix Central website.
+            - This option is available for HMC versions from V10 R3 M1060 onwards
         type: str
-        choices: ['listptf']
+        choices: ['listptf', 'listupg']
 '''
 
 EXAMPLES = '''
@@ -173,7 +175,7 @@ EXAMPLES = '''
           build_file: /Images/MF71190-10.2.1041.0-2308160028-x86_64.iso
       state: updated
 
-- name: List all the available ptfs
+- name: List all the available ptfs for update
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
@@ -191,6 +193,47 @@ EXAMPLES = '''
           location_type: ibmwebsite
           ptf: vMF71409
       state: updated
+
+- name: Upgrade the HMC from ibmwebsite
+  hmc_update_upgrade:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth: '{{ curr_hmc_auth }}'
+      build_config:
+          location_type: ibmwebsite
+          ptf: <ptf>
+      state: upgraded
+
+- name: Upgrade the HMC using NFS server
+  hmc_update_upgrade:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth: '{{ curr_hmc_auth }}'
+      build_config:
+          location_type: nfs
+          hostname: <hostname>
+          mount_location: /HMCImages
+          build_file: <build_file_path>
+      state: upgraded
+
+- name: Upgrade the HMC using SFTP server
+  hmc_update_upgrade:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth: '{{ curr_hmc_auth }}'
+      build_config:
+          location_type: sftp
+          hostname: <SFTP_Server_IP/Hostname>
+          userid: <SFTP_Server_Username>
+          passwd: <SFTP_Server_Password>
+          build_file: <build_file>
+      state: upgraded
+
+- name: List all the available ptfs for upgrade
+  hmc_update_upgrade:
+      hmc_host: '{{ inventory_hostname }}'
+      hmc_auth:
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      action: listupg
+
 '''
 
 RETURN = '''
@@ -430,6 +473,30 @@ def list_ptf(module, params):
     return changed, ptf_details, None
 
 
+def list_upgrade_ptf(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    changed = False
+    hmc_conn = None
+    ptf_details = None
+
+    if params['build_config']:
+        raise ParameterError("not supporting build_config option")
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    initial_version_details = hmc.listHMCVersion()
+
+    if int(initial_version_details["SERVICEPACK"]) < 1060:
+        raise VersionError("List upgrade ptf is supported from V10 R3 M1060 version onwards.")
+    else:
+        ptf_details = hmc.listUpgradePTF('ibmwebsite')
+    if 'No PTFs are available' in ptf_details:
+        return False, {"info": ptf_details}, None
+    return changed, ptf_details, None
+
+
 def upgrade_hmc(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -449,9 +516,6 @@ def upgrade_hmc(module, params):
     command_option_checker(params['build_config'])
 
     locationType = params['build_config']['location_type']
-
-    if locationType == 'ibmwebsite':
-        raise ParameterError("Upgrade through ibmwebsite is not supported ")
 
     if locationType == 'disk':
         is_img_in_hmc = check_image_in_hmc(module, params)
@@ -489,6 +553,12 @@ def upgrade_hmc(module, params):
             otherConfig['-D'] = params['build_config']['build_file']
 
     initial_version_details = hmc.listHMCVersion()
+
+    if locationType == 'ibmwebsite':
+        if int(initial_version_details["SERVICEPACK"]) >= 1060:
+            otherConfig['--PTF'] = params['build_config']['ptf']
+        else:
+            raise VersionError("Upgrade through ibmwebsite supported from V10 R3 M1060 version onwards.")
 
     hmc.getHMCUpgradeFiles(locationType, configDict=otherConfig)
 
@@ -635,6 +705,7 @@ def perform_task(module):
         "facts": facts,
         "upgraded": upgrade_hmc,
         "listptf": list_ptf,
+        "listupg": list_upgrade_ptf
     }
 
     oper = 'state'
@@ -684,7 +755,7 @@ def run_module():
                           )
                           ),
         state=dict(type='str', choices=['updated', 'upgraded', 'facts']),
-        action=dict(type='str', choices=['listptf'])
+        action=dict(type='str', choices=['listptf','listupg'])
     )
 
     module = AnsibleModule(
@@ -695,6 +766,7 @@ def run_module():
                      ['state', 'updated', ['hmc_host', 'hmc_auth', 'build_config']],
                      ['state', 'upgraded', ['hmc_host', 'hmc_auth', 'build_config']],
                      ['action', 'listptf', ['hmc_host', 'hmc_auth']],
+                     ['action', 'listupg', ['hmc_host', 'hmc_auth']],
                      ]
     )
 
