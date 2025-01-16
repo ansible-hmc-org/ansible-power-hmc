@@ -152,7 +152,7 @@ class Hmc():
         result = self.hmcconn.execute(hmcCmd)
         if 'No results were found.' in result:
             return 'No PTFs are available'
-        return self.cmdClass.parseMultiLineCSV(result)               
+        return self.cmdClass.parseMultiLineCSV(result)
 
     def getHMCUpgradeFiles(self, serverType, configDict=None):
         hmcCmd = self.CMD['GETUPGFILES'] + \

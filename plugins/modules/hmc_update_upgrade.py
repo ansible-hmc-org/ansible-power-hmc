@@ -755,7 +755,7 @@ def run_module():
                           )
                           ),
         state=dict(type='str', choices=['updated', 'upgraded', 'facts']),
-        action=dict(type='str', choices=['listptf','listupg'])
+        action=dict(type='str', choices=['listptf', 'listupg'])
     )
 
     module = AnsibleModule(
