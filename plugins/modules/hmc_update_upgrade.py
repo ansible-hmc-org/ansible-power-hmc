@@ -226,7 +226,7 @@ EXAMPLES = '''
           build_file: <build_file>
       state: upgraded
 
-- name: List all the available ptfs for upgrade
+- name: List all the available upgrade files
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
@@ -473,7 +473,7 @@ def list_ptf(module, params):
     return changed, ptf_details, None
 
 
-def list_upgrade_ptf(module, params):
+def list_upgrade_files(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
@@ -491,8 +491,8 @@ def list_upgrade_ptf(module, params):
     if int(initial_version_details["SERVICEPACK"]) < 1060:
         raise VersionError("List upgrade ptf is supported from V10 R3 M1060 version onwards.")
     else:
-        ptf_details = hmc.listUpgradePTF('ibmwebsite')
-    if 'No PTFs are available' in ptf_details:
+        ptf_details = hmc.listUpgradeFiles('ibmwebsite')
+    if 'No upgrade files available' in ptf_details:
         return False, {"info": ptf_details}, None
     return changed, ptf_details, None
 
@@ -705,7 +705,7 @@ def perform_task(module):
         "facts": facts,
         "upgraded": upgrade_hmc,
         "listptf": list_ptf,
-        "listupg": list_upgrade_ptf
+        "listupg": list_upgrade_files
     }
 
     oper = 'state'
