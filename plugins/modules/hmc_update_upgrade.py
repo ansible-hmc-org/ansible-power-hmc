@@ -142,16 +142,16 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       state: facts
 
 - name: Update the HMC to the V10R2M1040 build level from nfs location
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: nfs
           hostname: <NFS_Server_IP/Hostname>
@@ -163,8 +163,8 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: sftp
           hostname: <SFTP_Server_IP/Hostname>
@@ -177,16 +177,16 @@ EXAMPLES = '''
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       action: listptf
 
 - name: Update the HMC to the V10R2M1041(ifix) build level from ibmwebsite
   hmc_update_upgrade:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
       build_config:
           location_type: ibmwebsite
           ptf: vMF71409
@@ -425,7 +425,8 @@ def list_ptf(module, params):
         raise VersionError("List ptf is supported from V10 R2 M1030 version onwards.")
     else:
         ptf_details = hmc.listHMCPTF('ibmwebsite')
-
+    if 'No PTFs are available' in ptf_details:
+        return False, {"info": ptf_details}, None
     return changed, ptf_details, None
 
 

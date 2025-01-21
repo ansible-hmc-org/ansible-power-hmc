@@ -63,7 +63,7 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system..
             - Optional for I(state=absent), I(state=facts), I(action=poweron), I(action=shutdown) and I(action=restart).
         type: str
     vm_name:
@@ -428,22 +428,22 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       vm_id: <lpar_id>
       proc: 4
       proc_unit: 4
       mem: 20480
       volume_config:
-         - vios_name: <viosname1>
-           volume_name: <volumename1>
-         - vios_name: <viosname2>
-           volume_name: <volumename2>
+          - vios_name: <viosname1>
+            volume_name: <volumename1>
+          - vios_name: <viosname2>
+            volume_name: <volumename2>
       physical_io:
-         - <physicalIO location code>
-         - <physicalio location code>
+          - <physicalIO location code>
+          - <physicalio location code>
       max_virtual_slots: 50
       os_type: ibmi
       state: present
@@ -453,33 +453,33 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       volume_config:
-         - volume_size: <disk_size>
-         - volume_size: <disk_size>
+          - volume_size: <disk_size>
+          - volume_size: <disk_size>
       virt_network_config:
-         - network_name: <virtual_nw_name>
-           slot_number: <client_slot_no>
+          - network_name: <virtual_nw_name>
+            slot_number: <client_slot_no>
       npiv_config:
-         - vios_name: <viosname>
-           fc_port: <fc_port_name/loc_code>
-           wwpn_pair: <wwpn1;wwpn2>
+          - vios_name: <viosname>
+            fc_port: <fc_port_name/loc_code>
+            wwpn_pair: <wwpn1;wwpn2>
       vnic_config:
-         - vnic_adapter_id: <vnic_adapter_id>
-           backing_devices:
-              - location_code: XXXXX.XXX.XXXXXXX-P1-T1
-                capacity: <capacity>
-                hosting_partition: <vios_name>
-              - location_code: P1-T2
-         - backing_devices:
-              - location_code: P1-T3
-                hosting_partition: <vios_name>
-              - location_code: P1-T4
-                capacity: <capacity>
-         - vnic_adapter_id: <vnic_adapter_id>
+          - vnic_adapter_id: <vnic_adapter_id>
+            backing_devices:
+                - location_code: XXXXX.XXX.XXXXXXX-P1-T1
+                  capacity: <capacity>
+                  hosting_partition: <vios_name>
+                - location_code: P1-T2
+          - backing_devices:
+                - location_code: P1-T3
+                  hosting_partition: <vios_name>
+                - location_code: P1-T4
+                  capacity: <capacity>
+          - vnic_adapter_id: <vnic_adapter_id>
       os_type: aix_linux
       state: present
 
@@ -487,21 +487,21 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
-      retain_vios_cfg: True
-      delete_vdisks: True
+      retain_vios_cfg: true
+      delete_vdisks: true
       state: absent
 
 - name: Shutdown a logical partition.
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       action: shutdown
 
@@ -509,9 +509,9 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       prof_name: <profile_name>
       action: poweron
@@ -520,9 +520,9 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       keylock: 'normal'
       iIPLsource: 'd'
@@ -532,11 +532,11 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
-      system_name: <system_name>
+          username: '{{ ansible_user }}'
+          password: '{{ hmc_password }}'
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
-      all_resources: True
+      all_resources: true
       os_type: aix_linux
       state: present
 
@@ -544,29 +544,28 @@ EXAMPLES = '''
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth: "{{ curr_hmc_auth }}"
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
-         vm_ip: <IP_address of the lpar>
-         nim_ip: <IP_address of the NIM Server>
-         nim_gateway: <Gateway IP_Addres>
-         nim_subnetmask: <Subnetmask IP_Address>
+          vm_ip: <IP_address of the lpar>
+          nim_ip: <IP_address of the NIM Server>
+          nim_gateway: <Gateway IP_Addres>
+          nim_subnetmask: <Subnetmask IP_Address>
       action: install_os
 
 - name: Install Linux OS on LPAR from NIM Server.
   powervm_lpar_instance:
       hmc_host: '{{ inventory_hostname }}'
       hmc_auth: "{{ curr_hmc_auth }}"
-      system_name: <system_name>
+      system_name: <system_name/mtms>
       vm_name: <vm_name>
       install_settings:
-         vm_ip: <IP_address of the lpar>
-         nim_ip: <IP_address of the NIM Server>
-         nim_gateway: <Gateway IP_Addres>
-         nim_subnetmask: <Subnetmask IP_Address>
-         vm_mac: <mac address of lpar>
+          vm_ip: <IP_address of the lpar>
+          nim_ip: <IP_address of the NIM Server>
+          nim_gateway: <Gateway IP_Addres>
+          nim_subnetmask: <Subnetmask IP_Address>
+          vm_mac: <mac address of lpar>
       action: install_os
-
 '''
 
 RETURN = '''
@@ -597,6 +596,7 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client impo
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import add_taggedIO_details
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import add_physical_io
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
 from random import randint
 from collections import OrderedDict
 from decimal import Decimal
@@ -1065,6 +1065,15 @@ def create_partition(module, params):
     cli_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(cli_conn)
 
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
+
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -1299,8 +1308,18 @@ def remove_partition(module, params):
     deleteVdisks = params['delete_vdisks']
     flag = False
     force = False
+    changed = False
     if params['force'] is True:
         force = True
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
@@ -1377,6 +1396,15 @@ def poweroff_partition(module, params):
     shutdown_option = params['shutdown_option'] or 'Delayed'
     restart_option = params['restart_option'] or 'Immediate'
     operation = params['action']
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
@@ -1456,6 +1484,15 @@ def poweron_partition(module, params):
     prof_name = params['prof_name']
     keylock = params['keylock']
     iIPLsource = params['iIPLsource']
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
@@ -1612,6 +1649,7 @@ def install_aix_os(module, params):
 
 
 def partition_details(module, params):
+    changed = False
     rest_conn = None
     system_uuid = None
     server_dom = None
@@ -1624,6 +1662,15 @@ def partition_details(module, params):
     system_name = params['system_name']
     vm_name = params['vm_name']
     advanced_info = params['advanced_info']
+
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as on_system_error:
+            return changed, repr(on_system_error), None
 
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)

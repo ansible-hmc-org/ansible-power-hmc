@@ -175,6 +175,8 @@ class Hmc():
             self.OPT['LSUPDHMC']['-T'][locationType.upper()]
 
         result = self.hmcconn.execute(hmcCmd)
+        if 'No results were found.' in result:
+            return 'No PTFs are available'
         return self.cmdClass.parseMultiLineCSV(result)
 
     def configAltDisk(self, enable, mode):
@@ -490,6 +492,7 @@ class Hmc():
             self.OPT['LPAR_NETBOOT']['-C'] + lparIP +\
             self.OPT['LPAR_NETBOOT']['-K'] + submask +\
             " " + viosName + " " + profName + " " + systemName
+
         result = self.hmcconn.execute(lpar_netboot)
         return self._parseIODetailsFromNetboot(result)
 
@@ -518,6 +521,23 @@ class Hmc():
             os_command +\
             " " + viosName + " " + profName + " " + systemName
         self.hmcconn.execute(lpar_netboot)
+
+    def installOSFromDisk(self, vios_iso, image_dir, vios_IP, vios_gateway, vios_subnetmask, network_macaddr, system_name, name, prof_name, label=None):
+        default_path = "/extra/viosimages/"
+        installiosCmd = ''
+        installiosCmd = self.CMD['INSTALLIOS'] +\
+            self.OPT['INSTALLIOS']['-D'] + default_path + image_dir + "/" + vios_iso +\
+            self.OPT['INSTALLIOS']['-I'] + vios_IP +\
+            self.OPT['INSTALLIOS']['-G'] + vios_gateway +\
+            self.OPT['INSTALLIOS']['-S'] + vios_subnetmask +\
+            self.OPT['INSTALLIOS']['-M'] + network_macaddr +\
+            self.OPT['INSTALLIOS']['-s'] + system_name +\
+            self.OPT['INSTALLIOS']['-P'] + name +\
+            self.OPT['INSTALLIOS']['-r'] + prof_name
+        if label is not None:
+            installiosCmd += self.OPT['INSTALLIOS']['-R'] + label
+        logger.debug(installiosCmd)
+        self.hmcconn.execute(installiosCmd)
 
     def getconsolelog(self, module, lpar_hmc, userid, hmc_password, systemName, lparName):
         conn = HmcCliConnection(module, lpar_hmc, userid, hmc_password)
@@ -801,3 +821,113 @@ class Hmc():
         lines = raw_result.split()
 
         return lines
+
+    def getSystemNameFromMTMS(self, system_name):
+        attr_dict = self.getManagedSystemDetails(system_name)
+        return attr_dict.get('name')
+
+    def copyViosImage(self, params):
+        media = params['media'].lower()
+        mount_location = params['mount_location']
+        remote_server = params['remote_server']
+        directory_name = params['directory_name']
+        files = params['files']
+        remote_directory = params['remote_directory']
+        options = params['options']
+        ssh_key_file = params['ssh_key_file']
+
+        if files:
+            files = ','.join(files)
+
+        if options:
+            options = f'"ver={options}"'
+
+        if media == 'sftp':
+            sftp_user = params['sftp_auth']['sftp_username']
+            sftp_password = params['sftp_auth']['sftp_password']
+            cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
+                self.OPT['CPVIOSIMG']['-R']['SFTP'] +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server +\
+                self.OPT['CPVIOSIMG']['-U'] + sftp_user +\
+                self.OPT['CPVIOSIMG']['-F'] + files
+            if remote_directory:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-D'] + remote_directory
+            if sftp_password:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['--PASSWD'] + sftp_password
+            elif ssh_key_file:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-K'] + ssh_key_file
+        elif media == 'nfs':
+            cpviosimgCmd = self.CMD['CPVIOSIMG'] +\
+                self.OPT['CPVIOSIMG']['-R']['NFS'] +\
+                self.OPT['CPVIOSIMG']['-N'] + directory_name +\
+                self.OPT['CPVIOSIMG']['-H'] + remote_server +\
+                self.OPT['CPVIOSIMG']['-L'] + mount_location +\
+                self.OPT['CPVIOSIMG']['-F'] + files
+            if remote_directory:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['-D'] + remote_directory
+            if options:
+                cpviosimgCmd += self.OPT['CPVIOSIMG']['--OPTIONS'] + options
+
+        self.hmcconn.execute(cpviosimgCmd)
+
+    def listViosImages(self, directory_name=None):
+        if directory_name:
+            lsviosimgCmd = self.CMD['LSVIOSIMG'] +\
+                '| grep -w ' + directory_name +\
+                ' || echo No results were found'
+        else:
+            lsviosimgCmd = self.CMD['LSVIOSIMG']
+        output = self.hmcconn.execute(lsviosimgCmd)
+        if 'No results' in output:
+            return None
+        return self.cmdClass.parseMultiLineCSV(output)
+
+    def deleteViosImage(self, directory_list):
+        changed = False
+        for directory in directory_list:
+            rmviosimgCmd = self.CMD['RMVIOSIMG'] +\
+                self.OPT['RMVIOSIMG']['-N'] + directory
+            try:
+                self.hmcconn.execute(rmviosimgCmd)
+                changed = True
+            except HmcError as list_error:
+                if 'HSCLC464' in repr(list_error):
+                    continue
+                else:
+                    raise Exception(f"Error deleting VIOS image: {repr(list_error)}") from list_error
+            except Exception as e:
+                raise Exception(f"Unexpected error occurred while deleting VIOS image: {repr(e)}") from e
+        return changed
+
+    def getviosversion(self, configDict=None):
+        vios_version = ''
+        vios_version += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + 'ioslevel'
+        if configDict['vios_name'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_version += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_version)
+
+    def updatevios(self, state, configDict=None):
+        updviosbk_cmd = ''
+        if state == 'updated':
+            updviosbk_cmd += self.CMD['UPDVIOS']
+        elif state == 'upgraded':
+            updviosbk_cmd += self.CMD['UPGVIOS']
+        updviosbk_cmd += self.OPT['UPDVIOS']['-R'] + configDict['repository'] + \
+            self.OPT['UPDVIOS']['-M'] + configDict['system_name']
+        option_map = {'vios_name': '-P', 'vios_id': '--ID', 'image_name': '-N', 'files': '-F',
+                      'host_name': '-H', 'user_id': '-U', 'password': '--PASSWD', 'ssh_key_file': '-K',
+                      'directory': '-D', 'mount_loc': '-L', 'option': '--OPTIONS'}
+        for key in option_map:
+            if configDict[key] is not None:
+                updviosbk_cmd += self.OPT['UPDVIOS'][option_map[key]] + configDict[key]
+        if configDict['restart'] is not None:
+            updviosbk_cmd += self.OPT['UPDVIOS']['--RESTART']
+        if configDict['save'] is not None:
+            updviosbk_cmd += self.OPT['UPDVIOS']['--SAVE']
+        if state == 'upgraded':
+            updviosbk_cmd += self.OPT['UPDVIOS']['--DISK'] + str(configDict['disks'])
+        return self.hmcconn.execute(updviosbk_cmd)

@@ -139,53 +139,53 @@ EXAMPLES = '''
   vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
-        vios_name: <vios name>
-        backup_name: test
-        system: <sys>
-        types: viosioconfig
+      vios_name: <vios name>
+      backup_name: test
+      system: <sys>
+      types: viosioconfig
     state: present
 
 - name: Restore a vios from test backup file
   vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
-        vios_name: <vios name>
-        backup_name: test.tar.gz
-        system: <sys>
-        types: viosioconfig
+      vios_name: <vios name>
+      backup_name: test.tar.gz
+      system: <sys>
+      types: viosioconfig
     state: restore
 
 - name: Remove a backup file
   vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
-        vios_name: <vios name>
-        backup_name: test.tar.gz
-        system: <sys>
-        types: viosioconfig
+      vios_name: <vios name>
+      backup_name: test.tar.gz
+      system: <sys>
+      types: viosioconfig
     state: absent
 
 - name: Rename the backup file
   vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
-         username: '{{ ansible_user }}'
-         password: '{{ hmc_password }}'
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
     attributes:
-        vios_name: <vios name>
-        backup_name: test.tar.gz
-        new_name: new.tar.gz
-        system: <sys>
-        types: viosioconfig
+      vios_name: <vios name>
+      backup_name: test.tar.gz
+      new_name: new.tar.gz
+      system: <sys>
+      types: viosioconfig
     state: modify
 '''
 
@@ -340,6 +340,7 @@ def ensure_present(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
+    vios_list = []
 
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
     m_system = attributes['system']
@@ -399,6 +400,7 @@ def ensure_restore(module, params):
     attributes = params.get('attributes')
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
+    vios_list = []
 
     m_system = attributes['system']
     vios_name = attributes['vios_name'] or attributes['vios_id'] or attributes['vios_uuid']
