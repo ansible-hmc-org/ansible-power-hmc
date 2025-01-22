@@ -549,17 +549,19 @@ class Hmc():
         self.hmcconn.execute(installiosCmd)
 
     def getconsolelog(self, module, lpar_hmc, userid, hmc_password, systemName, lparName):
-        conn = HmcCliConnection(module, lpar_hmc, userid, hmc_password)
-        cmd = 'rmvterm -m ' + systemName + ' -p ' + lparName
-        conn.execute(cmd)
-        cmd = 'mkvterm -m ' + systemName + ' -p ' + lparName
-        stdout = conn.execute(cmd)
-        try:
-            for line in stdout:
-                logger.debug(line.strip())
-                logger.debug("\n")
-        except UnicodeDecodeError:
-            pass
+        count = 0
+        while(count < 25):
+            conn = HmcCliConnection(module, lpar_hmc, userid, hmc_password)
+            cmd = 'rmvterm -m ' + systemName + ' -p ' + lparName
+            conn.execute(cmd)
+            cmd = 'mkvterm -m ' + systemName + ' -p ' + lparName
+            stdout = conn.execute(cmd)
+            try:
+                logger.debug(stdout.strip("\n"))
+            except UnicodeDecodeError:
+                pass
+            count+=1
+
 
     def checkconsolelog(self, module, lpar_ip, lpar_hmc, userid, hmc_password, systemName, lparName):
         logger.info("Installation will take approximatly 10-12 mins to complete.")
