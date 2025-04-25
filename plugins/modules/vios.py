@@ -783,7 +783,7 @@ def installViosUsingDisk(module, params):
             module.exit_json(changed=False, msg="The VIOS directory with name '{}' doesn't exist.".format(image_dir))
         else:
             if not any(vios_iso in entry['IMAGE_FILES'].split(',') for entry in image):
-                module.exit_json(changed=False, msg=f"The '{vios_iso}' is not available in image_dir location.")
+                module.exit_json(changed=False, msg="The '{}' is not available in image_dir location.".format(vios_iso))
             elif vios_iso == 'flash.iso':
                 module.exit_json(changed=False, msg="flash.iso cannot be copied.Please check if your iso file has been copied completely to the HMC.")
         if network_macaddr:

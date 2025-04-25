@@ -121,7 +121,7 @@ EXAMPLES = '''
     system_name: <system-name>
     vios_name: <vios-name>
     targets:
-         - hdisk1
+      - hdisk1
     state: copy
 
 - name: Copy the rootvg to multiple disks hdisk1 and hdisk2
@@ -131,8 +131,8 @@ EXAMPLES = '''
     system_name: <system-name>
     vios_name: <vios-name>
     targets:
-         - hdisk1
-         - hdisk2
+      - hdisk1
+      - hdisk2
     state: copy
 
 - name: Copy the rootvg using minimize disk_size_policy
@@ -332,7 +332,7 @@ def find_valid_altdisk(module, params):
             found_altdisk.append(pv)
     if found_altdisk:
         if not params['force']:
-            error_msg = f'An alternate disk already exists on disk {found_altdisk}'
+            error_msg = 'An alternate disk already exists on disk {}'.format(found_altdisk)
             module.fail_json(msg=error_msg)
         elif params['targets'] is not None and set(params['targets']) == set(found_altdisk):
             return False
