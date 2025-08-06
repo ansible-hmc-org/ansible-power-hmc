@@ -1,0 +1,22 @@
+---
+- name: Install linux
+  hosts: vm
+  collections:
+    - ibm.power_hmc
+  gather_facts: false
+  roles:
+    - role: redhat_linux_install
+      vars:
+        distro: Rhel9.4le
+        repo_dir: rc-2.0
+        host_ip: < host-ip >
+        host_gw: < host-gateway >
+        host_subnet: < host-subnet >
+        host_netmask: < host-subnet-mask >
+        dns_ip: < dns-ip >
+        hostname: < hostname >
+        lpar_name: < lpar-name >
+        managed_system: < cec-name >
+        mac_address: < mac-address >
+        host_password: "{{ hostvars[groups['vm'][0]].ansible_password }}"
+
