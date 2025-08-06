@@ -1,7 +1,7 @@
 ---
 - name: Set MAC address fact
   set_fact:
-    mac_address: "{{ mac-address | lower }}"
+    mac_address: "{{ mac_address | lower }}"
 
 - name: Convert MAC address in colon format from fact variable
   set_fact:
