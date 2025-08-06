@@ -39,4 +39,3 @@ hostname: vm.abc.com
 lpar_name: vm-hmc
 managed_system: vm-abc
 host_password: password
-
