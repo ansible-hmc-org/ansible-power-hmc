@@ -183,12 +183,12 @@ def test_call_inside_powervm_poweron_partition(mocker, powervm_test_input, expec
         hmc_powervm.poweron_partition(hmc_powervm, powervm_test_input)
 
 
-@pytest.mark.parametrize("powervm_test_input, expectedError", test_data4)
+@pytest.mark.parametrize("powervm_test_input, expectedError", test_data3)
 def test_call_inside_powervm_poweron_partition(mocker, powervm_test_input, expectedError):
-	hmc_powervm = common_mock_setup(mocker)
-	if 'ParameterError' in expectedError:
-    	with pytest.raises(ParameterError) as e:
-        	hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
-    	assert expectedError == repr(e.value)
-	else:
-		hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
+    hmc_powervm = common_mock_setup(mocker)
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
