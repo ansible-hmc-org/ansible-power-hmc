@@ -87,10 +87,9 @@ options:
             -  Specify sss to retrieve a specific level of Managed System or Power LIC updates, even if disruptive.
                sss is the three character identifier of the specific level to retrieve.
                This is only valid when the LIC type is either Managed System only or Power only.
-            -  Specify ccc,ppp to retrieve a specific level of Managed System and Power LIC updates, even if disruptive.
+            -  Specify ccc to retrieve a specific level of Managed System LIC updates, even if disruptive.
                ccc is the three character identifier of the specific level of Managed System LIC updates to retrieve.
-               ppp is the three character identifier of the specific level of Power LIC updates to retrieve.
-               This is only valid when the LIC type is both Managed System and Power.
+               This is only valid when the LIC type is Managed System.
             -  Specify release1_level1,release2_level2,... to retrieve specific levels of LIC upgrades, even if disruptive.
                The level specified in each entry indicates the desired level
                for all components which are running the release specified in the entry.
@@ -131,10 +130,10 @@ EXAMPLES = r'''
       system_name: <System name/mtms>
       repository: sftp
       remote_repo:
-        hostname: <hostname/ip>
-        userid: <user>
-        passwd: <password>
-        directory: /repo/images/
+          hostname: <hostname/ip>
+          userid: <user>
+          passwd: <password>
+          directory: /repo/images/
       level: 01VL941_047
       state: upgraded
 '''
