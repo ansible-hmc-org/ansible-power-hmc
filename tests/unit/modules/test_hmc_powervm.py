@@ -120,16 +120,16 @@ test_data4 = [
       'system_name': "systemname", 'vm_name': None, 'update_config': update_config}, "ParameterError: mandatory parameter 'vm_name' is missing"),
     # update config is missing
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'modify_vm',
-    'system_name': "systemname", 'vm_name': 'vm_name', 'update_config': None}, "ParameterError: mandatory parameter 'update_config' is missing"),
+      'system_name': "systemname", 'vm_name': 'vm_name', 'update_config': None}, "ParameterError: mandatory parameter 'update_config' is missing"),
     # system name is missing
     ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'modify_vm',
-    'system_name': None, 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'system_name' is missing"),
+      'system_name': None, 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'system_name' is missing"),
     # hmc host is missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': None, 'action': 'modify_vm',
-    'system_name': 'systemname', 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'hmc_host' is missing"),
+      'system_name': 'systemname', 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'hmc_host' is missing"),
     # hmc_auth is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': None, 'state': None, 'action': 'modify_vm',
-    'system_name': 'systemname', 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'hmc_auth' is missing")]
+      'system_name': 'systemname', 'vm_name': 'vm_name', 'update_config': update_config}, "ParameterError: mandatory parameter 'hmc_auth' is missing")]
 
 
 def common_mock_setup(mocker):
@@ -182,12 +182,13 @@ def test_call_inside_powervm_poweron_partition(mocker, powervm_test_input, expec
     else:
         hmc_powervm.poweron_partition(hmc_powervm, powervm_test_input)
 
+
 @pytest.mark.parametrize("powervm_test_input, expectedError", test_data4)
 def test_call_inside_powervm_poweron_partition(mocker, powervm_test_input, expectedError):
-    hmc_powervm = common_mock_setup(mocker)
-    if 'ParameterError' in expectedError:
-        with pytest.raises(ParameterError) as e:
-            hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
-        assert expectedError == repr(e.value)
-    else:
-	      hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
+	hmc_powervm = common_mock_setup(mocker)
+	if 'ParameterError' in expectedError:
+    	with pytest.raises(ParameterError) as e:
+        	hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
+    	assert expectedError == repr(e.value)
+	else:
+		hmc_powervm.rename_partition(hmc_powervm, powervm_test_input)
