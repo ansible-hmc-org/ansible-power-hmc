@@ -80,7 +80,7 @@ options:
             directory:
                 description:
                     - Location where the images are stored.
-                    - Required when a remote location is used.
+                    - This option is required if I(repository=sftp) or I(repository=ftp).
                 type: str
     level:
         description:
