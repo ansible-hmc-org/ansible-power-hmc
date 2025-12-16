@@ -69,13 +69,13 @@ options:
             passwd:
                 description:
                     - The password to use to log in to the remote FTP or SFTP server.
-                      The I(passwd) and I(sshkey) options are mutually exclusive in case if I(location_type=sftp).
+                      The I(passwd) and I(sshkey) options are mutually exclusive in case if I(repository=sftp).
                       This option is only valid when the firmware image is located on a remote FTP or SFTP server.
                 type: str
             sshkey_file:
                 description:
                     - The name of the file that contains the SSH private key.
-                      This option is only valid if I(location_type=sftp).
+                      This option is only valid if I(repository=sftp).
                 type: str
             directory:
                 description:
