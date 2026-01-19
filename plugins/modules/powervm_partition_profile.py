@@ -50,9 +50,9 @@ options:
     system_name:
         description:
             - The name or mtms (machine type model serial) of the managed system..
-            - Optional for I(state=present), I(state=copy).
+            - Required for I(state=present), I(action=copy).
         type: str
-    vm_name:
+    lpar_name:
         description:
             - The name of the powervm partition.
         required: true
@@ -60,136 +60,142 @@ options:
     name:
         description:
             - Name of the existing logical partition profile.
-            - Used as the source profile when C(state=copy).
+            - Used as the source profile when I(action=copy).
         required: true
         type: str
-    processor_mode:
+    processor_settings:
         description:
-            - To specify the processor mode setting.
-            - Valid values are C(shared) and C(dedicated).
-            - Shared will assign partial processor units from the shared processor pool.
-            - Dedicated will assign the entire processor that can only be used by the logical partition.
-        type: str
+            - Processor configuration settings for the partition profile.
+            - Valid only for I(state=present)
+        type: dict
+        suboptions:
+            processor_mode:
+                description:
+                    - To specify the processor mode setting.
+                    - Valid values are C(shared) and C(dedicated).
+                type: str
+            desired_processors:
+                description:
+                    - Desired number of processors.
+                type: int
+            minimum_processors:
+                description:
+                    - Minimum number of processors.
+                type: int
+            maximum_processors:
+                description:
+                    - Maximum number of processors.
+                type: int
+            desired_processing_units:
+                description:
+                    - Desired shared processing units for shared processor mode.
+                    - Only valid if the C(processor_mode) is shared.
+                type: float
+            minimum_processing_units:
+                description:
+                    - Minimum shared processing units.
+                    - Only valid if the C(processor_mode) is shared.
+                type: float
+            maximum_processing_units:
+                description:
+                    - Maximum shared processing units.
+                    - Only valid if the C(processor_mode) is shared.
+                type: float
+            sharing_mode:
+                description:
+                    - Processor sharing mode for shared processor configuration.
+                    - Only valid if the C(processor_mode) is shared.
+                    - Valid values are C(capped) and C(uncapped).
+                    - Deafult value is C(capped).
+                type: str
+            uncapped_weight:
+                description:
+                    - Weight value used for uncapped shared processor mode.
+                    - Only valid if the C(processor_mode) is shared.
+                type: int
+            allow_processor_sharing:
+                description:
+                    - Only valid if the C(processor_mode) is dedicated.
+                    - Valid values are C(active), C(inactive), C(always), and C(never).
+                    - Only valid if the C(processor_mode) is dedicated.
+                    - This determines if idle processors are released to the shared pool.
+                    - Use C(active) to share idle cycles while the LPAR is running.
+                    - Use C(inactive) to share cycles only when the LPAR is inactive.
+                    - Use C(always) for continuous sharing of idle processor cycles.
+                    - Use C(never) to ensure processors are never shared (performance mode).
+                    - Default value is 'never'.
+                type: str
+            shared_processor_pool:
+                description:
+                    - Only valid if the C(processor_mode) is shared.
+                    - Shared processor pool id.
+                type: int
+    memory_settings:
+        description:
+            - Memory configuration settings for the partition profile.
+            - Valid only for I(state=present)
+        type: dict
+        suboptions:
+            desired_memory:
+                description:
+                    - Desired memory value in MB.
+                type: int
+            minimum_memory:
+                description:
+                    - Minimum memory value in MB.
+                type: int
+            maximum_memory:
+                description:
+                    - Maximum memory value in MB.
+                type: int
+            desired_huge_pagecount:
+                description:
+                    - Desired number of huge pages for the logical partition.
+                type: int
+            minimum_huge_pagecount:
+                description:
+                    - Minimum number of huge pages for the logical partition.
+                type: int
+            maximum_huge_pagecount:
+                description:
+                    - Maximum number of huge pages for the logical partition.
+                type: int
+            active_memory_expansion:
+                description:
+                    - Enable Active Memory Expansion.
+                    - Default value is 'false'.
+                type: bool
+            expansion_factor:
+                description:
+                    - Active Memory Expansion (AME) expansion factor.
+                    - Valid values are from C(0.0) to C(10.0).
+                type: float
+            hardware_page_tableratio:
+                description:
+                    - Hardware page table ratio.
+                    - Valid values are from C(5) to C(9).
+                type: int
+            desired_physical_page_tableratio:
+                description:
+                    - Desired physical page table ratio.
+                    - Valid values are from C(0) to C(6).
+                type: int
     duplicate_prof_name:
         description:
             - Name of the new profile to be created by copying an existing profile.
-            - Required when C(state=copy)
+            - Required when I(action=copy)
         type: str
-    desired_processing_units:
-        description:
-            - Desired shared processing units for shared processor mode.
-            - This value must be greater than or equal to C(minimum_processing_units)
-              and less than or equal to C(maximum_processing_units).
-        type: float
-    minimum_processing_units:
-        description:
-            - Minimum shared processing units.
-            - This value must be less than or equal to C(desired_processing_units).
-        type: float
-    maximum_processing_units:
-        description:
-            - Maximum shared processing units.
-            - This value must be greater than or equal to C(desired_processing_units).
-        type: float
-    desired_processors:
-        description:
-            - Desired number of processors.
-            - This value must be greater than or equal to C(minimum_processors)
-              and less than or equal to C(maximum_processors).
-        type: int
-    minimum_processors:
-        description:
-            - Minimum number of processors.
-            - This value must be less than or equal to C(desired_processors).
-        type: int
-    maximum_processors:
-        description:
-            - Maximum number of processors.
-            - This value must be greater than or equal to C(desired_processors).
-        type: int
-    desired_huge_pagecount:
-        description:
-            - Desired number of huge pages for the logical partition.
-            - This value must be greater than or equal to C(minimum_huge_pagecount)
-              and less than or equal to C(maximum_huge_pagecount).
-        type: int
-
-    minimum_huge_pagecount:
-        description:
-            - Minimum number of huge pages for the logical partition.
-            - This value must be less than or equal to C(desired_huge_pagecount).
-        type: int
-
-    maximum_huge_pagecount:
-        description:
-            - Maximum number of huge pages for the logical partition.
-            - This value must be greater than or equal to C(desired_huge_pagecount).
-        type: int
-    sharing_mode:
-        description:
-            - Processor sharing mode for shared processor configuration.
-            - Valid values are C(capped) and C(uncapped).
-            - Applicable only when C(processor_mode=shared).
-            - When set to C(uncapped), C(uncapped_weight) becomes mandatory.
-        type: str
-    uncapped_weight:
-        description:
-            - Weight value used for uncapped shared processor mode.
-            - Mandatory when C(sharing_mode=uncapped).
-        type: int
-    allow_processor_sharing:
-        description:
-            - Controls processor sharing behavior in dedicated processor mode.
-            - Valid values are C(active), C(inactive), C(always), and C(never).
-            - Applicable only when C(processor_mode=dedicated).
-            - Default is C(never).
-        type: str
-    shared_processor_poolName:
-        description:
-            - Shared processor pool name or ID.
-            - Applicable only when C(processor_mode=shared).
-            - Default is C(DefaultPool).
-        type: str
-    desired_memory:
-        description:
-            - Desired memory value in MB.
-        type: int
-    minimum_memory:
-        description:
-            - Minimum memory value in MB.
-        type: int
-    maximum_memory:
-        description:
-            - Maximum memory value in MB.
-        type: int
-    active_memory_expansion:
-        description:
-            - Enable Active Memory Expansion.
-        type: bool
-    expansion_factor:
-        description:
-            - Active Memory Expansion (AME) expansion factor.
-            - Valid values are from C(1.0) to C(10.0).
-            - When specified, AME is automatically enabled.
-        type: float
-    hardware_page_tableratio:
-        description:
-            - Hardware page table ratio.
-            - Valid values are from C(5) to C(9).
-        type: int
-    desired_physical_page_tableratio:
-        description:
-            - Desired physical page table ratio.
-            - Valid values are from C(0) to C(6).
-        type: int
     state:
         description:
             - Desired state of the logical partition profile.
             - C(present) creates a new partition profile.
-            - C(copy) copies an existing partition profile.
-        required: true
         type: str
-        choices: ['present', 'copy']
+        choices: ['present']
+    action:
+        description:
+            - C(copy) copies an existing partition profile.
+        type: str
+        choices: ['copy']
 '''
 
 EXAMPLES = '''
@@ -200,13 +206,14 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    vm_name: <vm_name>
+    lpar_name: <lpar_name>
     name: dedicated_profile
-    desired_processors: 1
-    maximum_processors: 3
-    minimum_processors: 1
-    processor_mode: dedicated
-    allow_processor_sharing: never
+    processor_settings:
+      processor_mode: dedicated
+      desired_processors: 1
+      maximum_processors: 3
+      minimum_processors: 1
+      allow_processor_sharing: never
     state: present
 
 - name: Create a new partition profile with shared processor and uncapped sharing mode
@@ -216,23 +223,26 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    vm_name: <vm_name>
+    lpar_name: <lpar_name>
     name: shared_testing
-    desired_processors: 1
-    maximum_processors: 1
-    minimum_processors: 1
-    minimum_processing_units: 1
-    maximum_processing_units: 1
-    desired_processing_units: 1
-    sharing_mode: uncapped
-    uncapped_weight: 100
-    desired_huge_pagecount: 2
-    maximum_huge_pagecount: 2
-    minimum_huge_pagecount: 2
-    desired_memory: 1024
-    maximum_memory: 1024
-    minimum_memory: 1024
-    expansion_factor: 10
+    processor_settings:
+      processor_mode: shared
+      desired_processors: 1
+      maximum_processors: 1
+      minimum_processors: 1
+      minimum_processing_units: 1.0
+      maximum_processing_units: 1.0
+      desired_processing_units: 1.0
+      sharing_mode: uncapped
+      uncapped_weight: 100
+    memory_settings:
+      desired_huge_pagecount: 2
+      maximum_huge_pagecount: 2
+      minimum_huge_pagecount: 2
+      desired_memory: 1024
+      maximum_memory: 1024
+      minimum_memory: 1024
+      expansion_factor: 10
     state: present
 
 - name: Create a copy of already existing partition profile
@@ -242,9 +252,10 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    vm_name: <vm_name>
+    lpar_name: <lpar_name>
     name: shared_testing
     duplicate_prof_name: test
+    action: copy
 '''
 
 RETURN = '''
@@ -278,7 +289,6 @@ from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions impor
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
 
-# Generic setting for log initializing and log rotation
 import logging
 LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
@@ -291,72 +301,147 @@ def init_logger():
         level=logging.DEBUG)
 
 
+def validate_sub_dict(sub_key, sub_params):
+    """Validate nested dictionary parameters"""
+    for key in list(sub_params.keys()):
+        if not sub_params[key] and sub_params[key] != 0 and sub_params[key] != False:
+            sub_params.pop(key)
+
+    if not sub_params:
+        raise ParameterError("Key values of '%s' are invalid or empty" % sub_key)
+
+    if sub_key == 'processor_settings':
+        processor_mode = sub_params.get('processor_mode')
+        if processor_mode:
+            if processor_mode.lower() not in ['dedicated', 'shared']:
+                raise ParameterError("processor_mode must be either 'dedicated' or 'shared'")
+            
+            if processor_mode.lower() == 'dedicated':
+                allow_sharing = sub_params.get('allow_processor_sharing')
+                if allow_sharing and allow_sharing.lower() not in ['active', 'inactive', 'always', 'never']:
+                    raise ParameterError("allow_processor_sharing must be one of: 'active', 'inactive', 'always', 'never'")
+                
+                invalid_params = ['sharing_mode', 'uncapped_weight', 'shared_processor_pool',
+                                'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
+                found_invalid = [p for p in invalid_params if sub_params.get(p) is not None]
+                if found_invalid:
+                    raise ParameterError("Parameters %s are not valid for dedicated processor mode" % ', '.join(found_invalid))
+            
+            elif processor_mode.lower() == 'shared':
+                sharing_mode = sub_params.get('sharing_mode')
+                if sharing_mode and sharing_mode.lower() not in ['capped', 'uncapped']:
+                    raise ParameterError("sharing_mode must be either 'capped' or 'uncapped'")
+                
+                if sub_params.get('allow_processor_sharing') is not None:
+                    raise ParameterError("allow_processor_sharing is not valid for shared processor mode")
+
+    elif sub_key == 'memory_settings':
+        expansion_factor = sub_params.get('expansion_factor')
+        if expansion_factor is not None:
+            if not (0.0 <= expansion_factor <= 10.0):
+                raise ParameterError("expansion_factor must be between 0.0 and 10.0")
+        
+        hw_page_ratio = sub_params.get('hardware_page_tableratio')
+        if hw_page_ratio is not None:
+            if not (5 <= hw_page_ratio <= 9):
+                raise ParameterError("hardware_page_tableratio must be between 5 and 9")
+        
+        phys_page_ratio = sub_params.get('desired_physical_page_tableratio')
+        if phys_page_ratio is not None:
+            if not (0 <= phys_page_ratio <= 6):
+                raise ParameterError("desired_physical_page_tableratio must be between 0 and 6")
+
+
 def validate_parameters(params):
     '''Check that the input parameters satisfy the mutual exclusiveness of HMC'''
-    opr = params['state']
+    opr = None
+    if params['state'] is not None:
+        opr = params['state']
+    else:
+        opr = params['action']
     unsupportedList = []
     mandatoryList = []
 
     if opr == 'present':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'processor_mode', 'minimum_processors',
-                         'maximum_processors', 'desired_processors', 'desired_huge_pagecount', 'maximum_huge_pagecount',
-                         'minimum_huge_pagecount', 'desired_memory', 'maximum_memory', 'minimum_memory']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
         unsupportedList = ['duplicate_prof_name']
 
-        if 'processor_mode' in params and params['processor_mode'] is not None:
-            if params['processor_mode'].lower() not in ['dedicated', 'shared']:
-                raise ParameterError("processor_mode must be either 'dedicated' or 'shared'")
-            if params['processor_mode'].lower() == 'dedicated':
-                unsupportedList += ['sharing_mode', 'uncapped_weight', 'shared_processor_poolName', 'minimum_processing_units',
-                                    'maximum_processing_units', 'desired_processing_units']
-                if 'allow_processor_sharing' in params and params['allow_processor_sharing'] is not None:
-                    if params['allow_processor_sharing'].lower() not in ['active', 'inactive', 'always', 'never']:
-                        raise ParameterError("allow_processor_sharing must be one of: 'active', 'inactive', 'always', 'never'")
-                else:
-                    params['allow_processor_sharing'] = 'never'
-            if params['processor_mode'].lower() == 'shared':
-                mandatoryList += ['minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
-                unsupportedList += ['allow_processor_sharing']
-                if params['shared_processor_poolName'] is None:
-                    params['shared_processor_poolName'] = 'DefaultPool'
-                if params['sharing_mode'] is not None:
-                    if params['sharing_mode'].lower() not in ['capped', 'uncapped']:
-                        raise ParameterError("processor_mode must be either 'capped' or 'uncapped'")
-                    if params['sharing_mode'].lower() == 'capped':
-                        unsupportedList += ['uncapped_weight']
-                    elif params['sharing_mode'].lower() == 'uncapped':
-                        mandatoryList += ['uncapped_weight']
-            if params['expansion_factor'] is not None:
-                if not (1 <= params['expansion_factor'] <= 10):
-                    raise ParameterError("expansion_factor must be between 1.0 and 10.0")
-            if params['hardware_page_tableratio'] is not None:
-                if not (5 <= params['hardware_page_tableratio'] <= 9):
-                    raise ParameterError("hardware_page_tableratio must be between 5 and 9")
-            if params['desired_physical_page_tableratio'] is not None:
-                if not (0 <= params['desired_physical_page_tableratio'] <= 6):
-                    raise ParameterError("desired_physical_page_tableratio must be between 0 and 6")
+        if params.get('processor_settings'):
+            proc_settings = params['processor_settings']
+            validate_sub_dict('processor_settings', proc_settings)
+            
+            processor_mode = proc_settings.get('processor_mode')
+            if not processor_mode:
+                raise ParameterError("processor_mode is required in processor_settings for state=present")
+            
+            if processor_mode.lower() == 'dedicated':
+                required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors']
+            else:
+                required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors',
+                                 'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
+            
+            missing = [f for f in required_fields if proc_settings.get(f) is None]
+            if missing:
+                raise ParameterError("Missing required processor_settings fields: %s" % ', '.join(missing))
+            
+            min_proc = proc_settings['minimum_processors']
+            des_proc = proc_settings['desired_processors']
+            max_proc = proc_settings['maximum_processors']
+            
+            if not (min_proc <= des_proc <= max_proc):
+                raise ParameterError("Processor values must satisfy: minimum_processors <= desired_processors <= maximum_processors")
+            
+            if processor_mode.lower() == 'shared':
+                min_units = proc_settings['minimum_processing_units']
+                des_units = proc_settings['desired_processing_units']
+                max_units = proc_settings['maximum_processing_units']
+                
+                if not (min_units <= des_units <= max_units):
+                    raise ParameterError("Processing unit values must satisfy: minimum_processing_units <= desired_processing_units <= maximum_processing_units")
+                logger.debug("Here error")
+                sharing_mode = proc_settings.get('sharing_mode')
+                logger.debug("Here aano error")
+                if sharing_mode and sharing_mode.lower() == 'uncapped':
+                    if proc_settings.get('uncapped_weight') is None:
+                        raise ParameterError("uncapped_weight is required when sharing_mode is 'uncapped'")
+        else:
+            raise ParameterError("processor_settings is required for state=present")
 
-    if opr == 'copy':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'duplicate_prof_name']
-        unsupportedList = ['processor_mode', 'minimum_processors', 'maximum_processors', 'desired_processors', 'desired_huge_pagecount',
-                           'maximum_huge_pagecount', 'minimum_memory', 'minimum_huge_pagecount', 'desired_physical_page_tableratio',
-                           'hardware_page_tableratio', 'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units',
-                           'allow_processor_sharing', 'sharing_mode', 'expansion_factor', 'shared_processor_poolName',
-                           'uncapped_weight', 'active_memory_expansion', 'desired_memory', 'maximum_memory']
+        if params.get('memory_settings'):
+            mem_settings = params['memory_settings']
+            validate_sub_dict('memory_settings', mem_settings)
+            
+            required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
+                                  'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
+            missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
+            if missing_mem:
+                raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
+            
+            min_mem = mem_settings['minimum_memory']
+            des_mem = mem_settings['desired_memory']
+            max_mem = mem_settings['maximum_memory']
+            
+            if not (min_mem <= des_mem <= max_mem):
+                raise ParameterError("Memory values must satisfy: minimum_memory <= desired_memory <= maximum_memory")
+        else:
+            raise ParameterError("memory_settings is required for state=present")
+
+    elif opr == 'copy':
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name', 'duplicate_prof_name']
+        unsupportedList = ['processor_settings', 'memory_settings']
 
     collate = []
     for eachMandatory in mandatoryList:
-        if not params[eachMandatory]:
+        if not params.get(eachMandatory):
             collate.append(eachMandatory)
     if collate:
         if len(collate) == 1:
             raise ParameterError("mandatory parameter '%s' is missing" % (collate[0]))
         else:
             raise ParameterError("mandatory parameters '%s' are missing" % (','.join(collate)))
-
     collate = []
     for eachUnsupported in unsupportedList:
-        if params[eachUnsupported]:
+        if params.get(eachUnsupported):
             collate.append(eachUnsupported)
 
     if collate:
@@ -365,14 +450,20 @@ def validate_parameters(params):
         else:
             raise ParameterError("unsupported parameters: %s" % (', '.join(collate)))
 
-    if params['processor_mode'] is not None:
-        if params['processor_mode'].lower() in ['dedicated', 'shared']:
-            if not (params['minimum_processors'] <= params['desired_processors'] <= params['maximum_processors']):
-                raise ParameterError("value of minimum_processors <= desired_processors <= maximum_processors")
-
-        if params['processor_mode'].lower() == 'shared':
-            if not (params['minimum_processing_units'] <= params['desired_processing_units'] <= params['maximum_processing_units']):
-                raise ParameterError("value of minimum_processing_units <= desired_processing_units <= maximum_processing_units")
+def build_config_dict(params):
+    config = {
+        'name': params.get('name'),
+        'duplicate_prof_name': params.get('duplicate_prof_name')
+    }
+    
+    sections = ['processor_settings', 'memory_settings']
+    
+    for section in sections:
+        section_data = params.get(section)
+        if isinstance(section_data, dict):
+            config.update(section_data)
+            
+    return config
 
 
 def copy_partition_profile(module, params):
@@ -380,19 +471,24 @@ def copy_partition_profile(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    vm_name = params['vm_name']
+    lpar_name = params['lpar_name']
     changed = False
     lpar_uuid = None
     name = params['name']
+    duplicate_prof_name = params['duplicate_prof_name']
+    
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
+    
     validate_parameters(params)
+    
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
         try:
             system_name = hmc.getSystemNameFromMTMS(system_name)
         except HmcError as on_system_error:
             return changed, repr(on_system_error), None
+    
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -408,22 +504,24 @@ def copy_partition_profile(module, params):
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
         for eachLpar in lpar_quick_list:
-            if eachLpar['PartitionName'] == vm_name:
+            if eachLpar['PartitionName'] == lpar_name:
                 lpar_uuid = eachLpar['UUID']
                 break
     else:
-        module.fail_json(msg="There are no Logical Partitions present on the system")
+        module.fail_json(msg=f"Given partition ({lpar_name}) is not present on the system")
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         if name not in result:
-            module.fail_json(msg="A profile named " + name + " doesnot exist for the partition.")
-        elif params['duplicate_prof_name'] in result:
-            module.fail_json(msg="A profile named " + params['duplicate_prof_name'] + " already exist.")
+            module.fail_json(msg="A profile named " + name + " does not exist for the partition.")
+        elif duplicate_prof_name in result:
+            msg="A profile named " + duplicate_prof_name + " already exists."
+            return False, None, msg
         else:
-            final_result = rest_conn.copyPartitionProfile(lpar_uuid, params)
+            config = {'name': name, 'duplicate_prof_name': duplicate_prof_name}
+            final_result = rest_conn.copyPartitionProfile(lpar_uuid, config)
             if final_result == 200:
-                final_result = {'msg': f"copy of {params['name']} partition profile is created successfully"}
+                final_result = {'msg': f"copy of {name} partition profile is created successfully"}
                 return True, final_result, None
             else:
                 return False, final_result, None
@@ -436,14 +534,17 @@ def create_partition_profile(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    vm_name = params['vm_name']
+    lpar_name = params['lpar_name']
     changed = False
     lpar_uuid = None
     name = params['name']
+    
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
+    
     validate_parameters(params)
+    
     allow_processor_sharing_MAP = {
         'inactive': 'sre idle proces',
         'active': 'sre idle procs active',
@@ -456,6 +557,7 @@ def create_partition_profile(module, params):
             system_name = hmc.getSystemNameFromMTMS(system_name)
         except HmcError as on_system_error:
             return changed, repr(on_system_error), None
+    
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
@@ -471,7 +573,7 @@ def create_partition_profile(module, params):
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
         for eachLpar in lpar_quick_list:
-            if eachLpar['PartitionName'] == vm_name:
+            if eachLpar['PartitionName'] == lpar_name:
                 lpar_uuid = eachLpar['UUID']
                 break
     else:
@@ -480,30 +582,45 @@ def create_partition_profile(module, params):
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         if name in result:
-            module.fail_json(msg="A profile named " + name + " already exists for this partition.")
+            msg="A profile named " + name + " already exists."
+            return False, None, msg
         else:
-            if params['processor_mode'].lower() == 'shared':
-                params['processor_mode'] = 'false'
-                if params['sharing_mode'] is None:
-                    params['sharing_mode'] = 'capped'
+            config = build_config_dict(params)
+            proc_settings = params.get('processor_settings', {})
+            processor_mode = proc_settings.get('processor_mode', '').lower()
+            
+            if processor_mode == 'shared':
+                config['processor_mode'] = 'false'
+                if not config.get('sharing_mode'):
+                    config['sharing_mode'] = 'capped'
+                    config['uncapped_weight'] = 0
+                if not config.get('shared_processor_pool'):
+                    logger.debug("is it coming here")
+                    config['shared_processor_pool'] = 0
             else:
-                params['processor_mode'] = 'true'
-                if params['allow_processor_sharing']:
-                    sharing_input = params.get('allow_processor_sharing', 'never')
+                config['processor_mode'] = 'true'
+                if config.get('allow_processor_sharing'):
+                    sharing_input = config.get('allow_processor_sharing', 'never')
                     allow_sharing_mode = allow_processor_sharing_MAP.get(sharing_input)
-                    params['allow_processor_sharing'] = allow_sharing_mode
-
-            if params['active_memory_expansion'] is None:
-                params['active_memory_expansion'] = False
-            if params['expansion_factor'] is not None and params['expansion_factor'] >= 1:
-                params['active_memory_expansion'] = True
+                    config['allow_processor_sharing'] = allow_sharing_mode
+                else:
+                    config['allow_processor_sharing'] = allow_processor_sharing_MAP['never']
+            mem_settings = params.get('memory_settings', {})
+            if config.get('active_memory_expansion') is None:
+                config['active_memory_expansion'] = False
+            
+            expansion_factor = config.get('expansion_factor')
+            if expansion_factor is not None and expansion_factor >= 1:
+                config['active_memory_expansion'] = True
             else:
-                params['expansion_factor'] = 0.0
-            if params['hardware_page_tableratio'] is None:
-                params['hardware_page_tableratio'] = 7
-            if params['desired_physical_page_tableratio'] is None:
-                params['desired_physical_page_tableratio'] = 6
-            result = rest_conn.createPartitionProfile(lpar_uuid, params)
+                config['expansion_factor'] = 0.0
+            
+            if config.get('hardware_page_tableratio') is None:
+                config['hardware_page_tableratio'] = 7
+            if config.get('desired_physical_page_tableratio') is None:
+                config['desired_physical_page_tableratio'] = 6
+            
+            result = rest_conn.createPartitionProfile(lpar_uuid, config)
         if result.startswith("REST"):
             return False, result, None
         else:
@@ -531,7 +648,33 @@ def perform_task(module):
 
 
 def run_module():
-    # define available arguments/parameters a user can pass to the module
+    processor_args = dict(
+        processor_mode=dict(type='str'),
+        desired_processors=dict(type='int'),
+        minimum_processors=dict(type='int'),
+        maximum_processors=dict(type='int'),
+        desired_processing_units=dict(type='float'),
+        minimum_processing_units=dict(type='float'),
+        maximum_processing_units=dict(type='float'),
+        sharing_mode=dict(type='str'),
+        uncapped_weight=dict(type='int'),
+        allow_processor_sharing=dict(type='str'),
+        shared_processor_pool=dict(type='int'),
+    )
+    
+    memory_args = dict(
+        desired_memory=dict(type='int'),
+        minimum_memory=dict(type='int'),
+        maximum_memory=dict(type='int'),
+        desired_huge_pagecount=dict(type='int'),
+        minimum_huge_pagecount=dict(type='int'),
+        maximum_huge_pagecount=dict(type='int'),
+        active_memory_expansion=dict(type='bool'),
+        expansion_factor=dict(type='float'),
+        hardware_page_tableratio=dict(type='int'),
+        desired_physical_page_tableratio=dict(type='int'),
+    )
+
     module_args = dict(
         hmc_host=dict(type='str', required=True),
         hmc_auth=dict(type='dict',
@@ -543,38 +686,27 @@ def run_module():
                       )
                       ),
         system_name=dict(type='str'),
-        vm_name=dict(type='str', required=True),
+        lpar_name=dict(type='str', required=True),
         name=dict(type='str', required=True),
-        processor_mode=dict(type='str'),
-        desired_processing_units=dict(type='float'),
-        maximum_processing_units=dict(type='float'),
-        minimum_processing_units=dict(type='float'),
-        desired_processors=dict(type='int'),
-        maximum_processors=dict(type='int'),
-        minimum_processors=dict(type='int'),
-        shared_processor_poolName=dict(type='str'),
-        uncapped_weight=dict(type='int'),
-        sharing_mode=dict(type='str'),
-        allow_processor_sharing=dict(type='str'),
-        active_memory_expansion=dict(type='bool'),
-        desired_huge_pagecount=dict(type='int'),
-        maximum_huge_pagecount=dict(type='int'),
-        minimum_huge_pagecount=dict(type='int'),
-        desired_memory=dict(type='int'),
-        maximum_memory=dict(type='int'),
-        minimum_memory=dict(type='int'),
-        expansion_factor=dict(type='float'),
-        hardware_page_tableratio=dict(type='int'),
-        desired_physical_page_tableratio=dict(type='int'),
+        processor_settings=dict(type='dict',
+                               options=processor_args
+                               ),
+        memory_settings=dict(type='dict',
+                            options=memory_args
+                            ),
         duplicate_prof_name=dict(type='str'),
-        state=dict(type='str', required=True,
-                   choices=['present', 'copy']),
+        state=dict(type='str',
+                   choices=['present']),
+        action=dict(type='str',
+                   choices=['copy']),
     )
 
     module = AnsibleModule(
         argument_spec=module_args,
-        required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'vm_name']],
-                     ['state', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'vm_name']]]
+        mutually_exclusive=[('state', 'action')],
+        required_one_of=[('state', 'action')],
+        required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'processor_settings', 'memory_settings']],
+                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'duplicate_prof_name']]]
     )
 
     if module._verbosity >= 5:
