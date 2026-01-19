@@ -304,7 +304,7 @@ def init_logger():
 def validate_sub_dict(sub_key, sub_params):
     """Validate nested dictionary parameters"""
     for key in list(sub_params.keys()):
-        if not sub_params[key] and sub_params[key] != 0 and sub_params[key] != False:
+        if not sub_params[key] and sub_params[key] is not 0 and sub_params[key] is not False:
             sub_params.pop(key)
 
     if not sub_params:
@@ -328,7 +328,6 @@ def validate_sub_dict(sub_key, sub_params):
                 sharing_mode = sub_params.get('sharing_mode')
                 if sharing_mode and sharing_mode.lower() not in ['capped', 'uncapped']:
                     raise ParameterError("sharing_mode must be either 'capped' or 'uncapped'")
-                
                 if sub_params.get('allow_processor_sharing') is not None:
                     raise ParameterError("allow_processor_sharing is not valid for shared processor mode")
     elif sub_key == 'memory_settings':
@@ -360,7 +359,7 @@ def validate_parameters(params):
         unsupportedList = ['duplicate_prof_name']
         if params.get('processor_settings'):
             proc_settings = params['processor_settings']
-            validate_sub_dict('processor_settings', proc_settings)  
+            validate_sub_dict('processor_settings', proc_settings)
             processor_mode = proc_settings.get('processor_mode')
             if not processor_mode:
                 raise ParameterError("processor_mode is required in processor_settings for state=present")
@@ -380,7 +379,7 @@ def validate_parameters(params):
             if processor_mode.lower() == 'shared':
                 min_units = proc_settings['minimum_processing_units']
                 des_units = proc_settings['desired_processing_units']
-                max_units = proc_settings['maximum_processing_units'] 
+                max_units = proc_settings['maximum_processing_units']
                 if not (min_units <= des_units <= max_units):
                     raise ParameterError("Processing unit values must satisfy: minimum_processing_units <= desired_processing_units <= maximum_processing_units")
                 logger.debug("Here error")
@@ -438,7 +437,7 @@ def build_config_dict(params):
     for section in sections:
         section_data = params.get(section)
         if isinstance(section_data, dict):
-            config.update(section_data)      
+            config.update(section_data) 
     return config
 
 
@@ -618,7 +617,6 @@ def run_module():
         allow_processor_sharing=dict(type='str'),
         shared_processor_pool=dict(type='int'),
     )
-    
     memory_args = dict(
         desired_memory=dict(type='int'),
         minimum_memory=dict(type='int'),
