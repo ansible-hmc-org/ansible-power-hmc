@@ -320,7 +320,7 @@ def validate_sub_dict(sub_key, sub_params):
                 if allow_sharing and allow_sharing.lower() not in ['active', 'inactive', 'always', 'never']:
                     raise ParameterError("allow_processor_sharing must be one of: 'active', 'inactive', 'always', 'never'")
                 invalid_params = ['sharing_mode', 'uncapped_weight', 'shared_processor_pool',
-                                'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
+                                  'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
                 found_invalid = [p for p in invalid_params if sub_params.get(p) is not None]
                 if found_invalid:
                     raise ParameterError("Parameters %s are not valid for dedicated processor mode" % ', '.join(found_invalid))
@@ -367,7 +367,7 @@ def validate_parameters(params):
                 required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors']
             else:
                 required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors',
-                                 'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
+                                   'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
             missing = [f for f in required_fields if proc_settings.get(f) is None]
             if missing:
                 raise ParameterError("Missing required processor_settings fields: %s" % ', '.join(missing))
@@ -381,7 +381,7 @@ def validate_parameters(params):
                 des_units = proc_settings['desired_processing_units']
                 max_units = proc_settings['maximum_processing_units']
                 if not (min_units <= des_units <= max_units):
-                    raise ParameterError("Processing unit values must satisfy: minimum_processing_units <= desired_processing_units <= maximum_processing_units")
+                    raise ParameterError("Processing unit values must satisfy minimum_processing_units <= desired_processing_units <= maximum_processing_units")
                 logger.debug("Here error")
                 sharing_mode = proc_settings.get('sharing_mode')
                 logger.debug("Here aano error")
@@ -394,7 +394,7 @@ def validate_parameters(params):
             mem_settings = params['memory_settings']
             validate_sub_dict('memory_settings', mem_settings)
             required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
-                                  'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
+                                   'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
             missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
             if missing_mem:
                 raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
@@ -437,7 +437,7 @@ def build_config_dict(params):
     for section in sections:
         section_data = params.get(section)
         if isinstance(section_data, dict):
-            config.update(section_data) 
+            config.update(section_data)
     return config
 
 
@@ -483,7 +483,7 @@ def copy_partition_profile(module, params):
         if name not in result:
             module.fail_json(msg="A profile named " + name + " does not exist for the partition.")
         elif duplicate_prof_name in result:
-            msg="A profile named " + duplicate_prof_name + " already exists."
+            msg = "A profile named " + duplicate_prof_name + " already exists."
             return False, None, msg
         else:
             config = {'name': name, 'duplicate_prof_name': duplicate_prof_name}
@@ -543,7 +543,7 @@ def create_partition_profile(module, params):
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         if name in result:
-            msg="A profile named " + name + " already exists."
+            msg = "A profile named " + name + " already exists."
             return False, None, msg
         else:
             config = build_config_dict(params)
@@ -643,17 +643,11 @@ def run_module():
         system_name=dict(type='str'),
         lpar_name=dict(type='str', required=True),
         name=dict(type='str', required=True),
-        processor_settings=dict(type='dict',
-                               options=processor_args
-                               ),
-        memory_settings=dict(type='dict',
-                            options=memory_args
-                            ),
+        processor_settings=dict(type='dict', options=processor_args),
+        memory_settings=dict(type='dict', options=memory_args),
         duplicate_prof_name=dict(type='str'),
-        state=dict(type='str',
-                   choices=['present']),
-        action=dict(type='str',
-                   choices=['copy']),
+        state=dict(type='str', choices=['present']),
+        action=dict(type='str', choices=['copy']),
     )
 
     module = AnsibleModule(
