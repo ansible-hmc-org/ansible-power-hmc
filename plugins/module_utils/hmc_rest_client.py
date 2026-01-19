@@ -2772,7 +2772,6 @@ class HmcRestClient:
         logger.debug(response)
         return response
 
-
     def copyPartitionProfile(self, lpar_uuid, params):
         payload = {
             "JobRequest": {
