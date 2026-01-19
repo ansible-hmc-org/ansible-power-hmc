@@ -315,18 +315,15 @@ def validate_sub_dict(sub_key, sub_params):
         if processor_mode:
             if processor_mode.lower() not in ['dedicated', 'shared']:
                 raise ParameterError("processor_mode must be either 'dedicated' or 'shared'")
-            
             if processor_mode.lower() == 'dedicated':
                 allow_sharing = sub_params.get('allow_processor_sharing')
                 if allow_sharing and allow_sharing.lower() not in ['active', 'inactive', 'always', 'never']:
                     raise ParameterError("allow_processor_sharing must be one of: 'active', 'inactive', 'always', 'never'")
-                
                 invalid_params = ['sharing_mode', 'uncapped_weight', 'shared_processor_pool',
                                 'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
                 found_invalid = [p for p in invalid_params if sub_params.get(p) is not None]
                 if found_invalid:
                     raise ParameterError("Parameters %s are not valid for dedicated processor mode" % ', '.join(found_invalid))
-            
             elif processor_mode.lower() == 'shared':
                 sharing_mode = sub_params.get('sharing_mode')
                 if sharing_mode and sharing_mode.lower() not in ['capped', 'uncapped']:
@@ -334,18 +331,15 @@ def validate_sub_dict(sub_key, sub_params):
                 
                 if sub_params.get('allow_processor_sharing') is not None:
                     raise ParameterError("allow_processor_sharing is not valid for shared processor mode")
-
     elif sub_key == 'memory_settings':
         expansion_factor = sub_params.get('expansion_factor')
         if expansion_factor is not None:
             if not (0.0 <= expansion_factor <= 10.0):
                 raise ParameterError("expansion_factor must be between 0.0 and 10.0")
-        
         hw_page_ratio = sub_params.get('hardware_page_tableratio')
         if hw_page_ratio is not None:
             if not (5 <= hw_page_ratio <= 9):
                 raise ParameterError("hardware_page_tableratio must be between 5 and 9")
-        
         phys_page_ratio = sub_params.get('desired_physical_page_tableratio')
         if phys_page_ratio is not None:
             if not (0 <= phys_page_ratio <= 6):
@@ -361,41 +355,32 @@ def validate_parameters(params):
         opr = params['action']
     unsupportedList = []
     mandatoryList = []
-
     if opr == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
         unsupportedList = ['duplicate_prof_name']
-
         if params.get('processor_settings'):
             proc_settings = params['processor_settings']
-            validate_sub_dict('processor_settings', proc_settings)
-            
+            validate_sub_dict('processor_settings', proc_settings)  
             processor_mode = proc_settings.get('processor_mode')
             if not processor_mode:
                 raise ParameterError("processor_mode is required in processor_settings for state=present")
-            
             if processor_mode.lower() == 'dedicated':
                 required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors']
             else:
                 required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors',
                                  'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
-            
             missing = [f for f in required_fields if proc_settings.get(f) is None]
             if missing:
                 raise ParameterError("Missing required processor_settings fields: %s" % ', '.join(missing))
-            
             min_proc = proc_settings['minimum_processors']
             des_proc = proc_settings['desired_processors']
             max_proc = proc_settings['maximum_processors']
-            
             if not (min_proc <= des_proc <= max_proc):
                 raise ParameterError("Processor values must satisfy: minimum_processors <= desired_processors <= maximum_processors")
-            
             if processor_mode.lower() == 'shared':
                 min_units = proc_settings['minimum_processing_units']
                 des_units = proc_settings['desired_processing_units']
-                max_units = proc_settings['maximum_processing_units']
-                
+                max_units = proc_settings['maximum_processing_units'] 
                 if not (min_units <= des_units <= max_units):
                     raise ParameterError("Processing unit values must satisfy: minimum_processing_units <= desired_processing_units <= maximum_processing_units")
                 logger.debug("Here error")
@@ -406,30 +391,24 @@ def validate_parameters(params):
                         raise ParameterError("uncapped_weight is required when sharing_mode is 'uncapped'")
         else:
             raise ParameterError("processor_settings is required for state=present")
-
         if params.get('memory_settings'):
             mem_settings = params['memory_settings']
             validate_sub_dict('memory_settings', mem_settings)
-            
             required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
                                   'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
             missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
             if missing_mem:
                 raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
-            
             min_mem = mem_settings['minimum_memory']
             des_mem = mem_settings['desired_memory']
             max_mem = mem_settings['maximum_memory']
-            
             if not (min_mem <= des_mem <= max_mem):
                 raise ParameterError("Memory values must satisfy: minimum_memory <= desired_memory <= maximum_memory")
         else:
             raise ParameterError("memory_settings is required for state=present")
-
     elif opr == 'copy':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name', 'duplicate_prof_name']
         unsupportedList = ['processor_settings', 'memory_settings']
-
     collate = []
     for eachMandatory in mandatoryList:
         if not params.get(eachMandatory):
@@ -443,26 +422,23 @@ def validate_parameters(params):
     for eachUnsupported in unsupportedList:
         if params.get(eachUnsupported):
             collate.append(eachUnsupported)
-
     if collate:
         if len(collate) == 1:
             raise ParameterError("unsupported parameter: %s" % (collate[0]))
         else:
             raise ParameterError("unsupported parameters: %s" % (', '.join(collate)))
 
+
 def build_config_dict(params):
     config = {
         'name': params.get('name'),
         'duplicate_prof_name': params.get('duplicate_prof_name')
     }
-    
     sections = ['processor_settings', 'memory_settings']
-    
     for section in sections:
         section_data = params.get(section)
         if isinstance(section_data, dict):
-            config.update(section_data)
-            
+            config.update(section_data)      
     return config
 
 
@@ -476,30 +452,24 @@ def copy_partition_profile(module, params):
     lpar_uuid = None
     name = params['name']
     duplicate_prof_name = params['duplicate_prof_name']
-    
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
-    
     validate_parameters(params)
-    
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
         try:
             system_name = hmc.getSystemNameFromMTMS(system_name)
         except HmcError as on_system_error:
             return changed, repr(on_system_error), None
-    
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
         logger.debug(repr(error))
         module.fail_json(msg="Logon to HMC failed")
-
     if system_name:
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
     if not system_uuid:
         module.fail_json(msg="Given system is not present")
-
     lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
@@ -509,7 +479,6 @@ def copy_partition_profile(module, params):
                 break
     else:
         module.fail_json(msg=f"Given partition ({lpar_name}) is not present on the system")
-
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         if name not in result:
@@ -538,37 +507,30 @@ def create_partition_profile(module, params):
     changed = False
     lpar_uuid = None
     name = params['name']
-    
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
-    
     validate_parameters(params)
-    
     allow_processor_sharing_MAP = {
         'inactive': 'sre idle proces',
         'active': 'sre idle procs active',
         'always': 'sre idle procs always',
         'never': 'keep idle procs'
     }
-
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
         try:
             system_name = hmc.getSystemNameFromMTMS(system_name)
         except HmcError as on_system_error:
             return changed, repr(on_system_error), None
-    
     try:
         rest_conn = HmcRestClient(hmc_host, hmc_user, password)
     except Exception as error:
         logger.debug(repr(error))
         module.fail_json(msg="Logon to HMC failed")
-
     if system_name:
         system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
     if not system_uuid:
         module.fail_json(msg="Given system is not present")
-
     lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
@@ -588,7 +550,6 @@ def create_partition_profile(module, params):
             config = build_config_dict(params)
             proc_settings = params.get('processor_settings', {})
             processor_mode = proc_settings.get('processor_mode', '').lower()
-            
             if processor_mode == 'shared':
                 config['processor_mode'] = 'false'
                 if not config.get('sharing_mode'):
@@ -608,18 +569,15 @@ def create_partition_profile(module, params):
             mem_settings = params.get('memory_settings', {})
             if config.get('active_memory_expansion') is None:
                 config['active_memory_expansion'] = False
-            
             expansion_factor = config.get('expansion_factor')
             if expansion_factor is not None and expansion_factor >= 1:
                 config['active_memory_expansion'] = True
             else:
                 config['expansion_factor'] = 0.0
-            
             if config.get('hardware_page_tableratio') is None:
                 config['hardware_page_tableratio'] = 7
             if config.get('desired_physical_page_tableratio') is None:
                 config['desired_physical_page_tableratio'] = 6
-            
             result = rest_conn.createPartitionProfile(lpar_uuid, config)
         if result.startswith("REST"):
             return False, result, None
@@ -637,7 +595,6 @@ def perform_task(module):
         "present": create_partition_profile,
         "copy": copy_partition_profile
     }
-
     oper = 'state'
     if params['state'] is None:
         oper = 'action'
@@ -708,7 +665,6 @@ def run_module():
         required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'processor_settings', 'memory_settings']],
                      ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'duplicate_prof_name']]]
     )
-
     if module._verbosity >= 5:
         init_logger()
 
