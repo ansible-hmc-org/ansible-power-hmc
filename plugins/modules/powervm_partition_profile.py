@@ -57,13 +57,13 @@ options:
             - The name of the powervm partition.
         required: true
         type: str
-    prof_name:
+    name:
         description:
             - Name of the existing logical partition profile.
             - Used as the source profile when C(state=copy).
         required: true
         type: str
-    processing_mode:
+    processor_mode:
         description:
             - To specify the processor mode setting.
             - Valid values are C(shared) and C(dedicated).
@@ -129,7 +129,7 @@ options:
         description:
             - Processor sharing mode for shared processor configuration.
             - Valid values are C(capped) and C(uncapped).
-            - Applicable only when C(processing_mode=shared).
+            - Applicable only when C(processor_mode=shared).
             - When set to C(uncapped), C(uncapped_weight) becomes mandatory.
         type: str
     uncapped_weight:
@@ -141,13 +141,13 @@ options:
         description:
             - Controls processor sharing behavior in dedicated processor mode.
             - Valid values are C(active), C(inactive), C(always), and C(never).
-            - Applicable only when C(processing_mode=dedicated).
+            - Applicable only when C(processor_mode=dedicated).
             - Default is C(never).
         type: str
     shared_processor_poolName:
         description:
             - Shared processor pool name or ID.
-            - Applicable only when C(processing_mode=shared).
+            - Applicable only when C(processor_mode=shared).
             - Default is C(DefaultPool).
         type: str
     desired_memory:
@@ -201,11 +201,11 @@ EXAMPLES = '''
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
     vm_name: <vm_name>
-    prof_name: dedicated_profile
+    name: dedicated_profile
     desired_processors: 1
     maximum_processors: 3
     minimum_processors: 1
-    processing_mode: dedicated
+    processor_mode: dedicated
     allow_processor_sharing: never
     state: present
 
@@ -217,7 +217,7 @@ EXAMPLES = '''
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
     vm_name: <vm_name>
-    prof_name: shared_testing
+    name: shared_testing
     desired_processors: 1
     maximum_processors: 1
     minimum_processors: 1
@@ -243,7 +243,7 @@ EXAMPLES = '''
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
     vm_name: <vm_name>
-    prof_name: shared_testing
+    name: shared_testing
     duplicate_prof_name: test
 '''
 
@@ -298,15 +298,15 @@ def validate_parameters(params):
     mandatoryList = []
 
     if opr == 'present':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'prof_name', 'processing_mode', 'minimum_processors',
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'processor_mode', 'minimum_processors',
                          'maximum_processors', 'desired_processors', 'desired_huge_pagecount', 'maximum_huge_pagecount',
                          'minimum_huge_pagecount', 'desired_memory', 'maximum_memory', 'minimum_memory']
         unsupportedList = ['duplicate_prof_name']
 
-        if 'processing_mode' in params and params['processing_mode'] is not None:
-            if params['processing_mode'].lower() not in ['dedicated', 'shared']:
-                raise ParameterError("processing_mode must be either 'dedicated' or 'shared'")
-            if params['processing_mode'].lower() == 'dedicated':
+        if 'processor_mode' in params and params['processor_mode'] is not None:
+            if params['processor_mode'].lower() not in ['dedicated', 'shared']:
+                raise ParameterError("processor_mode must be either 'dedicated' or 'shared'")
+            if params['processor_mode'].lower() == 'dedicated':
                 unsupportedList += ['sharing_mode', 'uncapped_weight', 'shared_processor_poolName', 'minimum_processing_units',
                                     'maximum_processing_units', 'desired_processing_units']
                 if 'allow_processor_sharing' in params and params['allow_processor_sharing'] is not None:
@@ -314,14 +314,14 @@ def validate_parameters(params):
                         raise ParameterError("allow_processor_sharing must be one of: 'active', 'inactive', 'always', 'never'")
                 else:
                     params['allow_processor_sharing'] = 'never'
-            if params['processing_mode'].lower() == 'shared':
+            if params['processor_mode'].lower() == 'shared':
                 mandatoryList += ['minimum_processing_units', 'maximum_processing_units', 'desired_processing_units']
                 unsupportedList += ['allow_processor_sharing']
                 if params['shared_processor_poolName'] is None:
                     params['shared_processor_poolName'] = 'DefaultPool'
                 if params['sharing_mode'] is not None:
                     if params['sharing_mode'].lower() not in ['capped', 'uncapped']:
-                        raise ParameterError("processing_mode must be either 'capped' or 'uncapped'")
+                        raise ParameterError("processor_mode must be either 'capped' or 'uncapped'")
                     if params['sharing_mode'].lower() == 'capped':
                         unsupportedList += ['uncapped_weight']
                     elif params['sharing_mode'].lower() == 'uncapped':
@@ -337,8 +337,8 @@ def validate_parameters(params):
                     raise ParameterError("desired_physical_page_tableratio must be between 0 and 6")
 
     if opr == 'copy':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'prof_name', 'duplicate_prof_name']
-        unsupportedList = ['processing_mode', 'minimum_processors', 'maximum_processors', 'desired_processors', 'desired_huge_pagecount',
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'duplicate_prof_name']
+        unsupportedList = ['processor_mode', 'minimum_processors', 'maximum_processors', 'desired_processors', 'desired_huge_pagecount',
                            'maximum_huge_pagecount', 'minimum_memory', 'minimum_huge_pagecount', 'desired_physical_page_tableratio',
                            'hardware_page_tableratio', 'minimum_processing_units', 'maximum_processing_units', 'desired_processing_units',
                            'allow_processor_sharing', 'sharing_mode', 'expansion_factor', 'shared_processor_poolName',
@@ -365,12 +365,12 @@ def validate_parameters(params):
         else:
             raise ParameterError("unsupported parameters: %s" % (', '.join(collate)))
 
-    if params['processing_mode'] is not None:
-        if params['processing_mode'].lower() in ['dedicated', 'shared']:
+    if params['processor_mode'] is not None:
+        if params['processor_mode'].lower() in ['dedicated', 'shared']:
             if not (params['minimum_processors'] <= params['desired_processors'] <= params['maximum_processors']):
                 raise ParameterError("value of minimum_processors <= desired_processors <= maximum_processors")
 
-        if params['processing_mode'].lower() == 'shared':
+        if params['processor_mode'].lower() == 'shared':
             if not (params['minimum_processing_units'] <= params['desired_processing_units'] <= params['maximum_processing_units']):
                 raise ParameterError("value of minimum_processing_units <= desired_processing_units <= maximum_processing_units")
 
@@ -383,7 +383,7 @@ def copy_partition_profile(module, params):
     vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
-    prof_name = params['prof_name']
+    name = params['name']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
@@ -416,14 +416,14 @@ def copy_partition_profile(module, params):
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
-        if prof_name not in result:
-            module.fail_json(msg="A profile named " + prof_name + " doesnot exist for the partition.")
+        if name not in result:
+            module.fail_json(msg="A profile named " + name + " doesnot exist for the partition.")
         elif params['duplicate_prof_name'] in result:
             module.fail_json(msg="A profile named " + params['duplicate_prof_name'] + " already exist.")
         else:
             final_result = rest_conn.copyPartitionProfile(lpar_uuid, params)
             if final_result == 200:
-                final_result = {'msg': f"copy of {params['prof_name']} partition profile is created successfully"}
+                final_result = {'msg': f"copy of {params['name']} partition profile is created successfully"}
                 return True, final_result, None
             else:
                 return False, final_result, None
@@ -439,7 +439,7 @@ def create_partition_profile(module, params):
     vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
-    prof_name = params['prof_name']
+    name = params['name']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
     final_result = {}
@@ -479,15 +479,15 @@ def create_partition_profile(module, params):
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
-        if prof_name in result:
-            module.fail_json(msg="A profile named " + prof_name + " already exists for this partition.")
+        if name in result:
+            module.fail_json(msg="A profile named " + name + " already exists for this partition.")
         else:
-            if params['processing_mode'].lower() == 'shared':
-                params['processing_mode'] = 'false'
+            if params['processor_mode'].lower() == 'shared':
+                params['processor_mode'] = 'false'
                 if params['sharing_mode'] is None:
                     params['sharing_mode'] = 'capped'
             else:
-                params['processing_mode'] = 'true'
+                params['processor_mode'] = 'true'
                 if params['allow_processor_sharing']:
                     sharing_input = params.get('allow_processor_sharing', 'never')
                     allow_sharing_mode = allow_processor_sharing_MAP.get(sharing_input)
@@ -544,8 +544,8 @@ def run_module():
                       ),
         system_name=dict(type='str'),
         vm_name=dict(type='str', required=True),
-        prof_name=dict(type='str', required=True),
-        processing_mode=dict(type='str'),
+        name=dict(type='str', required=True),
+        processor_mode=dict(type='str'),
         desired_processing_units=dict(type='float'),
         maximum_processing_units=dict(type='float'),
         minimum_processing_units=dict(type='float'),
