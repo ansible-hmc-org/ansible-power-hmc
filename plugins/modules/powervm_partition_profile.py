@@ -565,7 +565,6 @@ def create_partition_profile(module, params):
                     config['allow_processor_sharing'] = allow_sharing_mode
                 else:
                     config['allow_processor_sharing'] = allow_processor_sharing_MAP['never']
-            mem_settings = params.get('memory_settings', {})
             if config.get('active_memory_expansion') is None:
                 config['active_memory_expansion'] = False
             expansion_factor = config.get('expansion_factor')
