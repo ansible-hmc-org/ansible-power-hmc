@@ -2778,7 +2778,7 @@ class HmcRestClient:
                                 "Atom": ""
                             },
                             "ParameterName": "existingPartitionProfileName",
-                            "ParameterValue": params['prof_name']
+                            "ParameterValue": params['name']
                         },
                         {
                             "Metadata": {
@@ -2836,7 +2836,7 @@ class HmcRestClient:
             <SharingMode kxe="false" kb="CUD">{4}</SharingMode>
         </ProcessorAttributes>
         '''.format(params['desired_processors'], params['maximum_processors'], params['minimum_processors'],
-                   params['processing_mode'], params['allow_processor_sharing'])
+                   params['processor_mode'], params['allow_processor_sharing'])
         return payload
 
     def sharedProcessorPayload(self, params):
@@ -2862,7 +2862,7 @@ class HmcRestClient:
             </SharedProcessorConfiguration>
             <SharingMode kb="CUD" kxe="false">{9}</SharingMode>
         </ProcessorAttributes>
-        '''.format(params['processing_mode'], params['desired_processing_units'], params['desired_processors'],
+        '''.format(params['processor_mode'], params['desired_processing_units'], params['desired_processors'],
                    params['maximum_processing_units'], params['maximum_processors'], params['minimum_processing_units'],
                    params['minimum_processors'], params['shared_processor_poolName'], params['uncapped_weight'], params['sharing_mode'])
         return payload
@@ -2874,7 +2874,7 @@ class HmcRestClient:
                                     xmlns="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
                                     xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2" schemaVersion="V1_0">'''
         partiton_profile_xmlstr += templatePartitionProfile
-        if params['processing_mode'].lower() == 'false':
+        if params['processor_mode'].lower() == 'false':
             partiton_profile_xmlstr += self.sharedProcessorPayload(params)
         else:
             partiton_profile_xmlstr += self.dedicatedProcessorPayload(params)
@@ -2899,7 +2899,7 @@ class HmcRestClient:
             '''.format(str(params['active_memory_expansion']).lower(),
                        params['desired_huge_pagecount'], params['desired_memory'], params['expansion_factor'], params['hardware_page_tableratio'],
                        params['maximum_huge_pagecount'], params['maximum_memory'], params['minimum_huge_pagecount'],
-                       params['minimum_memory'], params['desired_physical_page_tableratio'], params['prof_name'])
+                       params['minimum_memory'], params['desired_physical_page_tableratio'], params['name'])
         partiton_profile_xmlstr += memory_payload
         if params['sharing_mode'] == 'capped':
             xml_tree = etree.fromstring(partiton_profile_xmlstr.encode())
