@@ -304,9 +304,9 @@ def init_logger():
 def validate_sub_dict(sub_key, sub_params):
     """Validate nested dictionary parameters"""
     for key in list(sub_params.keys()):
-        if not sub_params[key] and sub_params[key] != 0 and sub_params[key] != False:
+        value = sub_params[key]
+        if not value and value != 0 and value is not False:
             sub_params.pop(key)
-
     if not sub_params:
         raise ParameterError("Key values of '%s' are invalid or empty" % sub_key)
 
