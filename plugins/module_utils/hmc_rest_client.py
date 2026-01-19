@@ -2737,7 +2737,7 @@ class HmcRestClient:
                         force_basic_auth=True,
                         timeout=300)
         if resp.code != 200:
-            logger.debug("Get of Logical Partition Profile failed. Respsonse code: %d", resp.code)
+            logger.debug("Get of partition profile failed. Respsonse code: %d", resp.code)
             return None
         response = resp.read()
         if profile_name is None:
@@ -2754,6 +2754,24 @@ class HmcRestClient:
                     if atom_id_elem:
                         return atom_id_elem[0].text
             return None
+
+    def getCurrentPartitionProfiles(self, lpar_uuid, profile_uuid):
+        url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile/{2}".format(self.hmc_ip, lpar_uuid, profile_uuid)
+        header = {'X-API-Session': self.session,
+                  'Accept': '*/*'}
+        resp = open_url(url,
+                        headers=header,
+                        method='GET',
+                        validate_certs=False,
+                        force_basic_auth=True,
+                        timeout=300)
+        if resp.code != 200:
+            logger.debug("Get of partition profile failed. Respsonse code: %d", resp.code)
+            return None
+        response = resp.read()
+        logger.debug(response)
+        return response
+
 
     def copyPartitionProfile(self, lpar_uuid, params):
         payload = {
@@ -2857,14 +2875,16 @@ class HmcRestClient:
                 <MaximumVirtualProcessors kxe="false" kb="CUD">{4}</MaximumVirtualProcessors>
                 <MinimumProcessingUnits kxe="false" kb="CUD">{5}</MinimumProcessingUnits>
                 <MinimumVirtualProcessors kb="CUD" kxe="false">{6}</MinimumVirtualProcessors>
-                <SharedProcessorPoolName ksv="V1_17_0" kb="CUD" kxe="false">{7}</SharedProcessorPoolName>
+                <SharedProcessorPoolID kb="CUD" kxe="false">{7}</SharedProcessorPoolID>
                 <UncappedWeight kb="CUD" kxe="false">{8}</UncappedWeight>
             </SharedProcessorConfiguration>
             <SharingMode kb="CUD" kxe="false">{9}</SharingMode>
         </ProcessorAttributes>
         '''.format(params['processor_mode'], params['desired_processing_units'], params['desired_processors'],
                    params['maximum_processing_units'], params['maximum_processors'], params['minimum_processing_units'],
-                   params['minimum_processors'], params['shared_processor_poolName'], params['uncapped_weight'], params['sharing_mode'])
+                   params['minimum_processors'], params['shared_processor_pool'], params['uncapped_weight'], params['sharing_mode'])
+        logger.debug("Payload")
+        logger.debug(payload)
         return payload
 
     def createPartitionProfile(self, lpar_uuid, params):
@@ -2901,11 +2921,16 @@ class HmcRestClient:
                        params['maximum_huge_pagecount'], params['maximum_memory'], params['minimum_huge_pagecount'],
                        params['minimum_memory'], params['desired_physical_page_tableratio'], params['name'])
         partiton_profile_xmlstr += memory_payload
-        if params['sharing_mode'] == 'capped':
-            xml_tree = etree.fromstring(partiton_profile_xmlstr.encode())
-            for elem in xml_tree.xpath('.//*[local-name()="UncappedWeight"]'):
-                elem.getparent().remove(elem)
-                partiton_profile_xmlstr = etree.tostring(xml_tree, encoding='unicode')
+        logger.debug("evida engilum vanno")
+        logger.debug(params)
+        if 'sharing_mode' in params:
+            if params['sharing_mode'] == 'capped':
+                xml_tree = etree.fromstring(partiton_profile_xmlstr.encode())
+                for elem in xml_tree.xpath('.//*[local-name()="UncappedWeight"]'):
+                    elem.getparent().remove(elem)
+                    partiton_profile_xmlstr = etree.tostring(xml_tree, encoding='unicode')
+        logger.debug("final data")
+        logger.debug(partiton_profile_xmlstr)
         url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile".format(self.hmc_ip, lpar_uuid)
         header = {'X-API-Session': self.session,
                   'Accept': '*/*',
