@@ -2948,7 +2948,7 @@ class HmcRestClient:
         if profile_name_elements:
             return 200, profile_name_elements[0].text
         return "Error: Profile creation failed with unknown error"
-    
+
     def updatePartitionProfile(self, lpar_uuid, partition_uuid, params):
         partiton_profile_xmlstr = ''
         templatePartitionProfile = '''<LogicalPartitionProfile:LogicalPartitionProfile
@@ -3016,4 +3016,3 @@ class HmcRestClient:
         if profile_name_elements:
             return 200, profile_name_elements[0].text
         return "Error: Profile creation failed with unknown error"
-
