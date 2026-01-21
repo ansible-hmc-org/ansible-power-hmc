@@ -300,7 +300,6 @@ EXAMPLES = '''
       minimum_memory: 1024
       expansion_factor: 10
     state: updated
-
 '''
 
 RETURN = '''
