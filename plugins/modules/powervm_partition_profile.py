@@ -73,33 +73,40 @@ options:
                 description:
                     - To specify the processor mode setting.
                     - Valid values are C(shared) and C(dedicated).
+                    - Required for I(state=present) and I(state=updated).
                 type: str
             desired_processors:
                 description:
                     - Desired number of processors.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             minimum_processors:
                 description:
                     - Minimum number of processors.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             maximum_processors:
                 description:
                     - Maximum number of processors.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             desired_processing_units:
                 description:
                     - Desired shared processing units for shared processor mode.
                     - Only valid if the C(processor_mode) is shared.
+                    - Required for I(state=present) and I(state=updated) if C(processor_mode) is shared.
                 type: float
             minimum_processing_units:
                 description:
                     - Minimum shared processing units.
                     - Only valid if the C(processor_mode) is shared.
+                    - Required for I(state=present) and I(state=updated) if C(processor_mode) is shared.
                 type: float
             maximum_processing_units:
                 description:
                     - Maximum shared processing units.
                     - Only valid if the C(processor_mode) is shared.
+                    - Required for I(state=present) and I(state=updated) if C(processor_mode) is shared.
                 type: float
             sharing_mode:
                 description:
@@ -112,6 +119,7 @@ options:
                 description:
                     - Weight value used for uncapped shared processor mode.
                     - Only valid if the C(processor_mode) is shared.
+                    - Default vale is 0.0.
                 type: int
             allow_processor_sharing:
                 description:
@@ -139,26 +147,32 @@ options:
             desired_memory:
                 description:
                     - Desired memory value in MB.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             minimum_memory:
                 description:
                     - Minimum memory value in MB.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             maximum_memory:
                 description:
                     - Maximum memory value in MB.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             desired_huge_pagecount:
                 description:
                     - Desired number of huge pages for the logical partition.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             minimum_huge_pagecount:
                 description:
                     - Minimum number of huge pages for the logical partition.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             maximum_huge_pagecount:
                 description:
                     - Maximum number of huge pages for the logical partition.
+                    - Required for I(state=present) and I(state=updated).
                 type: int
             active_memory_expansion:
                 description:
@@ -189,8 +203,9 @@ options:
         description:
             - Desired state of the logical partition profile.
             - C(present) creates a new partition profile.
+            - C(updated) modify existing partition profile.
         type: str
-        choices: ['present']
+        choices: ['present', 'updated']
     action:
         description:
             - C(copy) copies an existing partition profile.
@@ -256,6 +271,36 @@ EXAMPLES = '''
     name: shared_testing
     duplicate_prof_name: test
     action: copy
+
+- name: Modify the processor and memory settings of existing partition profile 
+  powervm_partition_profile:
+    hmc_host: '{{ inventory_hostname }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    system_name: <system_name/mtms>
+    lpar_name: <lpar_name>
+    name: shared_testing
+    processor_settings:
+      processor_mode: shared
+      desired_processors: 1
+      maximum_processors: 1
+      minimum_processors: 1
+      minimum_processing_units: 1.0
+      maximum_processing_units: 1.0
+      desired_processing_units: 1.0
+      sharing_mode: uncapped
+      uncapped_weight: 100
+    memory_settings:
+      desired_huge_pagecount: 2
+      maximum_huge_pagecount: 2
+      minimum_huge_pagecount: 2
+      desired_memory: 1024
+      maximum_memory: 1024
+      minimum_memory: 1024
+      expansion_factor: 10
+    state: updated
+
 '''
 
 RETURN = '''
@@ -363,7 +408,9 @@ def validate_parameters(params):
         opr = params['action']
     unsupportedList = []
     mandatoryList = []
-    if opr == 'present' or 'updated':
+    if opr == 'present' or opr == 'updated':
+        logger.debug("why am i here")
+        logger.debug(opr)
         if opr == 'present':
             mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
         unsupportedList = ['duplicate_prof_name']
