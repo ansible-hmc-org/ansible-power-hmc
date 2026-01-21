@@ -73,7 +73,7 @@ test_data = [
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
       'lpar_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
       'processor_settings': processor_settings1},
-     "ParameterError: processor_mode is required in processor_settings for state=present"),
+     "ParameterError: processor_mode is required in processor_settings"),
 
     # when processor_settings is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
