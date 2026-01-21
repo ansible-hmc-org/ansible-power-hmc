@@ -618,7 +618,7 @@ def create_partition_profile(module, params):
                     config['shared_processor_pool'] = 0
                 if config.get('sharing_mode').lower() == 'capped':
                     if not config.get('uncapped_weight'):
-                       config['uncapped_weight'] = 0 
+                       config['uncapped_weight'] = 0
             else:
                 config['processor_mode'] = 'true'
                 if config.get('allow_processor_sharing'):
@@ -651,7 +651,7 @@ def create_partition_profile(module, params):
 def update_partition_profile(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
-    password = params['hmc_auth']['password'] 
+    password = params['hmc_auth']['password']
     system_name = params['system_name']
     lpar_name = params['lpar_name']
     changed = False
@@ -789,7 +789,7 @@ def update_partition_profile(module, params):
                 if user_val is not None and user_val != current_val:
                     profile_settings[section][field] = user_val
                     changed = True
-        if changed != True:
+        if changed is not True:
             msg = "Partition profile " + name + " is already in desired configuration"
             return False, None, msg
         else:
