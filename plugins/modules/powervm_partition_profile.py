@@ -372,7 +372,7 @@ def validate_parameters(params):
             validate_sub_dict('processor_settings', proc_settings)
             processor_mode = proc_settings.get('processor_mode')
             if not processor_mode:
-                raise ParameterError("processor_mode is required in processor_settings for state=present")
+                raise ParameterError("processor_mode is required in processor_settings")
             if processor_mode.lower() == 'dedicated':
                 required_fields = ['minimum_processors', 'maximum_processors', 'desired_processors']
             else:
@@ -397,22 +397,29 @@ def validate_parameters(params):
                     if proc_settings.get('uncapped_weight') is None:
                         raise ParameterError("uncapped_weight is required when sharing_mode is 'uncapped'")
         else:
-            raise ParameterError("processor_settings is required for state=present")
-        if params.get('memory_settings'):
-            mem_settings = params['memory_settings']
-            validate_sub_dict('memory_settings', mem_settings)
-            required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
-                                   'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
-            missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
-            if missing_mem:
-                raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
-            min_mem = mem_settings['minimum_memory']
-            des_mem = mem_settings['desired_memory']
-            max_mem = mem_settings['maximum_memory']
-            if not (min_mem <= des_mem <= max_mem):
-                raise ParameterError("Memory values must satisfy: minimum_memory <= desired_memory <= maximum_memory")
-        else:
-            raise ParameterError("memory_settings is required for state=present")
+            if opr == 'updated':
+                pass
+            else:
+                raise ParameterError("processor_settings is required for state=present")
+        if opr == 'present':
+            if params.get('memory_settings'):
+                mem_settings = params['memory_settings']
+                validate_sub_dict('memory_settings', mem_settings)
+                required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
+                                    'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
+                missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
+                if missing_mem:
+                    raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
+                min_mem = mem_settings['minimum_memory']
+                des_mem = mem_settings['desired_memory']
+                max_mem = mem_settings['maximum_memory']
+                if not (min_mem <= des_mem <= max_mem):
+                    raise ParameterError("Memory values must satisfy: minimum_memory <= desired_memory <= maximum_memory")
+            else:
+                if opr == 'updated':
+                    pass
+                else:
+                    raise ParameterError("memory_settings is required for state=present")
     elif opr == 'copy':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name', 'duplicate_prof_name']
         unsupportedList = ['processor_settings', 'memory_settings']
@@ -603,7 +610,7 @@ def update_partition_profile(module, params):
     changed = False
     lpar_uuid = None
     name = params['name']
-
+    validate_parameters(params)
     PROFILE_FIELD_MAP = {
         'processor_settings.desired_processors': (
             {'dedicated': 'DesiredProcessors', 'shared': 'DesiredVirtualProcessors'}, int
@@ -617,10 +624,8 @@ def update_partition_profile(module, params):
         'processor_settings.desired_processing_units': ('DesiredProcessingUnits', float),
         'processor_settings.minimum_processing_units': ('MinimumProcessingUnits', float),
         'processor_settings.maximum_processing_units': ('MaximumProcessingUnits', float),
-        'processor_settings.sharing_mode': ('SharingMode', str),
         'processor_settings.uncapped_weight': ('UncappedWeight', int),
         'processor_settings.shared_processor_pool': ('SharedProcessorPoolID', int),
-        'processor_settings.allow_processor_sharing': ('AllowProcessorSharing', 'allow_processor_sharing'),
         'memory_settings.desired_memory': ('DesiredMemory', int),
         'memory_settings.minimum_memory': ('MinimumMemory', int),
         'memory_settings.maximum_memory': ('MaximumMemory', int),
@@ -632,7 +637,6 @@ def update_partition_profile(module, params):
         'memory_settings.hardware_page_tableratio': ('HardwarePageTableRatio', int),
         'memory_settings.desired_physical_page_tableratio': ('DesiredPhysicalPageTableRatio', int),
     }
-
     profile_settings = {
         'processor_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('processor_settings.')},
         'memory_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('memory_settings.')},
@@ -687,6 +691,14 @@ def update_partition_profile(module, params):
         ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {
                 v: k for k, v in allow_processor_sharing_MAP.items()
             }
+        sharing_val = root.xpath(".//lpp:ProcessorAttributes/lpp:SharingMode/text()",namespaces=ns)
+        if sharing_val:
+            raw = sharing_val[0]
+            if processor_mode == 'dedicated':
+                profile_settings['processor_settings']['allow_processor_sharing'] = \
+                    ALLOW_PROCESSOR_SHARING_REVERSE_MAP.get(raw)
+            else:
+                profile_settings['processor_settings']['sharing_mode'] = raw
         for key, (xml_tag, cast) in PROFILE_FIELD_MAP.items():
             section, field = key.split('.')
             tag_to_use = xml_tag
@@ -734,14 +746,15 @@ def update_partition_profile(module, params):
             msg = "Partition profile " + name + " is already in desired configuration"
             return False, None, msg
         else:
-            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units",
-                               "maximum_processing_units", "desired_processing_units", "sharing_mode"]
+            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units", "maximum_processing_units", "desired_processing_units", "sharing_mode"]
             user_proc_mode = user_input.get('processor_settings', {}).get('processor_mode')
             if user_proc_mode is not None:
                 if user_proc_mode.lower() == 'dedicated':
                     for field in fields_to_reset:
                         if field in profile_settings['processor_settings']:
                             profile_settings['processor_settings'][field] = None
+                if user_proc_mode.lower() == 'shared':
+                    profile_settings['processor_settings']['allow_processor_sharing'] = None
             profile_settings['name'] = name
             profile_settings['state'] = 'updated'
             validate_parameters(profile_settings)
