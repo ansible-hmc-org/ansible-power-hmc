@@ -2948,3 +2948,71 @@ class HmcRestClient:
         if profile_name_elements:
             return 200, profile_name_elements[0].text
         return "Error: Profile creation failed with unknown error"
+
+    def updatePartitionProfile(self, lpar_uuid, partition_uuid, params):
+        partiton_profile_xmlstr = ''
+        templatePartitionProfile = '''<LogicalPartitionProfile:LogicalPartitionProfile
+                                    xmlns:LogicalPartitionProfile="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
+                                    xmlns="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
+                                    xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2" schemaVersion="V1_0">'''
+        partiton_profile_xmlstr += templatePartitionProfile
+        if params['processor_mode'].lower() == 'false':
+            partiton_profile_xmlstr += self.sharedProcessorPayload(params)
+        else:
+            partiton_profile_xmlstr += self.dedicatedProcessorPayload(params)
+        memory_payload = '''<ProfileMemory kb="CUR" kxe="false" schemaVersion="V1_0">
+            <Metadata>
+                <Atom/>
+            </Metadata>
+            <ActiveMemoryExpansionEnabled kb="CUD" kxe="false">{0}</ActiveMemoryExpansionEnabled>
+            <ActiveMemorySharingEnabled kb="CUD" kxe="false">false</ActiveMemorySharingEnabled>
+            <DesiredHugePageCount kb="CUD" kxe="false">{1}</DesiredHugePageCount>
+            <DesiredMemory kxe="false" kb="CUD">{2}</DesiredMemory>
+            <ExpansionFactor kb="CUD" kxe="false">{3}</ExpansionFactor>
+            <HardwarePageTableRatio kb="CUD" kxe="false">{4}</HardwarePageTableRatio>
+            <MaximumHugePageCount kb="CUD" kxe="false">{5}</MaximumHugePageCount>
+            <MaximumMemory kb="CUD" kxe="false">{6}</MaximumMemory>
+            <MinimumHugePageCount kb="CUD" kxe="false">{7}</MinimumHugePageCount>
+            <MinimumMemory kxe="false" kb="CUD">{8}</MinimumMemory>
+            <DesiredPhysicalPageTableRatio ksv="V1_6_0" kb="CUD" kxe="false">{9}</DesiredPhysicalPageTableRatio>
+            </ProfileMemory>
+            <ProfileName kb="CUR" kxe="false">{10}</ProfileName>
+            </LogicalPartitionProfile:LogicalPartitionProfile>
+            '''.format(str(params['active_memory_expansion']).lower(),
+                       params['desired_huge_pagecount'], params['desired_memory'], params['expansion_factor'], params['hardware_page_tableratio'],
+                       params['maximum_huge_pagecount'], params['maximum_memory'], params['minimum_huge_pagecount'],
+                       params['minimum_memory'], params['desired_physical_page_tableratio'], params['name'])
+        partiton_profile_xmlstr += memory_payload
+        if 'sharing_mode' in params:
+            if params['sharing_mode'] == 'capped':
+                xml_tree = etree.fromstring(partiton_profile_xmlstr.encode())
+                for elem in xml_tree.xpath('.//*[local-name()="UncappedWeight"]'):
+                    elem.getparent().remove(elem)
+                    partiton_profile_xmlstr = etree.tostring(xml_tree, encoding='unicode')
+        url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile/{2}".format(self.hmc_ip, lpar_uuid, partition_uuid)
+        header = {'X-API-Session': self.session,
+                  'Accept': '*/*',
+                  'Content-Type': 'application/vnd.ibm.powervm.uom+xml; type=LogicalPartitionProfile'}
+        try:
+            resp = open_url(url,
+                            headers=header,
+                            data=partiton_profile_xmlstr,
+                            method='POST',
+                            validate_certs=False,
+                            force_basic_auth=True,
+                            timeout=300)
+            response = resp.read()
+        except Exception as e:
+            if hasattr(e, 'read'):
+                response = e.read()
+                post_response = xml_strip_namespace(response)
+                error_message_elements = post_response.xpath("//Message")
+                logger.debug(response)
+                return e.code, error_message_elements[0].text.strip()
+            else:
+                return f"Error: {str(e)}"
+        post_response = xml_strip_namespace(response)
+        profile_name_elements = post_response.xpath("//ProfileName")
+        if profile_name_elements:
+            return 200, profile_name_elements[0].text
+        return "Error: Profile creation failed with unknown error"
