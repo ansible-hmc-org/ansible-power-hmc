@@ -296,6 +296,12 @@ import logging
 LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 
+allow_processor_sharing_MAP = {
+        'inactive': 'sre idle proces',
+        'active': 'sre idle procs active',
+        'always': 'sre idle procs always',
+        'never': 'keep idle procs'
+    }
 
 def init_logger():
     logging.basicConfig(
@@ -357,8 +363,9 @@ def validate_parameters(params):
         opr = params['action']
     unsupportedList = []
     mandatoryList = []
-    if opr == 'present':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
+    if opr == 'present' or 'updated':
+        if opr == 'present':
+            mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
         unsupportedList = ['duplicate_prof_name']
         if params.get('processor_settings'):
             proc_settings = params['processor_settings']
@@ -513,12 +520,6 @@ def create_partition_profile(module, params):
     hmc = Hmc(hmc_conn)
     final_result = {}
     validate_parameters(params)
-    allow_processor_sharing_MAP = {
-        'inactive': 'sre idle proces',
-        'active': 'sre idle procs active',
-        'always': 'sre idle procs always',
-        'never': 'keep idle procs'
-    }
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
         try:
             system_name = hmc.getSystemNameFromMTMS(system_name)
@@ -561,6 +562,9 @@ def create_partition_profile(module, params):
                     config['uncapped_weight'] = 0
                 if not config.get('shared_processor_pool'):
                     config['shared_processor_pool'] = 0
+                if config.get('sharing_mode').lower() == 'capped':
+                    if not config.get('uncapped_weight'):
+                       config['uncapped_weight'] = 0 
             else:
                 config['processor_mode'] = 'true'
                 if config.get('allow_processor_sharing'):
@@ -590,12 +594,206 @@ def create_partition_profile(module, params):
     except Exception as e:
         return False, repr(e), None
 
+def update_partition_profile(module, params):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password'] 
+    system_name = params['system_name']
+    lpar_name = params['lpar_name']
+    changed = False
+    lpar_uuid = None
+    name = params['name']
+
+    PROFILE_FIELD_MAP = {
+        'processor_settings.desired_processors': (
+            {'dedicated': 'DesiredProcessors', 'shared': 'DesiredVirtualProcessors'}, int
+        ),
+        'processor_settings.minimum_processors': (
+            {'dedicated': 'MinimumProcessors', 'shared': 'MinimumVirtualProcessors'}, int
+        ),
+        'processor_settings.maximum_processors': (
+            {'dedicated': 'MaximumProcessors', 'shared': 'MaximumVirtualProcessors'}, int
+        ),
+        'processor_settings.desired_processing_units': ('DesiredProcessingUnits', float),
+        'processor_settings.minimum_processing_units': ('MinimumProcessingUnits', float),
+        'processor_settings.maximum_processing_units': ('MaximumProcessingUnits', float),
+        'processor_settings.sharing_mode': ('SharingMode', str),
+        'processor_settings.uncapped_weight': ('UncappedWeight', int),
+        'processor_settings.shared_processor_pool': ('SharedProcessorPoolID', int),
+        'processor_settings.allow_processor_sharing': ('AllowProcessorSharing', 'allow_processor_sharing'),
+        'memory_settings.desired_memory': ('DesiredMemory', int),
+        'memory_settings.minimum_memory': ('MinimumMemory', int),
+        'memory_settings.maximum_memory': ('MaximumMemory', int),
+        'memory_settings.desired_huge_pagecount': ('DesiredHugePageCount', int),
+        'memory_settings.minimum_huge_pagecount': ('MinimumHugePageCount', int),
+        'memory_settings.maximum_huge_pagecount': ('MaximumHugePageCount', int),
+        'memory_settings.active_memory_expansion': ('ActiveMemoryExpansionEnabled', bool),
+        'memory_settings.expansion_factor': ('ExpansionFactor', float),
+        'memory_settings.hardware_page_tableratio': ('HardwarePageTableRatio', int),
+        'memory_settings.desired_physical_page_tableratio': ('DesiredPhysicalPageTableRatio', int),
+    }
+
+    profile_settings = {
+        'processor_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('processor_settings.')},
+        'memory_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('memory_settings.')},
+    }
+    user_input = {
+        'processor_settings': params.get('processor_settings') or {},
+        'memory_settings': params.get('memory_settings') or {}
+    }
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    if system_name and re.match(HmcConstants.MTMS_pattern, system_name):
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as e:
+            return changed, repr(e), None
+    try:
+        rest_conn = HmcRestClient(hmc_host, hmc_user, password)
+    except Exception as e:
+        logger.debug(repr(e))
+        module.fail_json(msg="Logon to HMC failed")
+    if system_name:
+        system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
+    if not system_uuid:
+        module.fail_json(msg="Given system is not present")
+    lpar_response = rest_conn.getLogicalPartitionsQuick(system_uuid)
+    if lpar_response:
+        lpar_quick_list = json.loads(lpar_response)
+        for eachLpar in lpar_quick_list:
+            if eachLpar['PartitionName'] == lpar_name:
+                lpar_uuid = eachLpar['UUID']
+                break
+    else:
+        module.fail_json(msg=f"Given partition ({lpar_name}) is not present on the system")
+
+    try:
+        result = rest_conn.getAllPartitionProfiles(lpar_uuid)
+        root = etree.fromstring(result)
+        profile_list = root.xpath("//*[local-name()='ProfileName']/text()")
+        partition_uuid = rest_conn.getAllPartitionProfiles(lpar_uuid, name)
+        if name not in profile_list:
+            module.fail_json(msg=f"A profile named {name} does not exist for the partition.")
+        current_config = rest_conn.getCurrentPartitionProfiles(lpar_uuid, partition_uuid)
+        root = etree.fromstring(current_config)
+        ns = {'lpp': 'http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/'}
+        has_dedicated = root.xpath(".//lpp:ProcessorAttributes/lpp:HasDedicatedProcessors/text()", namespaces=ns)
+        processor_mode = 'dedicated' if has_dedicated and has_dedicated[0].lower() == 'true' else 'shared'
+        profile_settings['processor_settings']['processor_mode'] = processor_mode
+        if processor_mode == 'shared':
+            proc_base = ".//lpp:SharedProcessorConfiguration"
+        else:
+            proc_base = ".//lpp:DedicatedProcessorConfiguration"
+        ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {
+                v: k for k, v in allow_processor_sharing_MAP.items()
+            }
+        for key, (xml_tag, cast) in PROFILE_FIELD_MAP.items():
+            section, field = key.split('.')
+            tag_to_use = xml_tag
+            if isinstance(xml_tag, dict):
+                tag_to_use = xml_tag.get(processor_mode)
+            if not tag_to_use:
+                continue
+            if section == 'processor_settings':
+                if field == 'sharing_mode':
+                    val = root.xpath(
+                        ".//lpp:ProcessorAttributes/lpp:SharingMode/text()",
+                        namespaces=ns
+                    )
+                else:
+                    val = root.xpath(
+                        f"{proc_base}/lpp:{tag_to_use}/text()",
+                        namespaces=ns
+                    )
+            elif section == 'memory_settings':
+                val = root.xpath(
+                    f".//lpp:ProfileMemory/lpp:{tag_to_use}/text()",
+                    namespaces=ns
+                )
+            else:
+                continue
+            if not val:
+                continue
+            raw = val[0]
+            if cast == 'allow_processor_sharing':
+                profile_settings[section][field] = ALLOW_PROCESSOR_SHARING_REVERSE_MAP.get(raw)
+            elif cast is bool:
+                profile_settings[section][field] = raw.lower() == 'true'
+            else:
+                try:
+                    profile_settings[section][field] = cast(raw)
+                except Exception:
+                    profile_settings[section][field] = None
+        for section in ['processor_settings', 'memory_settings']:
+            for field, current_val in profile_settings[section].items():
+                user_val = user_input[section].get(field)
+                if user_val is not None and user_val != current_val:
+                    profile_settings[section][field] = user_val
+                    changed = True
+        if changed != True:
+            msg = "Partition profile " + name + " is already in desired configuration"
+            return False, None, msg
+        else:
+            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units",
+                               "maximum_processing_units", "desired_processing_units", "sharing_mode"]
+            user_proc_mode = user_input.get('processor_settings', {}).get('processor_mode')
+            if user_proc_mode is not None:
+                if user_proc_mode.lower() == 'dedicated':
+                    for field in fields_to_reset:
+                        if field in profile_settings['processor_settings']:
+                            profile_settings['processor_settings'][field] = None
+            profile_settings['name'] = name
+            profile_settings['state'] = 'updated'
+            validate_parameters(profile_settings)
+            config = build_config_dict(profile_settings)
+            proc_settings = profile_settings.get('processor_settings', {})
+            processor_mode = proc_settings.get('processor_mode', '').lower()
+            if processor_mode == 'shared':
+                config['processor_mode'] = 'false'
+                if not config.get('sharing_mode'):
+                    config['sharing_mode'] = 'capped'
+                    config['uncapped_weight'] = 0
+                if not config.get('shared_processor_pool'):
+                    config['shared_processor_pool'] = 0
+                if config.get('sharing_mode').lower() == 'capped':
+                    if not config.get('uncapped_weight'):
+                       config['uncapped_weight'] = 0 
+            else:
+                config['processor_mode'] = 'true'
+                if config.get('allow_processor_sharing'):
+                    sharing_input = config.get('allow_processor_sharing', 'never')
+                    allow_sharing_mode = allow_processor_sharing_MAP.get(sharing_input)
+                    config['allow_processor_sharing'] = allow_sharing_mode
+                else:
+                    config['allow_processor_sharing'] = allow_processor_sharing_MAP['never']
+            if config.get('active_memory_expansion') is None:
+                config['active_memory_expansion'] = False
+            expansion_factor = config.get('expansion_factor')
+            if expansion_factor is not None and expansion_factor >= 1:
+                config['active_memory_expansion'] = True
+            else:
+                config['expansion_factor'] = 0.0
+            if config.get('hardware_page_tableratio') is None:
+                config['hardware_page_tableratio'] = 7
+            if config.get('desired_physical_page_tableratio') is None:
+                config['desired_physical_page_tableratio'] = 6
+            code, result = rest_conn.updatePartitionProfile(lpar_uuid, partition_uuid, config)
+        if code != 200:
+                return False, result, None
+        else:
+            final_result = {"msg": f"{result} partition profile is updated successfully"}
+            changed = True
+            return changed, final_result, None
+    except Exception as e:
+        return False, repr(e), None
+
 
 def perform_task(module):
     params = module.params
     actions = {
         "present": create_partition_profile,
-        "copy": copy_partition_profile
+        "copy": copy_partition_profile,
+        "updated": update_partition_profile
     }
     oper = 'state'
     if params['state'] is None:
@@ -649,7 +847,7 @@ def run_module():
         processor_settings=dict(type='dict', options=processor_args),
         memory_settings=dict(type='dict', options=memory_args),
         duplicate_prof_name=dict(type='str'),
-        state=dict(type='str', choices=['present']),
+        state=dict(type='str', choices=['present', 'updated']),
         action=dict(type='str', choices=['copy']),
     )
 
@@ -658,7 +856,8 @@ def run_module():
         mutually_exclusive=[('state', 'action')],
         required_one_of=[('state', 'action')],
         required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'processor_settings', 'memory_settings']],
-                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'duplicate_prof_name']]]
+                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'duplicate_prof_name']],
+                     ['state', 'updated', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name']]]
     )
     if module._verbosity >= 5:
         init_logger()
