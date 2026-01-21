@@ -272,7 +272,7 @@ EXAMPLES = '''
     duplicate_prof_name: test
     action: copy
 
-- name: Modify the processor and memory settings of existing partition profile 
+- name: Modify the processor and memory settings of existing partition profile
   powervm_partition_profile:
     hmc_host: '{{ inventory_hostname }}'
     hmc_auth:
@@ -346,7 +346,8 @@ allow_processor_sharing_MAP = {
         'active': 'sre idle procs active',
         'always': 'sre idle procs always',
         'never': 'keep idle procs'
-    }
+}
+
 
 def init_logger():
     logging.basicConfig(
@@ -453,7 +454,7 @@ def validate_parameters(params):
                 mem_settings = params['memory_settings']
                 validate_sub_dict('memory_settings', mem_settings)
                 required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
-                                    'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
+                                       'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
                 missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
                 if missing_mem:
                     raise ParameterError("Missing required memory_settings fields: %s" % ', '.join(missing_mem))
@@ -618,7 +619,7 @@ def create_partition_profile(module, params):
                     config['shared_processor_pool'] = 0
                 if config.get('sharing_mode').lower() == 'capped':
                     if not config.get('uncapped_weight'):
-                       config['uncapped_weight'] = 0
+                        config['uncapped_weight'] = 0
             else:
                 config['processor_mode'] = 'true'
                 if config.get('allow_processor_sharing'):
@@ -647,6 +648,7 @@ def create_partition_profile(module, params):
             return changed, final_result, None
     except Exception as e:
         return False, repr(e), None
+
 
 def update_partition_profile(module, params):
     hmc_host = params['hmc_host']
@@ -737,8 +739,8 @@ def update_partition_profile(module, params):
             proc_base = ".//lpp:DedicatedProcessorConfiguration"
         ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {
                 v: k for k, v in allow_processor_sharing_MAP.items()
-            }
-        sharing_val = root.xpath(".//lpp:ProcessorAttributes/lpp:SharingMode/text()",namespaces=ns)
+        }
+        sharing_val = root.xpath(".//lpp:ProcessorAttributes/lpp:SharingMode/text()", namespaces=ns)
         if sharing_val:
             raw = sharing_val[0]
             if processor_mode == 'dedicated':
@@ -793,7 +795,8 @@ def update_partition_profile(module, params):
             msg = "Partition profile " + name + " is already in desired configuration"
             return False, None, msg
         else:
-            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units", "maximum_processing_units", "desired_processing_units", "sharing_mode"]
+            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units",
+                               "maximum_processing_units", "desired_processing_units", "sharing_mode"]
             user_proc_mode = user_input.get('processor_settings', {}).get('processor_mode')
             if user_proc_mode is not None:
                 if user_proc_mode.lower() == 'dedicated':
@@ -817,7 +820,7 @@ def update_partition_profile(module, params):
                     config['shared_processor_pool'] = 0
                 if config.get('sharing_mode').lower() == 'capped':
                     if not config.get('uncapped_weight'):
-                       config['uncapped_weight'] = 0 
+                        config['uncapped_weight'] = 0
             else:
                 config['processor_mode'] = 'true'
                 if config.get('allow_processor_sharing'):
@@ -839,7 +842,7 @@ def update_partition_profile(module, params):
                 config['desired_physical_page_tableratio'] = 6
             code, result = rest_conn.updatePartitionProfile(lpar_uuid, partition_uuid, config)
         if code != 200:
-                return False, result, None
+            return False, result, None
         else:
             final_result = {"msg": f"{result} partition profile is updated successfully"}
             changed = True
