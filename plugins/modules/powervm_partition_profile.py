@@ -342,10 +342,10 @@ LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 
 allow_processor_sharing_MAP = {
-        'inactive': 'sre idle proces',
-        'active': 'sre idle procs active',
-        'always': 'sre idle procs always',
-        'never': 'keep idle procs'
+    'inactive': 'sre idle proces',
+    'active': 'sre idle procs active',
+    'always': 'sre idle procs always',
+    'never': 'keep idle procs'
 }
 
 
@@ -738,7 +738,7 @@ def update_partition_profile(module, params):
         else:
             proc_base = ".//lpp:DedicatedProcessorConfiguration"
         ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {
-                v: k for k, v in allow_processor_sharing_MAP.items()
+            v: k for k, v in allow_processor_sharing_MAP.items()
         }
         sharing_val = root.xpath(".//lpp:ProcessorAttributes/lpp:SharingMode/text()", namespaces=ns)
         if sharing_val:
