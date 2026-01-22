@@ -2883,11 +2883,11 @@ class HmcRestClient:
 
     def createPartitionProfile(self, lpar_uuid, params):
         partiton_profile_xmlstr = ''
-        templatePartitionProfile = '''<LogicalPartitionProfile:LogicalPartitionProfile
+        template_partition_profile = '''<LogicalPartitionProfile:LogicalPartitionProfile
                                     xmlns:LogicalPartitionProfile="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
                                     xmlns="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
                                     xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2" schemaVersion="V1_0">'''
-        partiton_profile_xmlstr += templatePartitionProfile
+        partiton_profile_xmlstr += template_partition_profile
         if params['processor_mode'].lower() == 'false':
             partiton_profile_xmlstr += self.sharedProcessorPayload(params)
         else:
@@ -2951,11 +2951,11 @@ class HmcRestClient:
 
     def updatePartitionProfile(self, lpar_uuid, partition_uuid, params):
         partiton_profile_xmlstr = ''
-        templatePartitionProfile = '''<LogicalPartitionProfile:LogicalPartitionProfile
+        template_partition_profile = '''<LogicalPartitionProfile:LogicalPartitionProfile
                                     xmlns:LogicalPartitionProfile="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
                                     xmlns="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
                                     xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2" schemaVersion="V1_0">'''
-        partiton_profile_xmlstr += templatePartitionProfile
+        partiton_profile_xmlstr += template_partition_profile
         if params['processor_mode'].lower() == 'false':
             partiton_profile_xmlstr += self.sharedProcessorPayload(params)
         else:
