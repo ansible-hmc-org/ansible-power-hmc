@@ -35,49 +35,49 @@ test_data = [
     # All present related Testdata
     # when hmc_host key is missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': 'prof_name', 'memory_settings': memory_settings,
+      'vm_name': 'vm_name', 'name': 'prof_name', 'memory_settings': memory_settings,
       'processor_settings': processor_settings},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
 
     # when system name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': None,
-      'lpar_name': 'vm_name', 'name': 'prof_name', 'memory_settings': memory_settings,
+      'vm_name': 'vm_name', 'name': 'prof_name', 'memory_settings': memory_settings,
       'processor_settings': processor_settings},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
-    # when lpar_name is missing
+    # when vm_name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': None, 'name': 'prof_name', 'memory_settings': memory_settings,
+      'vm_name': None, 'name': 'prof_name', 'memory_settings': memory_settings,
       'processor_settings': processor_settings},
-     "ParameterError: mandatory parameter 'lpar_name' is missing"),
+     "ParameterError: mandatory parameter 'vm_name' is missing"),
 
     # when name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
+      'vm_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
       'processor_settings': processor_settings},
      "ParameterError: mandatory parameter 'name' is missing"),
 
     # when memory_settings is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'memory_settings': None,
+      'vm_name': 'vm_name', 'name': None, 'memory_settings': None,
       'processor_settings': processor_settings},
      "ParameterError: memory_settings is required for state=present"),
 
     # when processor_settings is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
+      'vm_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
       'processor_settings': None},
      "ParameterError: processor_settings is required for state=present"),
 
     # when processor_mode is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
+      'vm_name': 'vm_name', 'name': None, 'memory_settings': memory_settings,
       'processor_settings': processor_settings1},
      "ParameterError: processor_mode is required in processor_settings"),
 
     # when processor_settings is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'present', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'memory_settings': memory_settings1,
+      'vm_name': 'vm_name', 'name': None, 'memory_settings': memory_settings1,
       'processor_settings': processor_settings},
      "ParameterError: Missing required memory_settings fields: desired_memory"),
 ]
@@ -86,27 +86,27 @@ test_data1 = [
     # All copy related Testdata
     # when hmc_host key is missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'copy', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': 'test'},
+      'vm_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': 'test'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
 
     # when system_name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'copy', 'system_name': None,
-      'lpar_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': 'test'},
+      'vm_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': 'test'},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
-    # when lpar_name is missing
+    # when vm_name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'copy', 'system_name': 'system_name',
-      'lpar_name': None, 'name': 'prof_name', 'duplicate_prof_name': 'test'},
-     "ParameterError: mandatory parameter 'lpar_name' is missing"),
+      'vm_name': None, 'name': 'prof_name', 'duplicate_prof_name': 'test'},
+     "ParameterError: mandatory parameter 'vm_name' is missing"),
 
     # when name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'copy', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': None, 'duplicate_prof_name': 'test'},
+      'vm_name': 'vm_name', 'name': None, 'duplicate_prof_name': 'test'},
      "ParameterError: mandatory parameter 'name' is missing"),
 
     # when duplicate_prof_name is missing
     ({'hmc_host': 'host', 'hmc_auth': hmc_auth, 'state': 'copy', 'system_name': 'system_name',
-      'lpar_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': None},
+      'vm_name': 'vm_name', 'name': 'prof_name', 'duplicate_prof_name': None},
      "ParameterError: mandatory parameter 'duplicate_prof_name' is missing"),
 ]
 
