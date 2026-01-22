@@ -18,10 +18,14 @@ DOCUMENTATION = '''
 module: powervm_partition_profile
 author:
     - Sreenidhi (@SreenidhiS1)
-short_description: Create, Copy PowerVM Partition Profiles
+short_description: Create, Copy and update PowerVM Partition Profiles
+notes:
+    - This module currently support only processor and memory configuration.
+    - Copy operation is supported for HMC version >= 1110
 description:
     - Create new partition profile
     - Copy an existing partition profile
+    - Modify an existing partition profile
 version_added: "1.2.0"
 requirements:
 - Python >= 3
@@ -50,9 +54,9 @@ options:
     system_name:
         description:
             - The name or mtms (machine type model serial) of the managed system..
-            - Required for I(state=present), I(action=copy).
+            - Required for I(state=present), I(action=copy) and I(state=updated).
         type: str
-    lpar_name:
+    vm_name:
         description:
             - The name of the powervm partition.
         required: true
@@ -66,7 +70,7 @@ options:
     processor_settings:
         description:
             - Processor configuration settings for the partition profile.
-            - Valid only for I(state=present)
+            - Valid only for I(state=present) and I(state=updated).
         type: dict
         suboptions:
             processor_mode:
@@ -221,7 +225,7 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    lpar_name: <lpar_name>
+    vm_name: <vm_name>
     name: dedicated_profile
     processor_settings:
       processor_mode: dedicated
@@ -238,7 +242,7 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    lpar_name: <lpar_name>
+    vm_name: <vm_name>
     name: shared_testing
     processor_settings:
       processor_mode: shared
@@ -267,7 +271,7 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    lpar_name: <lpar_name>
+    vm_name: <vm_name>
     name: shared_testing
     duplicate_prof_name: test
     action: copy
@@ -279,7 +283,7 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <system_name/mtms>
-    lpar_name: <lpar_name>
+    vm_name: <vm_name>
     name: shared_testing
     processor_settings:
       processor_mode: shared
@@ -409,10 +413,8 @@ def validate_parameters(params):
     unsupportedList = []
     mandatoryList = []
     if opr == 'present' or opr == 'updated':
-        logger.debug("why am i here")
-        logger.debug(opr)
         if opr == 'present':
-            mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name']
+            mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name']
         unsupportedList = ['duplicate_prof_name']
         if params.get('processor_settings'):
             proc_settings = params['processor_settings']
@@ -468,7 +470,7 @@ def validate_parameters(params):
                 else:
                     raise ParameterError("memory_settings is required for state=present")
     elif opr == 'copy':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'name', 'duplicate_prof_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'duplicate_prof_name']
         unsupportedList = ['processor_settings', 'memory_settings']
     collate = []
     for eachMandatory in mandatoryList:
@@ -508,7 +510,7 @@ def copy_partition_profile(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    lpar_name = params['lpar_name']
+    vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
     name = params['name']
@@ -535,11 +537,11 @@ def copy_partition_profile(module, params):
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
         for eachLpar in lpar_quick_list:
-            if eachLpar['PartitionName'] == lpar_name:
+            if eachLpar['PartitionName'] == vm_name:
                 lpar_uuid = eachLpar['UUID']
                 break
     else:
-        module.fail_json(msg=f"Given partition ({lpar_name}) is not present on the system")
+        module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         root = etree.fromstring(result)
@@ -566,7 +568,7 @@ def create_partition_profile(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    lpar_name = params['lpar_name']
+    vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
     name = params['name']
@@ -592,7 +594,7 @@ def create_partition_profile(module, params):
     if lpar_response is not None:
         lpar_quick_list = json.loads(lpar_response)
         for eachLpar in lpar_quick_list:
-            if eachLpar['PartitionName'] == lpar_name:
+            if eachLpar['PartitionName'] == vm_name:
                 lpar_uuid = eachLpar['UUID']
                 break
     else:
@@ -654,7 +656,7 @@ def update_partition_profile(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    lpar_name = params['lpar_name']
+    vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
     name = params['name']
@@ -713,11 +715,11 @@ def update_partition_profile(module, params):
     if lpar_response:
         lpar_quick_list = json.loads(lpar_response)
         for eachLpar in lpar_quick_list:
-            if eachLpar['PartitionName'] == lpar_name:
+            if eachLpar['PartitionName'] == vm_name:
                 lpar_uuid = eachLpar['UUID']
                 break
     else:
-        module.fail_json(msg=f"Given partition ({lpar_name}) is not present on the system")
+        module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
@@ -904,7 +906,7 @@ def run_module():
                       )
                       ),
         system_name=dict(type='str'),
-        lpar_name=dict(type='str', required=True),
+        vm_name=dict(type='str', required=True),
         name=dict(type='str', required=True),
         processor_settings=dict(type='dict', options=processor_args),
         memory_settings=dict(type='dict', options=memory_args),
@@ -917,9 +919,9 @@ def run_module():
         argument_spec=module_args,
         mutually_exclusive=[('state', 'action')],
         required_one_of=[('state', 'action')],
-        required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'processor_settings', 'memory_settings']],
-                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name', 'duplicate_prof_name']],
-                     ['state', 'updated', ['hmc_host', 'hmc_auth', 'system_name', 'lpar_name']]]
+        required_if=[['state', 'present', ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'processor_settings', 'memory_settings']],
+                     ['action', 'copy', ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'duplicate_prof_name']],
+                     ['state', 'updated', ['hmc_host', 'hmc_auth', 'system_name', 'vm_name']]]
     )
     if module._verbosity >= 5:
         init_logger()
