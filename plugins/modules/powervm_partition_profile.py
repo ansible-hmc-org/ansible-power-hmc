@@ -725,10 +725,10 @@ def update_partition_profile(module, params):
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
         root = etree.fromstring(result)
         profile_list = root.xpath("//*[local-name()='ProfileName']/text()")
-        partition_uuid = rest_conn.getAllPartitionProfiles(lpar_uuid, name)
+        profile_uuid = rest_conn.getAllPartitionProfiles(lpar_uuid, name)
         if name not in profile_list:
             module.fail_json(msg=f"A profile named {name} does not exist for the partition.")
-        current_config = rest_conn.getCurrentPartitionProfiles(lpar_uuid, partition_uuid)
+        current_config = rest_conn.getCurrentPartitionProfiles(lpar_uuid, profile_uuid)
         root = etree.fromstring(current_config)
         ns = {'lpp': 'http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/'}
         has_dedicated = root.xpath(".//lpp:ProcessorAttributes/lpp:HasDedicatedProcessors/text()", namespaces=ns)
@@ -841,7 +841,7 @@ def update_partition_profile(module, params):
                 config['hardware_page_tableratio'] = 7
             if config.get('desired_physical_page_tableratio') is None:
                 config['desired_physical_page_tableratio'] = 6
-            code, result = rest_conn.updatePartitionProfile(lpar_uuid, partition_uuid, config)
+            code, result = rest_conn.updatePartitionProfile(lpar_uuid, profile_uuid, config)
         if code != 200:
             return False, result, None
         else:
