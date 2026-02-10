@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: mapping_facts
+module: vios_mapping_facts
 author:
     - Sreenidhi S(@SreenidhiS1)
 short_description: Returns the VIOS mapping of physical, logical, and virtual devices as facts
