@@ -16,7 +16,7 @@ DOCUMENTATION = '''
 module: mapping_facts
 author:
     - Sreenidhi S(@SreenidhiS1)
-short_description: Returns the mapping between physical, logical, and virtual devices as facts
+short_description: Returns the VIOS mapping of physical, logical, and virtual devices as facts
 notes:
     - This module requires the HMC login user to have specific permissions.
       To achieve this, the user should create a task role based on hmcsuperadmin with additional permissions,
@@ -50,11 +50,10 @@ notes:
       ViewDumps+ViewPowerManagement+ViewSPP)
     - Create a user with the above created task role.
 description:
-    - Returns information about the mapping between the virtual host adapters and the physical
-      devices they are backed to.
+    - Returns the VIOS mapping of physical, logical, and virtual devices as facts
 requirements:
 - VIOS >= 2.2.5.0
-- Python >= 2.7
+- Python >= 3.9
 options:
     hmc_host:
         description:
@@ -223,12 +222,7 @@ def init_logger():
 
 def validate_parameters(params):
     unsupportedList = []
-    opr = None
-    if params['state'] is not None:
-        opr = params['state']
-    else:
-        opr = params['action']
-
+    opr = params['state']
     component = params['component']
     if opr == 'facts':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vios_name']
@@ -541,6 +535,16 @@ def cluster_mappings(module, params):
 
 def component_mapping(module, params):
     validate_parameters(params)
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    system_name = params['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if system_name not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
     component = module.params['component']
     if component == 'all' or component == 'vscsi':
         vscsi_mappings(module, params)
