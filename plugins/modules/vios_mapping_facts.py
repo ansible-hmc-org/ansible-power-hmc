@@ -578,8 +578,8 @@ def component_mapping(module, params):
     else:
         if params['vios_name'] is not None:
             vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(system_name)).splitlines())
-        if vios_name not in vios_list:
-            module.fail_json(msg="The vios is not available in the managed system")
+    if vios_name not in vios_list:
+        module.fail_json(msg="The vios is not available in the managed system")
     component = module.params['component']
     if component == 'all' or component == 'vscsi':
         vscsi_mappings(module, params)
