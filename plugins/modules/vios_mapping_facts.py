@@ -79,7 +79,6 @@ options:
     system_name:
         description:
             - The name of the managed system
-        required: true
         type: str
     vios_name:
         description:
