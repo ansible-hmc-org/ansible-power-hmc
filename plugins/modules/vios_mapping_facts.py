@@ -225,7 +225,7 @@ def validate_parameters(params):
     opr = params['state']
     component = params['component']
     if opr == 'facts':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vios_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'vios_name']
         if component == 'vscsi':
             unsupportedList = ['vtd', 'hostname']
         elif component == 'npiv' or component == 'vnic':
@@ -533,18 +533,54 @@ def cluster_mappings(module, params):
         return False, repr(e), None
 
 
+def get_MS_names_by_lpar_name(hmc_obj, lpar_name):
+    mss = hmc_obj.list_all_managed_system_details("name,state")
+    ms_list = []
+    for ms in mss:
+        if ms["state"] == 'Operating':
+            lpar_names = hmc_obj.list_all_lpars_details(ms["name"], "name")
+            if lpar_name in lpar_names:
+                ms_list.append(ms["name"])
+    return ms_list
+
+
+def identify_ManagedSystem_of_lpar(hmc, vm_name, module):
+    system_name = None
+    ms_name = get_MS_names_by_lpar_name(hmc, vm_name)
+    if len(ms_name) == 1:
+        system_name = ms_name[0]
+    elif len(ms_name) > 1:
+        err_msg = "Logical Partition Name:'{0}' found in more than one managed systems:'{1}'," \
+                  " Please provide the system_name parameter to avoid the confusion".format(vm_name, ms_name)
+        raise ParameterError(err_msg)
+    else:
+        err_msg = "Logical Partition Name:'{0}' not found in any of the managed systems".format(vm_name)
+        module.warn(err_msg)
+        return 1
+    return system_name
+
+
 def component_mapping(module, params):
     validate_parameters(params)
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
     system_name = params['system_name']
+    vios_name = params['vios_name']
+    if params['vios_name'] is not None:
+        system_name = identify_ManagedSystem_of_lpar(hmc, vios_name, module)
     sys_list = (
         hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if system_name not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        if params['vios_name'] is not None:
+            vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(system_name)).splitlines())
+        if vios_name not in vios_list:
+            module.fail_json(msg="The vios is not available in the managed system")
     component = module.params['component']
     if component == 'all' or component == 'vscsi':
         vscsi_mappings(module, params)
@@ -594,7 +630,7 @@ def run_module():
                        choices=['vscsi', 'net', 'npiv', 'vnic',
                                 'ams', 'suspend', 'cluster', 'all'],
                        default='all'),
-        system_name=dict(type='str', required=True),
+        system_name=dict(type='str'),
         vios_name=dict(type='str', required=True),
         vadapter=dict(type='str'),
         physloc=dict(type='str'),
@@ -609,7 +645,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        required_if=[['state', 'facts', ['hmc_host', 'hmc_auth', 'system_name', 'vios_name']]],
+        required_if=[['state', 'facts', ['hmc_host', 'hmc_auth', 'vios_name']]],
         mutually_exclusive=[['vadapter', 'physloc']],
         supports_check_mode=True
     )
