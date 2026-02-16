@@ -568,6 +568,7 @@ def component_mapping(module, params):
     hmc = Hmc(hmc_conn)
     system_name = params['system_name']
     vios_name = params['vios_name']
+    vios_list = []
     if params['vios_name'] is not None and system_name is None:
         system_name = identify_ManagedSystem_of_lpar(hmc, vios_name, module)
     sys_list = (
