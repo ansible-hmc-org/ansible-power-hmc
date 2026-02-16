@@ -13,7 +13,7 @@ hmc_auth = {'username': 'hscroot', 'password': 'password_value'}
 # Test data for vios_mapping_facts with state='facts'
 test_data_facts = [
     # Missing hmc_host
-    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'facts', 'system_name': 'sys', 'vios_name': 'vios', 
+    ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'facts', 'system_name': 'sys', 'vios_name': 'vios',
       'component': 'all', 'vadapter': None, 'physloc': None, 'cpid': None, 'types': None, 'vtd': None, 'hostname': None},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
 
