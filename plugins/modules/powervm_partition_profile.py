@@ -227,6 +227,13 @@ EXAMPLES = '''
     system_name: <system_name/mtms>
     vm_name: <vm_name>
     name: dedicated_profile
+    memory_settings:
+      desired_huge_pagecount: 2
+      maximum_huge_pagecount: 2
+      minimum_huge_pagecount: 2
+      desired_memory: 1024
+      maximum_memory: 1024
+      minimum_memory: 1024
     processor_settings:
       processor_mode: dedicated
       desired_processors: 1
@@ -597,8 +604,10 @@ def create_partition_profile(module, params):
             if eachLpar['PartitionName'] == vm_name:
                 lpar_uuid = eachLpar['UUID']
                 break
+        if lpar_uuid is None:
+           module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system") 
     else:
-        module.fail_json(msg="There are no Logical Partitions present on the system")
+        module.fail_json(msg=f"No partitions are present on the system")
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
@@ -718,8 +727,10 @@ def update_partition_profile(module, params):
             if eachLpar['PartitionName'] == vm_name:
                 lpar_uuid = eachLpar['UUID']
                 break
+        if lpar_uuid is None:
+           module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system") 
     else:
-        module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
+       module.fail_json(msg=f"No partitions are present on the system")
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
