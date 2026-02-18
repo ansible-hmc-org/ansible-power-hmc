@@ -605,7 +605,7 @@ def create_partition_profile(module, params):
                 lpar_uuid = eachLpar['UUID']
                 break
         if lpar_uuid is None:
-           module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
+            module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
     else:
         module.fail_json(msg="There are no Logical Partitions present on the system")
 
@@ -728,9 +728,9 @@ def update_partition_profile(module, params):
                 lpar_uuid = eachLpar['UUID']
                 break
         if lpar_uuid is None:
-           module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
+            module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
     else:
-       module.fail_json(msg="There are no Logical Partitions present on the system")
+        module.fail_json(msg="There are no Logical Partitions present on the system")
 
     try:
         result = rest_conn.getAllPartitionProfiles(lpar_uuid)
