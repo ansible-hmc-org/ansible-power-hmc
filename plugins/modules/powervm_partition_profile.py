@@ -641,12 +641,10 @@ def create_partition_profile(module, params):
             mem_settings = params.get('memory_settings', {})
             user_ame = mem_settings.get('active_memory_expansion')
             user_exp_factor = mem_settings.get('expansion_factor')
-            
             if config.get('active_memory_expansion') is None:
                 config['active_memory_expansion'] = False
             if config.get('expansion_factor') is None:
                 config['expansion_factor'] = 0.0
-            
             if user_ame is False:
                 config['active_memory_expansion'] = False
                 config['expansion_factor'] = 0.0
@@ -662,9 +660,9 @@ def create_partition_profile(module, params):
             elif user_exp_factor is not None and user_exp_factor < 1:
                 config['active_memory_expansion'] = False
                 config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] == False:
+            elif config['active_memory_expansion'] is False:
                 config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] == True and config['expansion_factor'] < 1:
+            elif config['active_memory_expansion'] is True and config['expansion_factor'] < 1:
                 config['expansion_factor'] = 1.0
             if config.get('hardware_page_tableratio') is None:
                 config['hardware_page_tableratio'] = 7
@@ -883,9 +881,9 @@ def update_partition_profile(module, params):
             elif user_exp_factor is not None and user_exp_factor < 1:
                 config['active_memory_expansion'] = False
                 config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] == False:
+            elif config['active_memory_expansion'] is False:
                 config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] == True and config['expansion_factor'] < 1:
+            elif config['active_memory_expansion'] is True and config['expansion_factor'] < 1:
                 config['expansion_factor'] = 1.0
             if config.get('hardware_page_tableratio') is None:
                 config['hardware_page_tableratio'] = 7
