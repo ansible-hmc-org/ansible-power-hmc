@@ -309,6 +309,7 @@ EXAMPLES = '''
       desired_memory: 1024
       maximum_memory: 1024
       minimum_memory: 1024
+      active_memory_expansion: true
       expansion_factor: 10
     state: updated
 '''
@@ -512,6 +513,33 @@ def build_config_dict(params):
     return config
 
 
+def apply_ame_config(config, user_ame, user_exp_factor):
+    if config.get('active_memory_expansion') is None:
+        config['active_memory_expansion'] = False
+    if config.get('expansion_factor') is None:
+        config['expansion_factor'] = 0.0
+    if user_ame is False:
+        config['active_memory_expansion'] = False
+        config['expansion_factor'] = 0.0
+    elif user_ame is True:
+        config['active_memory_expansion'] = True
+        if user_exp_factor is not None:
+            config['expansion_factor'] = user_exp_factor
+        elif config['expansion_factor'] < 1:
+            config['expansion_factor'] = 1.0
+    elif user_exp_factor is not None:
+        config['active_memory_expansion'] = True
+        config['expansion_factor'] = user_exp_factor
+    elif config['active_memory_expansion'] is False:
+        config['expansion_factor'] = 0.0
+    elif config['active_memory_expansion'] is True and config['expansion_factor'] < 1:
+        config['expansion_factor'] = 1.0
+    if config.get('hardware_page_tableratio') is None:
+        config['hardware_page_tableratio'] = 7
+    if config.get('desired_physical_page_tableratio') is None:
+        config['desired_physical_page_tableratio'] = 6
+
+
 def copy_partition_profile(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -581,7 +609,6 @@ def create_partition_profile(module, params):
     name = params['name']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
-    operating_system = None
     final_result = {}
     validate_parameters(params)
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
@@ -644,33 +671,7 @@ def create_partition_profile(module, params):
             mem_settings = params.get('memory_settings', {})
             user_ame = mem_settings.get('active_memory_expansion')
             user_exp_factor = mem_settings.get('expansion_factor')
-            if config.get('active_memory_expansion') is None:
-                config['active_memory_expansion'] = False
-            if config.get('expansion_factor') is None:
-                config['expansion_factor'] = 0.0
-            if user_ame is False:
-                config['active_memory_expansion'] = False
-                config['expansion_factor'] = 0.0
-            elif user_ame is True:
-                config['active_memory_expansion'] = True
-                if user_exp_factor is not None:
-                    config['expansion_factor'] = user_exp_factor if user_exp_factor >= 1 else 1.0
-                elif config['expansion_factor'] < 1:
-                    config['expansion_factor'] = 1.0
-            elif user_exp_factor is not None and user_exp_factor >= 1:
-                config['active_memory_expansion'] = True
-                config['expansion_factor'] = user_exp_factor
-            elif user_exp_factor is not None and user_exp_factor < 1:
-                config['active_memory_expansion'] = False
-                config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] is False:
-                config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] is True and config['expansion_factor'] < 1:
-                config['expansion_factor'] = 1.0
-            if config.get('hardware_page_tableratio') is None:
-                config['hardware_page_tableratio'] = 7
-            if config.get('desired_physical_page_tableratio') is None:
-                config['desired_physical_page_tableratio'] = 6
+            apply_ame_config(config, user_ame, user_exp_factor)
             code, result = rest_conn.createPartitionProfile(lpar_uuid, config)
         if code != 200:
             return False, result, None
@@ -865,33 +866,7 @@ def update_partition_profile(module, params):
                     config['allow_processor_sharing'] = allow_processor_sharing_MAP['never']
             user_ame = user_input.get('memory_settings', {}).get('active_memory_expansion')
             user_exp_factor = user_input.get('memory_settings', {}).get('expansion_factor')
-            if config.get('active_memory_expansion') is None:
-                config['active_memory_expansion'] = False
-            if config.get('expansion_factor') is None:
-                config['expansion_factor'] = 0.0
-            if user_ame is False:
-                config['active_memory_expansion'] = False
-                config['expansion_factor'] = 0.0
-            elif user_ame is True:
-                config['active_memory_expansion'] = True
-                if user_exp_factor is not None:
-                    config['expansion_factor'] = user_exp_factor if user_exp_factor >= 1 else 1.0
-                elif config['expansion_factor'] < 1:
-                    config['expansion_factor'] = 1.0
-            elif user_exp_factor is not None and user_exp_factor >= 1:
-                config['active_memory_expansion'] = True
-                config['expansion_factor'] = user_exp_factor
-            elif user_exp_factor is not None and user_exp_factor < 1:
-                config['active_memory_expansion'] = False
-                config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] is False:
-                config['expansion_factor'] = 0.0
-            elif config['active_memory_expansion'] is True and config['expansion_factor'] < 1:
-                config['expansion_factor'] = 1.0
-            if config.get('hardware_page_tableratio') is None:
-                config['hardware_page_tableratio'] = 7
-            if config.get('desired_physical_page_tableratio') is None:
-                config['desired_physical_page_tableratio'] = 6
+            apply_ame_config(config, user_ame, user_exp_factor)
             code, result = rest_conn.updatePartitionProfile(lpar_uuid, profile_uuid, config)
         if code != 200:
             return False, result, None
