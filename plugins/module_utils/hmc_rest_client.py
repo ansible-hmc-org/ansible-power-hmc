@@ -2831,7 +2831,7 @@ class HmcRestClient:
             logger.debug("Error in copyPartitionProfile: %s", str(e))
             return f"Error: {str(e)}"
 
-    def _dedicatedProcessorAttributesXML(self, params):
+    def dedicatedProcessorAttributesXML(self, params):
         return '''
             <ProcessorAttributes kxe="false" kb="CUR" schemaVersion="V1_0">
                 <Metadata>
@@ -2852,7 +2852,7 @@ class HmcRestClient:
                        params['processor_mode'], params['allow_processor_sharing'])
 
     def dedicatedProcessorPayload(self, params):
-        processor_attributes = self._dedicatedProcessorAttributesXML(params)
+        processor_attributes = self.dedicatedProcessorAttributesXML(params)
         if params['operating_system'] == 'IBM i':
             payload = '''
             <AssignAllResources kxe="false" kb="COD">false</AssignAllResources>
@@ -2880,7 +2880,7 @@ class HmcRestClient:
             '''.format(processor_attributes)
         return payload
 
-    def _sharedProcessorAttributesXML(self, params):
+    def sharedProcessorAttributesXML(self, params):
         return '''
         <ProcessorAttributes kxe="false" kb="CUR" schemaVersion="V1_0">
             <Metadata>
@@ -2907,7 +2907,7 @@ class HmcRestClient:
                    params['minimum_processors'], params['shared_processor_pool'], params['uncapped_weight'], params['sharing_mode'])
 
     def sharedProcessorPayload(self, params):
-        processor_attributes = self._sharedProcessorAttributesXML(params)
+        processor_attributes = self.sharedProcessorAttributesXML(params)
         if params['operating_system'] == 'IBM i':
             payload = '''
             <AssignAllResources kb="COD" kxe="false">false</AssignAllResources>
