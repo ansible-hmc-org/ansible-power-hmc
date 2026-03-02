@@ -2831,31 +2831,57 @@ class HmcRestClient:
             logger.debug("Error in copyPartitionProfile: %s", str(e))
             return f"Error: {str(e)}"
 
-    def dedicatedProcessorPayload(self, params):
-        payload = '''
-        <AssignAllResources kxe="false" kb="COD">false</AssignAllResources>
-        <ProcessorAttributes kxe="false" kb="CUR" schemaVersion="V1_0">
-            <Metadata>
-                <Atom/>
-            </Metadata>
-            <DedicatedProcessorConfiguration kxe="false" kb="CUD" schemaVersion="V1_0">
+    def _dedicatedProcessorAttributesXML(self, params):
+        return '''
+            <ProcessorAttributes kxe="false" kb="CUR" schemaVersion="V1_0">
                 <Metadata>
                     <Atom/>
                 </Metadata>
-                <DesiredProcessors kb="CUD" kxe="false">{0}</DesiredProcessors>
-                <MaximumProcessors kb="CUD" kxe="false">{1}</MaximumProcessors>
-                <MinimumProcessors kxe="false" kb="CUD">{2}</MinimumProcessors>
-            </DedicatedProcessorConfiguration>
-            <HasDedicatedProcessors kxe="false" kb="CUD">{3}</HasDedicatedProcessors>
-            <SharingMode kxe="false" kb="CUD">{4}</SharingMode>
-        </ProcessorAttributes>
-        '''.format(params['desired_processors'], params['maximum_processors'], params['minimum_processors'],
-                   params['processor_mode'], params['allow_processor_sharing'])
+                <DedicatedProcessorConfiguration kxe="false" kb="CUD" schemaVersion="V1_0">
+                    <Metadata>
+                        <Atom/>
+                    </Metadata>
+                    <DesiredProcessors kb="CUD" kxe="false">{0}</DesiredProcessors>
+                    <MaximumProcessors kb="CUD" kxe="false">{1}</MaximumProcessors>
+                    <MinimumProcessors kxe="false" kb="CUD">{2}</MinimumProcessors>
+                </DedicatedProcessorConfiguration>
+                <HasDedicatedProcessors kxe="false" kb="CUD">{3}</HasDedicatedProcessors>
+                <SharingMode kxe="false" kb="CUD">{4}</SharingMode>
+            </ProcessorAttributes>
+            '''.format(params['desired_processors'], params['maximum_processors'], params['minimum_processors'],
+                       params['processor_mode'], params['allow_processor_sharing'])
+
+    def dedicatedProcessorPayload(self, params):
+        processor_attributes = self._dedicatedProcessorAttributesXML(params)
+        if params['operating_system'] == 'IBM i':
+            payload = '''
+            <AssignAllResources kxe="false" kb="COD">false</AssignAllResources>
+            <IOConfigurationInstance kb="CUD" kxe="false" schemaVersion="V1_0">
+                <Metadata>
+                    <Atom/>
+                </Metadata>
+                <MaximumVirtualIOSlots kb="CUD" kxe="false">10</MaximumVirtualIOSlots>
+                <TaggedIO kb="CUD" kxe="false" schemaVersion="V1_0">
+                    <Metadata>
+                        <Atom/>
+                    </Metadata>
+                    <AlternateLoadSource kb="CUD" kxe="false">NONE</AlternateLoadSource>
+                    <Console kxe="false" kb="CUR">HMC</Console>
+                    <LoadSource kb="CUR" kxe="false">NONE</LoadSource>
+                </TaggedIO>
+                <VirtualOpticonnectPool kb="CUD" kxe="false">false</VirtualOpticonnectPool>
+            </IOConfigurationInstance>
+            {0}
+            '''.format(processor_attributes)
+        else:
+            payload = '''
+            <AssignAllResources kxe="false" kb="COD">false</AssignAllResources>
+            {0}
+            '''.format(processor_attributes)
         return payload
 
-    def sharedProcessorPayload(self, params):
-        payload = '''
-        <AssignAllResources kb="COD" kxe="false">false</AssignAllResources>
+    def _sharedProcessorAttributesXML(self, params):
+        return '''
         <ProcessorAttributes kxe="false" kb="CUR" schemaVersion="V1_0">
             <Metadata>
                 <Atom/>
@@ -2879,6 +2905,34 @@ class HmcRestClient:
         '''.format(params['processor_mode'], params['desired_processing_units'], params['desired_processors'],
                    params['maximum_processing_units'], params['maximum_processors'], params['minimum_processing_units'],
                    params['minimum_processors'], params['shared_processor_pool'], params['uncapped_weight'], params['sharing_mode'])
+
+    def sharedProcessorPayload(self, params):
+        processor_attributes = self._sharedProcessorAttributesXML(params)
+        if params['operating_system'] == 'IBM i':
+            payload = '''
+            <AssignAllResources kb="COD" kxe="false">false</AssignAllResources>
+            <IOConfigurationInstance kb="CUD" kxe="false" schemaVersion="V1_0">
+                <Metadata>
+                    <Atom/>
+                </Metadata>
+                <MaximumVirtualIOSlots kb="CUD" kxe="false">10</MaximumVirtualIOSlots>
+                <TaggedIO kb="CUD" kxe="false" schemaVersion="V1_0">
+                    <Metadata>
+                        <Atom/>
+                    </Metadata>
+                    <AlternateLoadSource kb="CUD" kxe="false">NONE</AlternateLoadSource>
+                    <Console kxe="false" kb="CUR">HMC</Console>
+                    <LoadSource kb="CUR" kxe="false">NONE</LoadSource>
+                </TaggedIO>
+                <VirtualOpticonnectPool kb="CUD" kxe="false">false</VirtualOpticonnectPool>
+            </IOConfigurationInstance>
+            {0}
+            '''.format(processor_attributes)
+        else:
+            payload = '''
+            <AssignAllResources kb="COD" kxe="false">false</AssignAllResources>
+            {0}
+            '''.format(processor_attributes)
         return payload
 
     def createPartitionProfile(self, lpar_uuid, params):
