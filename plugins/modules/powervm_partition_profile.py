@@ -309,6 +309,7 @@ EXAMPLES = '''
       desired_memory: 1024
       maximum_memory: 1024
       minimum_memory: 1024
+      active_memory_expansion: true
       expansion_factor: 10
     state: updated
 '''
