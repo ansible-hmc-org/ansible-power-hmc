@@ -603,7 +603,7 @@ def copy_partition_profile(module, params):
                 rest_conn.logoff()
             except Exception as logoff_error:
                 error_msg = parse_error_response(logoff_error)
-                module.warn(error_msg)
+                logger.debug(error_msg)
 
 
 def create_partition_profile(module, params):
@@ -693,7 +693,7 @@ def create_partition_profile(module, params):
                 rest_conn.logoff()
             except Exception as logoff_error:
                 error_msg = parse_error_response(logoff_error)
-                module.warn(error_msg)
+                logger.debug(error_msg)
 
 
 def update_partition_profile(module, params):
@@ -895,7 +895,7 @@ def update_partition_profile(module, params):
                 rest_conn.logoff()
             except Exception as logoff_error:
                 error_msg = parse_error_response(logoff_error)
-                module.warn(error_msg)
+                logger.debug(error_msg)
 
 
 def perform_task(module):
