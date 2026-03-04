@@ -617,6 +617,7 @@ def create_partition_profile(module, params):
     name = params['name']
     hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
     hmc = Hmc(hmc_conn)
+    operating_system = None
     final_result = {}
     validate_parameters(params)
     if system_name is not None and re.match(HmcConstants.MTMS_pattern, system_name):
@@ -641,6 +642,7 @@ def create_partition_profile(module, params):
             for eachLpar in lpar_quick_list:
                 if eachLpar['PartitionName'] == vm_name:
                     lpar_uuid = eachLpar['UUID']
+                    operating_system = eachLpar['OperatingSystemType']
                     break
             if lpar_uuid is None:
                 module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
@@ -656,6 +658,7 @@ def create_partition_profile(module, params):
             config = build_config_dict(params)
             proc_settings = params.get('processor_settings', {})
             processor_mode = proc_settings.get('processor_mode', '').lower()
+            config['operating_system'] = operating_system
             if processor_mode == 'shared':
                 config['processor_mode'] = 'false'
                 if not config.get('sharing_mode'):
@@ -704,6 +707,7 @@ def update_partition_profile(module, params):
     vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
+    operating_system = None
     name = params['name']
     validate_parameters(params)
     PROFILE_FIELD_MAP = {
@@ -764,6 +768,7 @@ def update_partition_profile(module, params):
             for eachLpar in lpar_quick_list:
                 if eachLpar['PartitionName'] == vm_name:
                     lpar_uuid = eachLpar['UUID']
+                    operating_system = eachLpar['OperatingSystemType']
                     break
             if lpar_uuid is None:
                 module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
@@ -859,6 +864,7 @@ def update_partition_profile(module, params):
             config = build_config_dict(profile_settings)
             proc_settings = profile_settings.get('processor_settings', {})
             processor_mode = proc_settings.get('processor_mode', '').lower()
+            config['operating_system'] = operating_system
             if processor_mode == 'shared':
                 config['processor_mode'] = 'false'
                 if not config.get('sharing_mode'):
