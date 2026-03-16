@@ -641,7 +641,7 @@ def run_module():
                             'file', 'file_disk', 'file_opt', 'cl_disk']),
         vtd=dict(type='str'),
         hostname=dict(type='str'),
-        state=dict(type='str', choices=['facts']),
+        state=dict(type='str', choices=['facts'], required=True),
     )
 
     module = AnsibleModule(
