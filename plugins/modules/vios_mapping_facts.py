@@ -571,6 +571,7 @@ def component_mapping(module, params):
     vios_list = []
     if params['vios_name'] is not None and system_name is None:
         system_name = identify_ManagedSystem_of_lpar(hmc, vios_name, module)
+        params['system_name'] = system_name
     sys_list = (
         hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
