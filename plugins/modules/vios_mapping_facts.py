@@ -145,6 +145,7 @@ options:
         description:
             - C(facts) gathers and returns information about mapping between physical, logical, and virtual devices
         type: str
+        required: true
         choices: ['facts']
 '''
 
