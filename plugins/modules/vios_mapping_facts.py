@@ -113,6 +113,7 @@ options:
         description:
             - Specifies the client partition ID, in decimal, for which to return device
               mapping information.
+            - Use value 0 to display all mappings for the specified component.
             - Not applicable for C(net) and C(ams) components
         type: int
     types:
