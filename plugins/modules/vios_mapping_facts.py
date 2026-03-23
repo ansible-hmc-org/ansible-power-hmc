@@ -94,7 +94,7 @@ options:
             - C(vnic) to list server virtual NIC adapters.
             - C(ams) to list paging space devices that are used in active memory sharing.
             - C(suspend) to list suspended virtual adapters.
-            - C(cluster) to list shared storage pool mappings
+            - C(cluster) to list shared storage pool mappings.
             - C(all) to list all devices.
         type: str
         choices: ['vscsi', 'net', 'npiv', 'vnic', 'ams', 'suspend', 'cluster', 'all']
@@ -114,11 +114,11 @@ options:
             - Specifies the client partition ID, in decimal, for which to return device
               mapping information.
             - Use value 0 to display all mappings for the specified component.
-            - Not applicable for C(net) and C(ams) components
+            - Not applicable for C(net) and C(ams) components.
         type: int
     types:
         description:
-            - Specifies the type of devices to display.
+            - Specifies the type of devices to display
             - C(disk) to list physical backing devices.
             - C(lv) to list logical volume backing devices.
             - C(optical) to list optical backing devices.
@@ -153,10 +153,10 @@ options:
 EXAMPLES = '''
 - name: Populate the mapping facts with the mapping information for VSCSI
   vios_mapping_facts:
-    hmc_host: <host_IP>
+    hmc_host: <hmc_host>
     hmc_auth:
-      username: <hmc_user>
-      password: <hmc_pass>
+      username: <hmc_username>
+      password: <hmc_password>
     system_name: <system_name>
     vios_name: <vios_name>
     component: vscsi
@@ -164,10 +164,10 @@ EXAMPLES = '''
 
 - name: Populate the mapping facts with the mapping information for NPIV device vfchost0
   vios_mapping_facts:
-    hmc_host: <host_IP>
+    hmc_host: <hmc_host>
     hmc_auth:
-      username: <hmc_user>
-      password: <hmc_pass>
+      username: <hmc_username>
+      password: <hmc_password>
     system_name: <system_name>
     vios_name: <vios_name>
     vadapter: vfchost0
@@ -176,10 +176,10 @@ EXAMPLES = '''
 
 - name: Populate the mapping facts with the mapping information for all devices
   vios_mapping_facts:
-    hmc_host: <host_IP>
+    hmc_host: <hmc_host>
     hmc_auth:
-      username: <hmc_user>
-      password: <hmc_pass>
+      username: <hmc_username>
+      password: <hmc_password>
     system_name: <system_name>
     vios_name: <vios_name>
     component: all
@@ -187,10 +187,10 @@ EXAMPLES = '''
 
 - name: Populate the mapping facts with the mapping information for optical backing devices
   vios_mapping_facts:
-    hmc_host: <host_IP>
+    hmc_host: <hmc_host>
     hmc_auth:
-      username: <hmc_user>
-      password: <hmc_pass>
+      username: <hmc_username>
+      password: <hmc_password>
     system_name: <system_name>
     vios_name: <vios_name>
     types: optical
