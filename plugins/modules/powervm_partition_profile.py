@@ -129,7 +129,6 @@ options:
                 description:
                     - Only valid if the C(processor_mode) is dedicated.
                     - Valid values are C(active), C(inactive), C(always), and C(never).
-                    - Only valid if the C(processor_mode) is dedicated.
                     - This determines if idle processors are released to the shared pool.
                     - Use C(active) to share idle cycles while the LPAR is running.
                     - Use C(inactive) to share cycles only when the LPAR is inactive.
