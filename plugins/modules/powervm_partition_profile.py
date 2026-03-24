@@ -318,7 +318,7 @@ changed:
         - Indicates whether any change was made.
     type: bool
     returned: always
-partition_info:
+profile_info:
     description:
         - Information about the logical partition profile operation.
         - For C(state=present), contains a success message for the created profile.
@@ -989,7 +989,7 @@ def run_module():
     result = {}
     result['changed'] = changed
     if info:
-        result['partition_info'] = info
+        result['profile_info'] = info
 
     if warning:
         result['warning'] = warning
