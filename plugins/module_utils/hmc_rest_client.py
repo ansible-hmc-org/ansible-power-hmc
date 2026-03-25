@@ -1389,7 +1389,6 @@ class HmcRestClient:
                         client_slot = vios_scsi.xpath('//ClientAdapter/VirtualSlotNumber')[0].text
                         server_slot = vios_scsi.xpath('//ClientAdapter/RemoteSlotNumber')[0].text
                         target_device = vios_scsi.xpath('//TargetDevice//TargetName')[0].text
-                        
                         vol_dict = {
                             "vios": vios_dict[vios_id],
                             'name': vios_scsi.xpath('//Storage/PhysicalVolume/VolumeName')[0].text,
