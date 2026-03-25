@@ -354,7 +354,7 @@ Version 1.15.0
 Notes
   * powervm_partition_profile: Support for creating, copying, and updating profiles with processor and memory settings.
   * vios_mapping_facts: Added support for listing VIOS physical, logical, and virtual device mappings as facts.
-  * powervm_dlpar: Fixed SCSI server and client adapter ID misconfiguration during DLPAR operations.
+  * powervm_dlpar: Fixed SCSI server and client adapter ID configuration issue during DLPAR.
   
   Availability
     * `Galaxy v1.15.0`_
