@@ -645,7 +645,7 @@ class HmcRestClient:
     def updatePCM(self, system_uuid, metrics, disable):
         url = "https://{0}/rest/api/pcm/ManagedSystem/{1}/preferences".format(self.hmc_ip, system_uuid)
         header = {'Content-Type': 'application/xml',
-                  'X-API-Session': logon_res}
+                  'X-API-Session': self.session}
         sys_details = self.getPCM(system_uuid, None)
         doc = xml_strip_namespace(sys_details)
         preference_map = {'LTM': 'LongTermMonitorEnabled', 'STM': 'ShortTermMonitorEnabled',
