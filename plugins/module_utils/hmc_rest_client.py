@@ -643,7 +643,6 @@ class HmcRestClient:
         return response
 
     def updatePCM(self, system_uuid, metrics, disable):
-        logon_res = self.logon()
         url = "https://{0}/rest/api/pcm/ManagedSystem/{1}/preferences".format(self.hmc_ip, system_uuid)
         header = {'Content-Type': 'application/xml',
                   'X-API-Session': logon_res}
@@ -684,7 +683,6 @@ class HmcRestClient:
             payload_content = payload_content.replace('\n', ' ').replace('\"', '\'')
             payload_content = etree.fromstring(payload_content)
             payload_content = etree.tostring(payload_content, encoding='unicode')
-            logger.debug(payload_content)
             resp = open_url(url,
                             headers=header,
                             method='POST',
