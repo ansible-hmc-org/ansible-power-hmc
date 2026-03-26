@@ -280,6 +280,20 @@ class HmcRestClient:
                  force_basic_auth=True,
                  timeout=300)
 
+    def __enter__(self):
+        """Context manager entry point - returns the connection object."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit point - calls the existing logoff() method."""
+        logger.debug("__exit__ called - cleaning up HMC session")
+        try:
+            self.logoff()
+            logger.debug("HMC session successfully logged off in __exit__")
+        except Exception as e:
+            logger.debug("Error during logoff in __exit__: %s", repr(e))
+        return False
+
     def fetchJobStatus(self, jobId, template=False, timeout_in_min=30):
 
         if template:
