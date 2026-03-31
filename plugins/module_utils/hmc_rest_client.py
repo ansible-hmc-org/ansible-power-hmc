@@ -1378,10 +1378,12 @@ class HmcRestClient:
             for vios_scsi_raw in vios_scsis:
                 vscsi_dict = {}
                 vios_scsi = etree.ElementTree(vios_scsi_raw)
+                # This code is to handle stale adapters
                 if len(vios_scsi.xpath('//ClientAdapter')) < 1:
                     continue
                 part_id = vios_scsi.xpath('//ClientAdapter/LocalPartitionID')[0].text
                 if str(lpar_id) == str(part_id):
+                    # Adds the PVs
                     if len(vios_scsi.xpath('//Storage/PhysicalVolume/VolumeUniqueID')) >= 1:
                         volumeUniqueID = vios_scsi.xpath('//Storage/PhysicalVolume/VolumeUniqueID')[0].text
                         vscsi_dict['VolumeUniqueID'] = volumeUniqueID
