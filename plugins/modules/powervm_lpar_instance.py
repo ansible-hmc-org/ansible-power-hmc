@@ -1208,7 +1208,8 @@ def create_partition(module, params):
             if shared_proc_pool:
                 shared_proc_pool = rest_conn.validateSharedProcessorPoolNameAndID(system_uuid, shared_proc_pool)
                 if not shared_proc_pool:
-                    raise HmcError("Shared Processor Pool ID or Name:{0}, does not exist in the managed system:{1}". format(params['shared_proc_pool'], system_name))
+                    raise HmcError("Shared Processor Pool ID or Name:{0}, does not exist in the managed system:{1}".
+                                   format(params['shared_proc_pool'], system_name))
 
             if proc_compatibility_mode:
                 supp_compat_modes = server_dom.xpath("//SupportedPartitionProcessorCompatibilityModes")
