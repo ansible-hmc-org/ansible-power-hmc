@@ -1061,7 +1061,8 @@ def platform_update(module):
                     else:
                         adp_ids = {io_update.get('id')}
                     if output.get('ParameterName') == 'JOBRESULT_KEY_ERRORMSG':
-                        error_msg = f"Import operation failed for IO Adapter ID '{adp_ids}' on VIOS '{io_update.get('vios_name')}': {output.get('ParameterValue')}"
+                        f"Import operation failed for IO Adapter ID '{adp_ids}' "
+                        f"on VIOS '{io_update.get('vios_name')}': {output.get('ParameterValue')}"
                         module.fail_json(msg=error_msg)
 
             cleaned_data = cleanup_entries(attributes, sriov=available_adapter_id, io=available_io_updates)
