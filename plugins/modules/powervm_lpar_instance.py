@@ -1328,7 +1328,7 @@ def create_partition(module, params):
                         if vol_tuple_list:
                             pvid_added.append(vol_tuple_list[0][2].xpath('UniqueDeviceID')[0].text)
                             vtd_name = each_vol_config.get('vtd_name', '')
-                            vscsi_clients_payload += rest_conn.add_vscsi_payload(vol_tuple_list)
+                            vscsi_clients_payload += rest_conn.add_vscsi_payload(vol_tuple_list, vtd_name)
                         else:
                             module.fail_json(msg="Unable to identify free physical volume")
 
