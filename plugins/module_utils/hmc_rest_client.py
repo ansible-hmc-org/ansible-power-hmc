@@ -30,6 +30,9 @@ systems/power/firmware/uom/mc/2012_10/" xmlns="http://www.ibm.com/xmlns/systems/
 VIOS_NS = 'VirtualIOServer xmlns:VirtualIOServer="http://www.ibm.com/xmlns/\
 systems/power/firmware/uom/mc/2012_10/" xmlns="http://www.ibm.com/xmlns/systems/power\
 /firmware/uom/mc/2012_10/" xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2"'
+VSWITCH_NS = 'VirtualSwitch xmlns:VirtualSwitch="http://www.ibm.com/xmlns/\
+systems/power/firmware/uom/mc/2012_10/" xmlns="http://www.ibm.com/xmlns/systems/power\
+/firmware/uom/mc/2012_10/" xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2"'
 
 
 def xml_strip_namespace(xml_str):
@@ -3071,22 +3074,22 @@ class HmcRestClient:
         url = "https://{0}/rest/api/uom/ManagedSystem/{1}/VirtualSwitch".format(self.hmc_ip, system_uuid)
         header = {'X-API-Session': self.session,
                   'Accept': 'application/vnd.ibm.powervm.uom+xml; type=VirtualSwitch'}
-        
+
         try:
             resp = open_url(url,
-                           headers=header,
-                           method='GET',
-                           validate_certs=False,
-                           force_basic_auth=True,
-                           timeout=300)
-            
+                            headers=header,
+                            method='GET',
+                            validate_certs=False,
+                            force_basic_auth=True,
+                            timeout=300)
+
             if resp.code == 204:
                 return None
-            
+
             response = resp.read()
             if not response:
                 return None
-                
+
             virtual_switches_root = xml_strip_namespace(response)
             return virtual_switches_root
         except Exception as error:
@@ -3098,7 +3101,7 @@ class HmcRestClient:
         header = {'X-API-Session': self.session,
                   'Content-Type': 'application/vnd.ibm.powervm.uom+xml; type=VirtualSwitch',
                   'Accept': 'application/atom+xml'}
-        
+
         payload = '''<VirtualSwitch schemaVersion="V1_0">
             <SwitchMode kb="CUD" kxe="false">{0}</SwitchMode>
             <SwitchName kxe="false" kb="CUD">{1}</SwitchName>
@@ -3107,12 +3110,12 @@ class HmcRestClient:
         payload = payload.replace("VirtualSwitch", VSWITCH_NS, 1)
         try:
             resp = open_url(url,
-                           headers=header,
-                           data=payload,
-                           method='PUT',
-                           validate_certs=False,
-                           force_basic_auth=True,
-                           timeout=300)
+                            headers=header,
+                            data=payload,
+                            method='PUT',
+                            validate_certs=False,
+                            force_basic_auth=True,
+                            timeout=300)
 
             response = resp.read()
             if not response:
@@ -3129,7 +3132,7 @@ class HmcRestClient:
         header = {'X-API-Session': self.session,
                   'Content-Type': 'application/vnd.ibm.powervm.uom+xml; type=VirtualSwitch',
                   'Accept': 'application/atom+xml'}
-        
+
         payload = '''<VirtualSwitch schemaVersion="V1_0">
             <SwitchMode kb="CUD" kxe="false">{0}</SwitchMode>
             <SwitchName kxe="false" kb="CUD">{1}</SwitchName>
@@ -3138,12 +3141,12 @@ class HmcRestClient:
         payload = payload.replace("VirtualSwitch", VSWITCH_NS, 1)
         try:
             resp = open_url(url,
-                           headers=header,
-                           data=payload,
-                           method='POST',
-                           validate_certs=False,
-                           force_basic_auth=True,
-                           timeout=300)
+                            headers=header,
+                            data=payload,
+                            method='POST',
+                            validate_certs=False,
+                            force_basic_auth=True,
+                            timeout=300)
             response = resp.read()
             if not response:
                 return None
@@ -3157,7 +3160,7 @@ class HmcRestClient:
             virtual_switches_dom = self.getVirtualSwitches(system_uuid)
             if not virtual_switches_dom:
                 return None, None, None
-            
+
             switches = virtual_switches_dom.xpath("//VirtualSwitch")
             for switch in switches:
                 name_elem = switch.xpath(".//SwitchName")
@@ -3169,7 +3172,7 @@ class HmcRestClient:
                     mode_elem = switch.xpath(".//SwitchMode")
                     switch_mode = mode_elem[0].text if mode_elem else None
                     return switch_uuid, switch_id, switch_mode
-            
+
             return None, None, None
         except Exception as error:
             logger.debug("Get Virtual Switch by name failed: %s", repr(error))
@@ -3181,11 +3184,11 @@ class HmcRestClient:
                   'Accept': 'application/atom+xml'}
         try:
             resp = open_url(url,
-                           headers=header,
-                           method='DELETE',
-                           validate_certs=False,
-                           force_basic_auth=True,
-                           timeout=300)
+                            headers=header,
+                            method='DELETE',
+                            validate_certs=False,
+                            force_basic_auth=True,
+                            timeout=300)
 
             return True
         except Exception as error:

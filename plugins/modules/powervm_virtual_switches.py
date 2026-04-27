@@ -46,7 +46,7 @@ options:
             password:
                 description:
                     - HMC password.
-                required: true
+                required: false
                 type: str
     system_name:
         description:
@@ -65,7 +65,6 @@ options:
             - Optional when I(state=modify). If not provided, the current mode is retained.
         type: str
         choices: ['Veb', 'Vepa']
-        default: 'Veb'
     new_switch_name:
         description:
             - The new name for the virtual switch when modifying.
@@ -149,7 +148,6 @@ import logging
 LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 import sys
-import json
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
@@ -166,7 +164,7 @@ def init_logger():
 
 def validate_parameters(params):
     state = params['state']
-    
+
     if state == 'present':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'switch_name']
         unsupportedList = ['new_switch_name']
@@ -194,7 +192,7 @@ def validate_parameters(params):
             raise ParameterError("mandatory parameter '%s' is missing" % (collate[0]))
         else:
             raise ParameterError("mandatory parameters '%s' are missing" % (','.join(collate)))
-    
+
     collate = []
     for eachUnsupported in unsupportedList:
         if params[eachUnsupported]:
@@ -212,16 +210,16 @@ def create_virtual_switch(module, params):
     password = params['hmc_auth']['password']
     system_name = params['system_name']
     switch_name = params['switch_name']
-    
+
     # Set default switch_mode to 'Veb' if not provided
     if not params.get('switch_mode'):
         params['switch_mode'] = 'Veb'
-    
+
     switch_mode = params['switch_mode']
     changed = False
-    
+
     validate_parameters(params)
-    
+
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
@@ -233,9 +231,10 @@ def create_virtual_switch(module, params):
                 if switch_names:
                     for switch in switch_names:
                         if switch.text == switch_name:
-                            module.exit_json(changed=False,
-                                           msg="Virtual switch '{0}' already exists".format(switch_name))
-            
+                            module.exit_json(
+                                changed=False,
+                                msg="Virtual switch '{0}' already exists".format(switch_name))
+
             result = rest_conn.createVirtualSwitch(system_uuid, switch_name, switch_mode)
             if result:
                 changed = True
@@ -246,12 +245,12 @@ def create_virtual_switch(module, params):
                 }
             else:
                 module.fail_json(msg="Failed to create virtual switch")
-                
+
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-    
+
     return changed, switch_info, None
 
 
@@ -269,7 +268,7 @@ def get_virtual_switches(module, params):
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
 
-            virtual_switches_dom = rest_conn.getVirtualSwitches(system_uuid)            
+            virtual_switches_dom = rest_conn.getVirtualSwitches(system_uuid)
             switches_info = []
             if virtual_switches_dom:
                 switches = virtual_switches_dom.xpath("//VirtualSwitch")
@@ -285,17 +284,17 @@ def get_virtual_switches(module, params):
                     if switch_id_elem:
                         switch_data['switch_id'] = switch_id_elem[0].text
                     switches_info.append(switch_data)
-            
+
             switch_info = {
                 'virtual_switches': switches_info,
                 'count': len(switches_info)
             }
-        
+
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-    
+
     return changed, switch_info, None
 
 
@@ -309,7 +308,7 @@ def modify_virtual_switch(module, params):
     switch_mode = params.get('switch_mode')
     changed = False
     validate_parameters(params)
-    
+
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
@@ -325,8 +324,9 @@ def modify_virtual_switch(module, params):
                     if switch_names:
                         for switch in switch_names:
                             if switch.text == new_switch_name:
-                                module.fail_json(msg="Virtual switch with name '{0}' already exists. Cannot rename to an existing switch name.".format(new_switch_name))
-            
+                                module.fail_json(msg="Virtual switch with name '{0}' already exists. \
+Cannot rename to an existing switch name.".format(new_switch_name))
+
             if switch_mode is None:
                 switch_mode = current_mode
             if new_switch_name == switch_name and switch_mode == current_mode:
@@ -350,12 +350,12 @@ def modify_virtual_switch(module, params):
                     }
                 else:
                     module.fail_json(msg="Failed to modify virtual switch")
-                
+
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-    
+
     return changed, switch_info, None
 
 
@@ -367,17 +367,18 @@ def delete_virtual_switch(module, params):
     switch_name = params['switch_name']
     changed = False
     validate_parameters(params)
-    
+
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
             switch_uuid, switch_id, current_mode = rest_conn.getVirtualSwitchByName(system_uuid, switch_name)
-            
+
             if not switch_uuid:
-                module.exit_json(changed=False,
-                               msg="Virtual switch '{0}' not found".format(switch_name))
+                module.exit_json(
+                    changed=False,
+                    msg="Virtual switch '{0}' not found".format(switch_name))
             result = rest_conn.deleteVirtualSwitch(system_uuid, switch_uuid)
             if result:
                 changed = True
@@ -387,12 +388,12 @@ def delete_virtual_switch(module, params):
                 }
             else:
                 module.fail_json(msg="Failed to delete virtual switch")
-                
+
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-    
+
     return changed, switch_info, None
 
 
@@ -404,7 +405,7 @@ def perform_task(module):
         "absent": delete_virtual_switch,
         "facts": get_virtual_switches,
     }
-    
+
     try:
         return actions[params['state']](module, params)
     except Exception as error:
