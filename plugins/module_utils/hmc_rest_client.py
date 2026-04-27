@@ -3124,7 +3124,7 @@ class HmcRestClient:
             if virtual_switch_dom is None:
                 return None
             return virtual_switch_dom
-        except Exception as error:
+        except Exception:
             raise
 
     def updateVirtualSwitch(self, system_uuid, switch_uuid, switch_name, switch_mode, switch_id):
@@ -3152,7 +3152,7 @@ class HmcRestClient:
                 return None
             virtual_switch_dom = xml_strip_namespace(response)
             return virtual_switch_dom
-        except Exception as error:
+        except Exception:
             raise
 
     def getVirtualSwitchByName(self, system_uuid, switch_name):
@@ -3183,13 +3183,13 @@ class HmcRestClient:
         header = {'X-API-Session': self.session,
                   'Accept': 'application/atom+xml'}
         try:
-            resp = open_url(url,
-                            headers=header,
-                            method='DELETE',
-                            validate_certs=False,
-                            force_basic_auth=True,
-                            timeout=300)
+            open_url(url,
+                     headers=header,
+                     method='DELETE',
+                     validate_certs=False,
+                     force_basic_auth=True,
+                     timeout=300)
 
             return True
-        except Exception as error:
+        except Exception:
             raise
