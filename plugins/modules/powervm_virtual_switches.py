@@ -23,7 +23,7 @@ notes:
 description:
     - "Creates a virtual switch with specified configuration on the managed system"
     - "Retrieves information about virtual switches on the managed system"
-version_added: "1.5.0"
+version_added: "1.0.0"
 requirements:
 - Python >= 3
 options:
@@ -50,15 +50,15 @@ options:
                 type: str
     system_name:
         description:
-            - The name of the managed system.
+            - The name or mtms (machine type model serial) of the managed system.
         required: true
         type: str
-    switch_name:
+    virtual_switch_name:
         description:
             - The name of the virtual switch.
             - Required when I(state=present), I(state=modify), or I(state=absent).
         type: str
-    switch_mode:
+    virtual_switch_mode:
         description:
             - The mode of the virtual switch.
             - Optional when I(state=present). Defaults to 'Veb' if not specified.
@@ -69,7 +69,7 @@ options:
         description:
             - The new name for the virtual switch when modifying.
             - Optional when I(state=modify). If not provided, the current name is retained.
-            - For I(state=modify), at least one of I(switch_mode) or I(new_switch_name) must be provided.
+            - For I(state=modify), at least one of I(virtual_switch_mode) or I(new_switch_name) must be provided.
         type: str
     state:
         description:
@@ -90,8 +90,8 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
-    switch_name: ETHERNET1
-    switch_mode: Veb
+    virtual_switch_name: ETHERNET1
+    virtual_switch_mode: Veb
     state: present
 
 - name: Modify a virtual switch (change mode)
@@ -101,8 +101,8 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
-    switch_name: ETHERNET1
-    switch_mode: Vepa
+    virtual_switch_name: ETHERNET1
+    virtual_switch_mode: Vepa
     state: modify
 
 - name: Modify a virtual switch (change name and mode)
@@ -112,9 +112,9 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
-    switch_name: ETHERNET1
+    virtual_switch_name: ETHERNET1
     new_switch_name: ETHERNET2
-    switch_mode: Veb
+    virtual_switch_mode: Veb
     state: modify
 
 - name: Delete a virtual switch
@@ -124,7 +124,7 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
-    switch_name: ETHERNET1
+    virtual_switch_name: ETHERNET1
     state: absent
 
 - name: Get virtual switch facts
@@ -134,6 +134,15 @@ EXAMPLES = '''
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
+    state: facts
+
+- name: Get virtual switch facts using MTMS
+  powervm_virtual_switches:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    system_name: <machine_type_model_serial>
     state: facts
 '''
 
@@ -148,11 +157,15 @@ import logging
 LOG_FILENAME = "/tmp/ansible_power_hmc.log"
 logger = logging.getLogger(__name__)
 import sys
+import re
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import HmcError
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_cli_client import HmcCliConnection
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_resource import Hmc
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_constants import HmcConstants
 
 
 def init_logger():
@@ -166,22 +179,19 @@ def validate_parameters(params):
     state = params['state']
 
     if state == 'present':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'switch_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'virtual_switch_name']
         unsupportedList = ['new_switch_name']
     elif state == 'modify':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'switch_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'virtual_switch_name']
         unsupportedList = []
-        if not params.get('switch_mode') and not params.get('new_switch_name'):
-            raise ParameterError("For modify state, at least one of 'switch_mode' or 'new_switch_name' must be provided")
+        if not params.get('virtual_switch_mode') and not params.get('new_switch_name'):
+            raise ParameterError("For modify state, at least one of 'virtual_switch_mode' or 'new_switch_name' must be provided")
     elif state == 'absent':
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'switch_name']
-        unsupportedList = ['switch_mode', 'new_switch_name']
+        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'virtual_switch_name']
+        unsupportedList = ['virtual_switch_mode', 'new_switch_name']
     elif state == 'facts':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name']
-        unsupportedList = ['switch_name', 'switch_mode', 'new_switch_name']
-    else:
-        mandatoryList = ['hmc_host', 'hmc_auth', 'system_name']
-        unsupportedList = []
+        unsupportedList = ['virtual_switch_name', 'virtual_switch_mode', 'new_switch_name']
 
     collate = []
     for eachMandatory in mandatoryList:
@@ -209,16 +219,25 @@ def create_virtual_switch(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    switch_name = params['switch_name']
+    switch_name = params['virtual_switch_name']
 
-    # Set default switch_mode to 'Veb' if not provided
-    if not params.get('switch_mode'):
-        params['switch_mode'] = 'Veb'
+    # Set default virtual_switch_mode to 'Veb' if not provided
+    if not params.get('virtual_switch_mode'):
+        params['virtual_switch_mode'] = 'Veb'
 
-    switch_mode = params['switch_mode']
+    switch_mode = params['virtual_switch_mode']
     changed = False
 
     validate_parameters(params)
+
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+        hmc = Hmc(hmc_conn)
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as error:
+            error_msg = parse_error_response(error)
+            module.fail_json(msg=error_msg)
 
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
@@ -262,6 +281,16 @@ def get_virtual_switches(module, params):
     changed = False
     validate_parameters(params)
 
+    # Handle MTMS format for system_name
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+        hmc = Hmc(hmc_conn)
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as error:
+            error_msg = parse_error_response(error)
+            module.fail_json(msg=error_msg)
+
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
@@ -303,11 +332,21 @@ def modify_virtual_switch(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    switch_name = params['switch_name']
+    switch_name = params['virtual_switch_name']
     new_switch_name = params.get('new_switch_name', switch_name)
-    switch_mode = params.get('switch_mode')
+    switch_mode = params.get('virtual_switch_mode')
     changed = False
     validate_parameters(params)
+
+    # Handle MTMS format for system_name
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+        hmc = Hmc(hmc_conn)
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as error:
+            error_msg = parse_error_response(error)
+            module.fail_json(msg=error_msg)
 
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
@@ -364,9 +403,19 @@ def delete_virtual_switch(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
-    switch_name = params['switch_name']
+    switch_name = params['virtual_switch_name']
     changed = False
     validate_parameters(params)
+
+    # Handle MTMS format for system_name
+    if re.match(HmcConstants.MTMS_pattern, system_name):
+        hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+        hmc = Hmc(hmc_conn)
+        try:
+            system_name = hmc.getSystemNameFromMTMS(system_name)
+        except HmcError as error:
+            error_msg = parse_error_response(error)
+            module.fail_json(msg=error_msg)
 
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
@@ -424,17 +473,17 @@ def run_module():
                       )
                       ),
         system_name=dict(type='str', required=True),
-        switch_name=dict(type='str'),
+        virtual_switch_name=dict(type='str'),
         new_switch_name=dict(type='str'),
-        switch_mode=dict(type='str', choices=['Veb', 'Vepa']),
+        virtual_switch_mode=dict(type='str', choices=['Veb', 'Vepa']),
         state=dict(type='str', choices=['present', 'modify', 'absent', 'facts'], default='facts'),
     )
 
     module = AnsibleModule(
         argument_spec=module_args,
         required_if=[
-            ['state', 'present', ['switch_name']],
-            ['state', 'absent', ['switch_name']],
+            ['state', 'present', ['virtual_switch_name']],
+            ['state', 'absent', ['virtual_switch_name']],
         ],
     )
 
