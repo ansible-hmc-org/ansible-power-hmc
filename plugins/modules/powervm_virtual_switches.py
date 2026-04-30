@@ -57,6 +57,7 @@ options:
         description:
             - The name of the virtual switch.
             - Required when I(state=present), I(state=modify), or I(state=absent).
+            - Optional when I(state=facts). If provided, returns details for the specific switch. If not provided, returns all switches.
         type: str
     virtual_switch_mode:
         description:
@@ -76,7 +77,7 @@ options:
             - C(present) creates a new virtual switch.
             - C(modify) modifies an existing virtual switch (name and/or mode).
             - C(absent) deletes an existing virtual switch.
-            - C(facts) retrieves information about virtual switches.
+            - C(facts) retrieves information about virtual switches. If I(virtual_switch_name) is provided, returns details for that specific switch only.
         type: str
         choices: ['present', 'modify', 'absent', 'facts']
         default: 'facts'
@@ -127,13 +128,23 @@ EXAMPLES = '''
     virtual_switch_name: ETHERNET1
     state: absent
 
-- name: Get virtual switch facts
+- name: Get all virtual switch facts
   powervm_virtual_switches:
     hmc_host: "{{ inventory_hostname }}"
     hmc_auth:
       username: '{{ ansible_user }}'
       password: '{{ hmc_password }}'
     system_name: <managed_system_name>
+    state: facts
+
+- name: Get specific virtual switch facts
+  powervm_virtual_switches:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    system_name: <managed_system_name>
+    virtual_switch_name: ETHERNET1
     state: facts
 
 - name: Get virtual switch facts using MTMS
@@ -191,7 +202,7 @@ def validate_parameters(params):
         unsupportedList = ['virtual_switch_mode', 'new_switch_name']
     elif state == 'facts':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name']
-        unsupportedList = ['virtual_switch_name', 'virtual_switch_mode', 'new_switch_name']
+        unsupportedList = ['virtual_switch_mode', 'new_switch_name']
 
     collate = []
     for eachMandatory in mandatoryList:
@@ -221,11 +232,7 @@ def create_virtual_switch(module, params):
     system_name = params['system_name']
     switch_name = params['virtual_switch_name']
 
-    # Set default virtual_switch_mode to 'Veb' if not provided
-    if not params.get('virtual_switch_mode'):
-        params['virtual_switch_mode'] = 'Veb'
-
-    switch_mode = params['virtual_switch_mode']
+    switch_mode = params.get('virtual_switch_mode') or 'Veb'
     changed = False
 
     validate_parameters(params)
@@ -278,6 +285,7 @@ def get_virtual_switches(module, params):
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     system_name = params['system_name']
+    switch_name_filter = params.get('virtual_switch_name')
     changed = False
     validate_parameters(params)
 
@@ -312,12 +320,24 @@ def get_virtual_switches(module, params):
                     switch_id_elem = switch.xpath(".//SwitchID")
                     if switch_id_elem:
                         switch_data['switch_id'] = switch_id_elem[0].text
-                    switches_info.append(switch_data)
+                    
+                    # If a specific switch name is provided, only include that switch
+                    if switch_name_filter:
+                        if switch_data.get('switch_name') == switch_name_filter:
+                            switches_info.append(switch_data)
+                    else:
+                        switches_info.append(switch_data)
 
-            switch_info = {
-                'virtual_switches': switches_info,
-                'count': len(switches_info)
-            }
+            # If a specific switch was requested but not found, return info message
+            if switch_name_filter and not switches_info:
+                switch_info = {
+                    'virtual_switches': [],
+                    'msg': "Virtual switch '{0}' not found in system '{1}'".format(switch_name_filter, system_name)
+                }
+            else:
+                switch_info = {
+                    'virtual_switches': switches_info
+                }
 
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
