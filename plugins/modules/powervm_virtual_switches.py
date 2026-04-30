@@ -320,15 +320,12 @@ def get_virtual_switches(module, params):
                     switch_id_elem = switch.xpath(".//SwitchID")
                     if switch_id_elem:
                         switch_data['switch_id'] = switch_id_elem[0].text
-                    
-                    # If a specific switch name is provided, only include that switch
                     if switch_name_filter:
                         if switch_data.get('switch_name') == switch_name_filter:
                             switches_info.append(switch_data)
                     else:
                         switches_info.append(switch_data)
 
-            # If a specific switch was requested but not found, return info message
             if switch_name_filter and not switches_info:
                 switch_info = {
                     'virtual_switches': [],
