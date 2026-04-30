@@ -16,17 +16,17 @@ test_data_present = [
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'present',
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1', 'virtual_switch_mode': 'Veb'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
-    
+
     # system_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'present',
       'system_name': None, 'virtual_switch_name': 'ETHERNET1', 'virtual_switch_mode': 'Veb'},
      "ParameterError: mandatory parameter 'system_name' is missing"),
-    
+
     # virtual_switch_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'present',
       'system_name': 'system1', 'virtual_switch_name': None, 'virtual_switch_mode': 'Veb'},
      "ParameterError: mandatory parameter 'virtual_switch_name' is missing"),
-    
+
     # unsupported parameter new_switch_name for present state
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'present',
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1', 
@@ -41,25 +41,25 @@ test_data_modify = [
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1', 
       'virtual_switch_mode': 'Vepa'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
-    
+
     # system_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'modify',
       'system_name': None, 'virtual_switch_name': 'ETHERNET1', 
       'virtual_switch_mode': 'Vepa'},
      "ParameterError: mandatory parameter 'system_name' is missing"),
-    
+
     # virtual_switch_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'modify',
       'system_name': 'system1', 'virtual_switch_name': None, 
       'virtual_switch_mode': 'Vepa'},
      "ParameterError: mandatory parameter 'virtual_switch_name' is missing"),
-    
+
     # neither virtual_switch_mode nor new_switch_name provided
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'modify',
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1', 
       'virtual_switch_mode': None, 'new_switch_name': None},
      "ParameterError: For modify state, at least one of 'virtual_switch_mode' or 'new_switch_name' must be provided"),
-    
+
     # multiple mandatory parameters missing
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'modify',
       'system_name': None, 'virtual_switch_name': 'ETHERNET1', 
@@ -73,17 +73,17 @@ test_data_absent = [
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'absent',
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1'},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
-    
+
     # system_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'absent',
       'system_name': None, 'virtual_switch_name': 'ETHERNET1'},
      "ParameterError: mandatory parameter 'system_name' is missing"),
-    
+
     # virtual_switch_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'absent',
       'system_name': 'system1', 'virtual_switch_name': None},
      "ParameterError: mandatory parameter 'virtual_switch_name' is missing"),
-    
+
     # multiple unsupported parameters for absent state
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'absent',
       'system_name': 'system1', 'virtual_switch_name': 'ETHERNET1',
@@ -97,12 +97,12 @@ test_data_facts = [
     ({'hmc_host': None, 'hmc_auth': hmc_auth, 'state': 'facts',
       'system_name': 'system1', 'virtual_switch_name': None},
      "ParameterError: mandatory parameter 'hmc_host' is missing"),
-    
+
     # system_name is missing
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'facts',
       'system_name': None, 'virtual_switch_name': None},
      "ParameterError: mandatory parameter 'system_name' is missing"),
-    
+
     # multiple unsupported parameters for facts state
     ({'hmc_host': '0.0.0.0', 'hmc_auth': hmc_auth, 'state': 'facts',
       'system_name': 'system1', 'virtual_switch_name': None,
