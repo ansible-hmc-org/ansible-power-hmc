@@ -3043,6 +3043,8 @@ class HmcRestClient:
                     elem.getparent().remove(elem)
                     partiton_profile_xmlstr = etree.tostring(xml_tree, encoding='unicode')
         url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile/{2}".format(self.hmc_ip, lpar_uuid, partition_uuid)
+        if force:
+            url += "?force=true"
         header = {'X-API-Session': self.session,
                   'Accept': '*/*',
                   'Content-Type': 'application/vnd.ibm.powervm.uom+xml; type=LogicalPartitionProfile'}
