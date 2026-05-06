@@ -3024,7 +3024,7 @@ class HmcRestClient:
             return 200, profile_name_elements[0].text
         return "Error: Profile creation failed with unknown error"
 
-    def updatePartitionProfile(self, lpar_uuid, partition_uuid, params):
+    def updatePartitionProfile(self, lpar_uuid, partition_uuid, params, force=False):
         partiton_profile_xmlstr = ''
         template_partition_profile = '''<LogicalPartitionProfile:LogicalPartitionProfile
                                     xmlns:LogicalPartitionProfile="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
