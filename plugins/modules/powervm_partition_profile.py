@@ -429,7 +429,7 @@ def validate_parameters(params):
     if opr == 'present' or opr == 'updated':
         if opr == 'present':
             mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name']
-        unsupportedList = ['duplicate_prof_name', 'force']
+            unsupportedList = ['duplicate_prof_name', 'force']
         else:
             unsupportedList = ['duplicate_prof_name']
         if params.get('processor_settings'):
