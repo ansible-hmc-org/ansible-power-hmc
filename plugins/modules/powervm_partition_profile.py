@@ -206,6 +206,8 @@ options:
         description:
             - Forces update of the partition profile when set to C(true).
             - Valid only for I(state=updated).
+            - When the Sync Partition with Profile option is enabled, using this option forcefully updates the profile.
+              These changes will take effect the next time the partition profile is activated.
         type: bool
         default: false
     state:
