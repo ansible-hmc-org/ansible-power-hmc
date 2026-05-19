@@ -3232,7 +3232,6 @@ class HmcRestClient:
                   'Accept': 'application/atom+xml'}
 
         tagged_str = 'true' if tagged_network else 'false'
-        
         payload = '''<VirtualNetwork schemaVersion="V1_0">
                 <AssociatedSwitch kxe="false" kb="COD" href="{0}" rel="related"/>
                 <NetworkName kxe="false" kb="CUR">{1}</NetworkName>
@@ -3241,9 +3240,7 @@ class HmcRestClient:
                 <VirtualSwitchName ksv="V1_12_0" kb="ROR" kxe="false">{4}</VirtualSwitchName>
                 <TaggedNetwork kxe="false" kb="COD">{5}</TaggedNetwork>
             </VirtualNetwork>'''.format(switch_href, network_name, network_vlan_id, switch_id, switch_name, tagged_str)
-        
         payload = payload.replace("VirtualNetwork", VNETWORK_NS, 1)
-        
         try:
             resp = open_url(url,
                             headers=header,
@@ -3268,13 +3265,10 @@ class HmcRestClient:
         header = {'X-API-Session': self.session,
                   'Content-Type': 'application/vnd.ibm.powervm.uom+xml; type=VirtualNetwork',
                   'Accept': 'application/atom+xml'}
-
         payload = '''<VirtualNetwork schemaVersion="V1_0">
             <NetworkName kxe="false" kb="CUR">{0}</NetworkName>
         </VirtualNetwork>'''.format(new_network_name)
-        
         payload = payload.replace("VirtualNetwork", VNETWORK_NS, 1)
-        
         try:
             resp = open_url(url,
                             headers=header,
