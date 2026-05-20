@@ -612,9 +612,6 @@ def run_module():
         ]
     )
 
-    if NEED_LXML:
-        module.fail_json(msg="lxml is required for this module")
-
     init_logger()
     changed, info, warning = perform_task(module)
     if isinstance(info, str):
