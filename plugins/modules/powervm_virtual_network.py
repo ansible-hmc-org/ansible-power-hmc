@@ -374,7 +374,7 @@ def get_virtual_networks(module, params):
     password = params['hmc_auth']['password']
     system_name = params['system_name']
     network_name_filter = params.get('network_name')
-    changed = False  
+    changed = False
     validate_parameters(params)
 
     if re.match(HmcConstants.MTMS_pattern, system_name):
