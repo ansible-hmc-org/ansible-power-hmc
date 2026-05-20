@@ -528,6 +528,11 @@ def update_virtual_network(module, params):
                 module.exit_json(
                     changed=False,
                     msg="Virtual network '{0}' not found".format(network_name))
+            if network_name == new_network_name:
+                module.exit_json(
+                    changed=False,
+                    msg="Virtual network already has the name '{0}'".format(new_network_name))
+
             if virtual_networks_dom:
                 networks = virtual_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
