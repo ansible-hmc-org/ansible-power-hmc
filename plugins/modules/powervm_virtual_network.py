@@ -301,14 +301,14 @@ def create_virtual_network(module, params):
             virtual_switches_dom = rest_conn.getVirtualSwitches(system_uuid)
             if not virtual_switches_dom:
                 module.fail_json(msg="No virtual switches found on system")
-            
+
             switches = virtual_switches_dom.xpath("//VirtualSwitch")
             for switch in switches:
                 name_elem = switch.xpath(".//SwitchName")
                 switch_id_elem = switch.xpath(".//SwitchID")
                 current_name = name_elem[0].text if name_elem else None
                 current_id = switch_id_elem[0].text if switch_id_elem else None
-                
+
                 if (switch_name and current_name == switch_name) or \
                    (switch_id is not None and current_id == str(switch_id)):
                     uuid_elem = switch.xpath(".//Metadata/Atom/AtomID")
@@ -341,11 +341,9 @@ def create_virtual_network(module, params):
                 for network in networks:
                     net_vlan_elem = network.xpath(".//NetworkVLANID")
                     net_switch_elem = network.xpath(".//VirtualSwitchName")
-                    
                     if net_vlan_elem and net_switch_elem:
                         existing_vlan = net_vlan_elem[0].text
                         existing_switch = net_switch_elem[0].text
-                        
                         if existing_vlan == str(network_vlan_id) and existing_switch == switch_info['name']:
                             module.exit_json(
                                 changed=False,
@@ -355,7 +353,6 @@ def create_virtual_network(module, params):
             result = rest_conn.createVirtualNetwork(
                 system_uuid, network_name, network_vlan_id,
                 switch_info['href'], switch_info['id'], switch_info['name'], tagged_network)
-            
             if result:
                 changed = True
                 network_info = {
@@ -412,7 +409,6 @@ def get_virtual_networks(module, params):
             
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
             networks_info = []
-            
             if virtual_networks_dom:
                 networks = virtual_networks_dom.xpath("//VirtualNetwork")
                 if network_name_filter:
@@ -420,7 +416,6 @@ def get_virtual_networks(module, params):
                                     if net.xpath(".//NetworkName") and net.xpath(".//NetworkName")[0].text == network_name_filter]
                 else:
                     networks_info = [extract_network_data(net) for net in networks]
-
             if network_name_filter and not networks_info:
                 network_info = {
                     'virtual_networks': [],
@@ -430,7 +425,6 @@ def get_virtual_networks(module, params):
                 network_info = {
                     'virtual_networks': networks_info
                 }
-
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
@@ -446,7 +440,6 @@ def delete_virtual_network(module, params):
     system_name = params['system_name']
     network_name = params['network_name']
     changed = False
-    
     validate_parameters(params)
     if re.match(HmcConstants.MTMS_pattern, system_name):
         hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
@@ -456,7 +449,6 @@ def delete_virtual_network(module, params):
         except HmcError as error:
             error_msg = parse_error_response(error)
             module.fail_json(msg=error_msg)
-
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
@@ -482,12 +474,10 @@ def delete_virtual_network(module, params):
                                     network_href = atom_link[0].get('href')
                                     network_uuid = network_href.split('/')[-1]
                                     break
-
             if not network_uuid:
                 module.exit_json(
                     changed=False,
                     msg="Virtual network '{0}' not found".format(network_name))
-
             result = rest_conn.deleteVirtualNetwork(system_uuid, network_uuid)
             if result:
                 changed = True
@@ -497,12 +487,10 @@ def delete_virtual_network(module, params):
                 }
             else:
                 module.fail_json(msg="Failed to delete virtual network")
-
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-
     return changed, network_info, None
 
 
@@ -514,7 +502,6 @@ def update_virtual_network(module, params):
     network_name = params['network_name']
     new_network_name = params['new_network_name']
     changed = False
-    
     validate_parameters(params)
     if re.match(HmcConstants.MTMS_pattern, system_name):
         hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
@@ -524,16 +511,13 @@ def update_virtual_network(module, params):
         except HmcError as error:
             error_msg = parse_error_response(error)
             module.fail_json(msg=error_msg)
-
     try:
         with HmcRestClient(hmc_host, hmc_user, password) as rest_conn:
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
-            
             network_uuid = None
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
-            
             if virtual_networks_dom:
                 networks = virtual_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
@@ -551,7 +535,6 @@ def update_virtual_network(module, params):
                                     network_href = atom_link[0].get('href')
                                     network_uuid = network_href.split('/')[-1]
                                     break
-
             if not network_uuid:
                 module.exit_json(
                     changed=False,
@@ -564,7 +547,6 @@ def update_virtual_network(module, params):
                         module.exit_json(
                             changed=False,
                             msg="Virtual network with name '{0}' already exists".format(new_network_name))
-
             result = rest_conn.updateVirtualNetwork(system_uuid, network_uuid, new_network_name)
             if result:
                 changed = True
@@ -575,12 +557,10 @@ def update_virtual_network(module, params):
                 }
             else:
                 module.fail_json(msg="Failed to update virtual network")
-
     except (Exception, HmcError) as error:
         error_msg = parse_error_response(error)
         logger.debug("Line number: %d exception: %s", sys.exc_info()[2].tb_lineno, repr(error))
         module.fail_json(msg=error_msg)
-
     return changed, network_info, None
 
 
@@ -636,19 +616,15 @@ def run_module():
         module.fail_json(msg="lxml is required for this module")
 
     init_logger()
-
     changed, info, warning = perform_task(module)
-
     if isinstance(info, str):
         module.fail_json(msg=info)
-
     result = {}
     result['changed'] = changed
     if info:
         result['virtual_network_info'] = info
     if warning:
         result['warning'] = warning
-
     module.exit_json(**result)
 
 
