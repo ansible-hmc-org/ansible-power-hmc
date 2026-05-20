@@ -203,12 +203,6 @@ logger = logging.getLogger(__name__)
 import sys
 import re
 
-NEED_LXML = False
-try:
-    from lxml import etree
-except ImportError:
-    NEED_LXML = True
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import parse_error_response
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_rest_client import HmcRestClient
@@ -380,7 +374,7 @@ def get_virtual_networks(module, params):
     password = params['hmc_auth']['password']
     system_name = params['system_name']
     network_name_filter = params.get('network_name')
-    changed = False    
+    changed = False   
     validate_parameters(params)
 
     if re.match(HmcConstants.MTMS_pattern, system_name):
@@ -406,7 +400,6 @@ def get_virtual_networks(module, params):
                     'switch_id': network.xpath(".//VswitchID")[0].text if network.xpath(".//VswitchID") else None,
                     'tagged_network': network.xpath(".//TaggedNetwork")[0].text if network.xpath(".//TaggedNetwork") else None
                 }
-            
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
             networks_info = []
             if virtual_networks_dom:
@@ -456,7 +449,6 @@ def delete_virtual_network(module, params):
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
             network_uuid = None
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
-            
             if virtual_networks_dom:
                 networks = virtual_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
