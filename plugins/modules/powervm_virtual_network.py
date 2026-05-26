@@ -339,8 +339,6 @@ def create_virtual_network(module, params):
                     module.fail_json(msg="Virtual switch '{0}' not found".format(switch_name))
                 else:
                     module.fail_json(msg="Virtual switch with ID '{0}' not found".format(switch_id))
-            
-            # Check for VLAN ID conflict with the validated switch
             if existing_networks_dom is not None:
                 networks = existing_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
@@ -398,7 +396,6 @@ def get_virtual_networks(module, params):
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
-            
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
             networks_info = []
             if virtual_networks_dom:
