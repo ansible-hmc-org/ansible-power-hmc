@@ -24,11 +24,11 @@ notes:
 description:
     - "Creates a virtual network with specified configuration on the managed system"
     - "Retrieves information about virtual networks on the managed system"
+    - "Update the name of the virtual network on the managed system"
     - "Deletes virtual networks from the managed system"
-version_added: "1.5.0"
+version_added: "1.0.0"
 requirements:
 - Python >= 3
-- lxml
 options:
     hmc_host:
         description:
@@ -59,7 +59,7 @@ options:
     network_name:
         description:
             - The name of the virtual network.
-            - Required when I(state=present) or I(state=absent).
+            - Required when I(state=present) or I(state=absent)or I(state=updated).
             - Optional when I(state=facts). If provided, returns details for the specific network. If not provided, returns all networks.
         type: str
     network_vlan_id:
@@ -269,6 +269,16 @@ def validate_parameters(params):
             raise ParameterError("unsupported parameters: %s" % (', '.join(collate)))
 
 
+def extract_network_data(network):
+    return {
+        'network_name': network.xpath(".//NetworkName")[0].text if network.xpath(".//NetworkName") else None,
+        'network_vlan_id': network.xpath(".//NetworkVLANID")[0].text if network.xpath(".//NetworkVLANID") else None,
+        'switch_name': network.xpath(".//VirtualSwitchName")[0].text if network.xpath(".//VirtualSwitchName") else None,
+        'switch_id': network.xpath(".//VswitchID")[0].text if network.xpath(".//VswitchID") else None,
+        'tagged_network': network.xpath(".//TaggedNetwork")[0].text if network.xpath(".//TaggedNetwork") else None
+    }
+
+
 def create_virtual_network(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -295,6 +305,15 @@ def create_virtual_network(module, params):
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
+            existing_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
+            if existing_networks_dom is not None:
+                network_names = existing_networks_dom.xpath("//NetworkName")
+                if network_names:
+                    for network in network_names:
+                        if network.text == network_name:
+                            module.exit_json(
+                                changed=False,
+                                msg="Virtual network '{0}' already exists".format(network_name))
             switch_info = {'uuid': None, 'id': None, 'name': None, 'href': None}
             virtual_switches_dom = rest_conn.getVirtualSwitches(system_uuid)
             if not virtual_switches_dom:
@@ -320,15 +339,8 @@ def create_virtual_network(module, params):
                     module.fail_json(msg="Virtual switch '{0}' not found".format(switch_name))
                 else:
                     module.fail_json(msg="Virtual switch with ID '{0}' not found".format(switch_id))
-            existing_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
-            if existing_networks_dom is not None:
-                network_names = existing_networks_dom.xpath("//NetworkName")
-                if network_names:
-                    for network in network_names:
-                        if network.text == network_name:
-                            module.exit_json(
-                                changed=False,
-                                msg="Virtual network '{0}' already exists".format(network_name))
+            
+            # Check for VLAN ID conflict with the validated switch
             if existing_networks_dom is not None:
                 networks = existing_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
@@ -386,15 +398,7 @@ def get_virtual_networks(module, params):
             system_uuid, server_dom = rest_conn.getManagedSystem(system_name)
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
-
-            def extract_network_data(network):
-                return {
-                    'network_name': network.xpath(".//NetworkName")[0].text if network.xpath(".//NetworkName") else None,
-                    'network_vlan_id': network.xpath(".//NetworkVLANID")[0].text if network.xpath(".//NetworkVLANID") else None,
-                    'switch_name': network.xpath(".//VirtualSwitchName")[0].text if network.xpath(".//VirtualSwitchName") else None,
-                    'switch_id': network.xpath(".//VswitchID")[0].text if network.xpath(".//VswitchID") else None,
-                    'tagged_network': network.xpath(".//TaggedNetwork")[0].text if network.xpath(".//TaggedNetwork") else None
-                }
+            
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
             networks_info = []
             if virtual_networks_dom:
@@ -532,15 +536,6 @@ def update_virtual_network(module, params):
                 module.exit_json(
                     changed=False,
                     msg="Virtual network already has the name '{0}'".format(new_network_name))
-
-            if virtual_networks_dom:
-                networks = virtual_networks_dom.xpath("//VirtualNetwork")
-                for network in networks:
-                    network_name_elem = network.xpath(".//NetworkName")
-                    if network_name_elem and network_name_elem[0].text == new_network_name:
-                        module.exit_json(
-                            changed=False,
-                            msg="Virtual network with name '{0}' already exists".format(new_network_name))
             result = rest_conn.updateVirtualNetwork(system_uuid, network_uuid, new_network_name)
             if result:
                 changed = True
