@@ -507,16 +507,21 @@ def update_virtual_network(module, params):
             if not system_uuid:
                 module.fail_json(msg="Managed system not found: {0}".format(system_name))
             network_uuid = None
+            new_network_exists = False
             virtual_networks_dom = rest_conn.getVirtualNetworks(system_uuid)
             if virtual_networks_dom:
                 networks = virtual_networks_dom.xpath("//VirtualNetwork")
                 for network in networks:
                     network_name_elem = network.xpath(".//NetworkName")
-                    if network_name_elem and network_name_elem[0].text == network_name:
+                    if not network_name_elem:
+                        continue
+                    existing_network_name = network_name_elem[0].text
+                    if existing_network_name == new_network_name:
+                        new_network_exists = True
+                    if existing_network_name == network_name:
                         atom_id_elem = network.xpath(".//Metadata/Atom/AtomID")
                         if atom_id_elem and len(atom_id_elem) > 0:
                             network_uuid = atom_id_elem[0].text
-                            break
                         else:
                             atom_elem = network.xpath(".//Metadata/Atom")
                             if atom_elem and len(atom_elem) > 0:
@@ -524,15 +529,21 @@ def update_virtual_network(module, params):
                                 if atom_link:
                                     network_href = atom_link[0].get('href')
                                     network_uuid = network_href.split('/')[-1]
-                                    break
-            if not network_uuid:
-                module.exit_json(
-                    changed=False,
-                    msg="Virtual network '{0}' not found".format(network_name))
             if network_name == new_network_name:
                 module.exit_json(
                     changed=False,
                     msg="Virtual network already has the name '{0}'".format(new_network_name))
+            if not network_uuid:
+                if new_network_exists:
+                    module.exit_json(
+                        changed=False,
+                        msg="Virtual network '{0}' already exists".format(new_network_name))
+                module.fail_json(
+                    msg="Virtual network '{0}' does not exist".format(network_name))
+            if new_network_exists:
+                module.exit_json(
+                    changed=False,
+                    msg="Virtual network '{0}' already exists".format(new_network_name))
             result = rest_conn.updateVirtualNetwork(system_uuid, network_uuid, new_network_name)
             if result:
                 changed = True
