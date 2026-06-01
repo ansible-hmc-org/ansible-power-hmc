@@ -3,7 +3,6 @@ __metaclass__ = type
 
 import pytest
 import importlib
-import xml.etree.ElementTree as etree
 
 IMPORT_VIRTUAL_NETWORK = "ansible_collections.ibm.power_hmc.plugins.modules.powervm_virtual_network"
 
