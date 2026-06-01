@@ -3,7 +3,7 @@ __metaclass__ = type
 
 import pytest
 import importlib
-from lxml import etree
+import xml.etree.ElementTree as etree
 
 IMPORT_VIRTUAL_NETWORK = "ansible_collections.ibm.power_hmc.plugins.modules.powervm_virtual_network"
 
@@ -116,17 +116,43 @@ def common_mock_setup(mocker):
     return powervm_virtual_network
 
 
+class FakeElementList(list):
+    def xpath(self, expression):
+        if expression == ".//link[@rel='SELF']":
+            return []
+        return []
+
+
+class FakeElement:
+    def __init__(self, text=None, children=None):
+        self.text = text
+        self.children = children or {}
+
+    def xpath(self, expression):
+        return self.children.get(expression, FakeElementList())
+
+
+class FakeDom:
+    def __init__(self, names):
+        self.names = names
+
+    def xpath(self, expression):
+        if expression == "//VirtualNetwork":
+            networks = FakeElementList()
+            for index, name in enumerate(self.names, start=1):
+                networks.append(
+                    FakeElement(children={
+                        ".//NetworkName": FakeElementList([FakeElement(text=name)]),
+                        ".//Metadata/Atom/AtomID": FakeElementList([FakeElement(text="uuid-{0}".format(index))]),
+                        ".//Metadata/Atom": FakeElementList([FakeElement()])
+                    })
+                )
+            return networks
+        return FakeElementList()
+
+
 def build_virtual_networks_dom(names):
-    root = etree.Element("Root")
-    for index, name in enumerate(names, start=1):
-        network = etree.SubElement(root, "VirtualNetwork")
-        metadata = etree.SubElement(network, "Metadata")
-        atom = etree.SubElement(metadata, "Atom")
-        atom_id = etree.SubElement(atom, "AtomID")
-        atom_id.text = "uuid-{0}".format(index)
-        network_name = etree.SubElement(network, "NetworkName")
-        network_name.text = name
-    return root
+    return FakeDom(names)
 
 
 @pytest.mark.parametrize("test_input, expected_error", test_data_present)
