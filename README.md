@@ -61,7 +61,7 @@ For detailed release notes and version history, see [CHANGELOG.rst](CHANGELOG.rs
 
 ## Support
 
-If you encounter any issues while using this collection, please create an issue on the [Red Hat Automation Hub](https://console.redhat.com/ansible/automation-hub/repo/published/ibm/power_hmc) by clicking "Create Issue" or visit our [GitHub Issues][issues] page.
+If you encounter any issues while using this collection, please create an issue on the [Red Hat Automation Hub](https://console.redhat.com/ansible/automation-hub/collections/published/ibm/power_hmc) by clicking "Create Issue" or visit our [GitHub Issues][issues] page.
 
 For additional support and questions, you can also reach out through the community channels listed in our [Contributing Guide](CONTRIBUTING.md).
 
