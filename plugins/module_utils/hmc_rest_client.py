@@ -3027,25 +3027,9 @@ class HmcRestClient:
             return 200, profile_name_elements[0].text
         return "Error: Profile creation failed with unknown error"
 
-    def updatePartitionProfile(self, lpar_uuid, partition_uuid, params, force=False):
-        partiton_profile_xmlstr = ''
-        template_partition_profile = '''<LogicalPartitionProfile:LogicalPartitionProfile
-                                    xmlns:LogicalPartitionProfile="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
-                                    xmlns="http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/"
-                                    xmlns:ns2="http://www.w3.org/XML/1998/namespace/k2" schemaVersion="V1_0">'''
-        partiton_profile_xmlstr += template_partition_profile
-        if params['processor_mode'].lower() == 'false':
-            partiton_profile_xmlstr += self.sharedProcessorPayload(params)
-        else:
-            partiton_profile_xmlstr += self.dedicatedProcessorPayload(params)
-        partiton_profile_xmlstr += self.buildMemoryPayloadXML(params)
-        if 'sharing_mode' in params:
-            if params['sharing_mode'] == 'capped':
-                xml_tree = etree.fromstring(partiton_profile_xmlstr.encode())
-                for elem in xml_tree.xpath('.//*[local-name()="UncappedWeight"]'):
-                    elem.getparent().remove(elem)
-                    partiton_profile_xmlstr = etree.tostring(xml_tree, encoding='unicode')
-        url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile/{2}".format(self.hmc_ip, lpar_uuid, partition_uuid)
+    def updatePartitionProfile(self, lpar_uuid, partition_uuid, patched_xml, force=False):
+        url = "https://{0}/rest/api/uom/LogicalPartition/{1}/LogicalPartitionProfile/{2}".format(
+            self.hmc_ip, lpar_uuid, partition_uuid)
         if force:
             url += "?force=true"
         header = {'X-API-Session': self.session,
@@ -3054,7 +3038,7 @@ class HmcRestClient:
         try:
             resp = open_url(url,
                             headers=header,
-                            data=partiton_profile_xmlstr,
+                            data=patched_xml,
                             method='POST',
                             validate_certs=False,
                             force_basic_auth=True,
@@ -3073,7 +3057,7 @@ class HmcRestClient:
         profile_name_elements = post_response.xpath("//ProfileName")
         if profile_name_elements:
             return 200, profile_name_elements[0].text
-        return "Error: Profile creation failed with unknown error"
+        return "Error: Profile update failed with unknown error"
 
     def getVirtualSwitches(self, system_uuid):
         url = "https://{0}/rest/api/uom/ManagedSystem/{1}/VirtualSwitch".format(self.hmc_ip, system_uuid)
