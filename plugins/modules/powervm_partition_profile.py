@@ -790,9 +790,7 @@ def update_partition_profile(module, params):
         if name not in profile_list:
             module.fail_json(msg=f"A profile named {name} does not exist for the partition.")
         current_config = rest_conn.getCurrentPartitionProfiles(lpar_uuid, profile_uuid)
-        logger.debug("--- Current Partition profile ---")
         root = etree.fromstring(current_config)
-        logger.debug(current_config)
         ns = {'lpp': 'http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/'}
         profile_elem = root.xpath(".//lpp:LogicalPartitionProfile", namespaces=ns)
         if not profile_elem:
@@ -896,9 +894,6 @@ def update_partition_profile(module, params):
                         'sharing_mode': sharing_mode,
                     }
                     new_proc_xml = rest_conn.sharedProcessorAttributesXML(api_params)
-                # The helper methods return XML without a namespace declaration
-                # (they are designed to be embedded in a larger document).
-                # Add the namespace so the fragment parses as a standalone element.
                 lpp_ns = 'http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/'
                 new_proc_xml = new_proc_xml.strip().replace(
                     '<ProcessorAttributes ',
@@ -964,8 +959,6 @@ def update_partition_profile(module, params):
                     else:
                         elems[0].text = str(cast(user_val))
             patched_xml = etree.tostring(profile_root, encoding='unicode')
-            logger.debug("--- Patched XML sent to updatePartitionProfile ---")
-            logger.debug(patched_xml)
             code, result = rest_conn.updatePartitionProfile(lpar_uuid, profile_uuid, patched_xml, force=force)
         if code != 200:
             return False, result, None
