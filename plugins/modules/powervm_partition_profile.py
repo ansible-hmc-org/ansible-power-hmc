@@ -367,8 +367,6 @@ allow_processor_sharing_MAP = {
     'never': 'keep idle procs'
 }
 
-ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {v: k for k, v in allow_processor_sharing_MAP.items()}
-
 
 def init_logger():
     logging.basicConfig(
@@ -470,10 +468,10 @@ def validate_parameters(params):
                 pass
             else:
                 raise ParameterError("processor_settings is required for state=present")
-        if params.get('memory_settings'):
-            mem_settings = params['memory_settings']
-            validate_sub_dict('memory_settings', mem_settings)
-            if opr == 'present':
+        if opr == 'present':
+            if params.get('memory_settings'):
+                mem_settings = params['memory_settings']
+                validate_sub_dict('memory_settings', mem_settings)
                 required_mem_fields = ['desired_memory', 'minimum_memory', 'maximum_memory',
                                        'desired_huge_pagecount', 'minimum_huge_pagecount', 'maximum_huge_pagecount']
                 missing_mem = [f for f in required_mem_fields if mem_settings.get(f) is None]
@@ -484,8 +482,11 @@ def validate_parameters(params):
                 max_mem = mem_settings['maximum_memory']
                 if not (min_mem <= des_mem <= max_mem):
                     raise ParameterError("Memory values must satisfy: minimum_memory <= desired_memory <= maximum_memory")
-        elif opr == 'present':
-            raise ParameterError("memory_settings is required for state=present")
+            else:
+                if opr == 'updated':
+                    pass
+                else:
+                    raise ParameterError("memory_settings is required for state=present")
     elif opr == 'copy':
         mandatoryList = ['hmc_host', 'hmc_auth', 'system_name', 'vm_name', 'name', 'duplicate_prof_name']
         unsupportedList = ['processor_settings', 'memory_settings', 'force']
@@ -716,6 +717,7 @@ def update_partition_profile(module, params):
     vm_name = params['vm_name']
     changed = False
     lpar_uuid = None
+    operating_system = None
     name = params['name']
     validate_parameters(params)
     PROFILE_FIELD_MAP = {
@@ -748,6 +750,8 @@ def update_partition_profile(module, params):
         'processor_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('processor_settings.')},
         'memory_settings': {k.split('.')[1]: None for k in PROFILE_FIELD_MAP if k.startswith('memory_settings.')},
     }
+    profile_settings['processor_settings']['sharing_mode'] = None
+    profile_settings['processor_settings']['allow_processor_sharing'] = None
     user_input = {
         'processor_settings': params.get('processor_settings') or {},
         'memory_settings': params.get('memory_settings') or {}
@@ -777,13 +781,17 @@ def update_partition_profile(module, params):
             for eachLpar in lpar_quick_list:
                 if eachLpar['PartitionName'] == vm_name:
                     lpar_uuid = eachLpar['UUID']
+                    operating_system = eachLpar['OperatingSystemType']
                     break
             if lpar_uuid is None:
                 module.fail_json(msg=f"Given partition ({vm_name}) is not present on the system")
         else:
             module.fail_json(msg="There are no Logical Partitions present on the system")
+        result = rest_conn.getAllPartitionProfiles(lpar_uuid)
+        root = etree.fromstring(result)
+        profile_list = root.xpath("//*[local-name()='ProfileName']/text()")
         profile_uuid = rest_conn.getAllPartitionProfiles(lpar_uuid, name)
-        if not profile_uuid:
+        if name not in profile_list:
             module.fail_json(msg=f"A profile named {name} does not exist for the partition.")
         current_config = rest_conn.getCurrentPartitionProfiles(lpar_uuid, profile_uuid)
         root = etree.fromstring(current_config)
@@ -795,8 +803,13 @@ def update_partition_profile(module, params):
         has_dedicated = root.xpath(".//lpp:ProcessorAttributes/lpp:HasDedicatedProcessors/text()", namespaces=ns)
         processor_mode = 'dedicated' if has_dedicated and has_dedicated[0].lower() == 'true' else 'shared'
         profile_settings['processor_settings']['processor_mode'] = processor_mode
-        proc_base = (".//lpp:SharedProcessorConfiguration" if processor_mode == 'shared'
-                     else ".//lpp:DedicatedProcessorConfiguration")
+        if processor_mode == 'shared':
+            proc_base = ".//lpp:SharedProcessorConfiguration"
+        else:
+            proc_base = ".//lpp:DedicatedProcessorConfiguration"
+        ALLOW_PROCESSOR_SHARING_REVERSE_MAP = {
+            v: k for k, v in allow_processor_sharing_MAP.items()
+        }
         sharing_val = root.xpath(".//lpp:ProcessorAttributes/lpp:SharingMode/text()", namespaces=ns)
         if sharing_val:
             raw = sharing_val[0]
@@ -807,11 +820,22 @@ def update_partition_profile(module, params):
                 profile_settings['processor_settings']['sharing_mode'] = raw
         for key, (xml_tag, cast) in PROFILE_FIELD_MAP.items():
             section, field = key.split('.')
-            tag_to_use = xml_tag.get(processor_mode) if isinstance(xml_tag, dict) else xml_tag
+            tag_to_use = xml_tag
+            if isinstance(xml_tag, dict):
+                tag_to_use = xml_tag.get(processor_mode)
             if not tag_to_use:
                 continue
             if section == 'processor_settings':
-                val = root.xpath(f"{proc_base}/lpp:{tag_to_use}/text()", namespaces=ns)
+                if field == 'sharing_mode':
+                    val = root.xpath(
+                        ".//lpp:ProcessorAttributes/lpp:SharingMode/text()",
+                        namespaces=ns
+                    )
+                else:
+                    val = root.xpath(
+                        f"{proc_base}/lpp:{tag_to_use}/text()",
+                        namespaces=ns
+                    )
             elif section == 'memory_settings':
                 val = root.xpath(
                     f".//lpp:ProfileMemory/lpp:{tag_to_use}/text()",
@@ -822,7 +846,9 @@ def update_partition_profile(module, params):
             if not val:
                 continue
             raw = val[0]
-            if cast is bool:
+            if cast == 'allow_processor_sharing':
+                profile_settings[section][field] = ALLOW_PROCESSOR_SHARING_REVERSE_MAP.get(raw)
+            elif cast is bool:
                 profile_settings[section][field] = raw.lower() == 'true'
             else:
                 try:
@@ -835,140 +861,84 @@ def update_partition_profile(module, params):
                 if user_val is not None and user_val != current_val:
                     profile_settings[section][field] = user_val
                     changed = True
-        user_proc_mode = user_input.get('processor_settings', {}).get('processor_mode')
-        if user_proc_mode is not None and user_proc_mode.lower() != processor_mode:
-            changed = True
         if changed is not True:
             msg = "Partition profile " + name + " is already in desired configuration"
             return False, None, msg
         else:
-            if user_proc_mode is not None and user_proc_mode.lower() != processor_mode:
-                new_proc_mode = user_proc_mode.lower()
-                proc_vals = dict(profile_settings['processor_settings'])
-                proc_vals['processor_mode'] = new_proc_mode
-                if new_proc_mode == 'dedicated':
-                    api_params = {
-                        'desired_processors': proc_vals.get('desired_processors', 1),
-                        'maximum_processors': proc_vals.get('maximum_processors', 1),
-                        'minimum_processors': proc_vals.get('minimum_processors', 1),
-                        'processor_mode': 'true',
-                        'allow_processor_sharing': allow_processor_sharing_MAP.get(
-                            proc_vals.get('allow_processor_sharing') or 'never'),
-                    }
-                    new_proc_xml = rest_conn.dedicatedProcessorAttributesXML(api_params)
-                else:
-                    user_proc = user_input.get('processor_settings', {})
-                    sharing_mode = user_proc.get('sharing_mode') or proc_vals.get('sharing_mode') or 'capped'
-                    api_params = {
-                        'processor_mode': 'false',
-                        'desired_processing_units': user_proc.get('desired_processing_units') or proc_vals.get('desired_processing_units', 0.5),
-                        'desired_processors': user_proc.get('desired_processors') or proc_vals.get('desired_processors', 1),
-                        'maximum_processing_units': user_proc.get('maximum_processing_units') or proc_vals.get('maximum_processing_units', 1.0),
-                        'maximum_processors': user_proc.get('maximum_processors') or proc_vals.get('maximum_processors', 1),
-                        'minimum_processing_units': user_proc.get('minimum_processing_units') or proc_vals.get('minimum_processing_units', 0.1),
-                        'minimum_processors': user_proc.get('minimum_processors') or proc_vals.get('minimum_processors', 1),
-                        'shared_processor_pool': user_proc.get('shared_processor_pool') if user_proc.get('shared_processor_pool') is not None else (proc_vals.get('shared_processor_pool') or 0),
-                        'uncapped_weight': user_proc.get('uncapped_weight') if user_proc.get('uncapped_weight') is not None else (proc_vals.get('uncapped_weight') or 0),
-                        'sharing_mode': sharing_mode,
-                    }
-                    new_proc_xml = rest_conn.sharedProcessorAttributesXML(api_params)
-                lpp_ns = 'http://www.ibm.com/xmlns/systems/power/firmware/uom/mc/2012_10/'
-                new_proc_xml = new_proc_xml.strip().replace(
-                    '<ProcessorAttributes ',
-                    f'<ProcessorAttributes xmlns="{lpp_ns}" ', 1)
-                new_proc_elem = etree.fromstring(new_proc_xml)
-                old_proc_attrs = profile_root.xpath(
-                    ".//lpp:ProcessorAttributes", namespaces=ns)
-                if old_proc_attrs:
-                    parent = old_proc_attrs[0].getparent()
-                    idx = list(parent).index(old_proc_attrs[0])
-                    parent.remove(old_proc_attrs[0])
-                    parent.insert(idx, new_proc_elem)
-                proc_base = (".//lpp:SharedProcessorConfiguration" if new_proc_mode == 'shared'
-                             else ".//lpp:DedicatedProcessorConfiguration")
-                processor_mode = new_proc_mode
+            fields_to_reset = ["uncapped_weight", "shared_processor_pool", "minimum_processing_units",
+                               "maximum_processing_units", "desired_processing_units", "sharing_mode"]
+            user_proc_mode = user_input.get('processor_settings', {}).get('processor_mode')
+            if user_proc_mode is not None:
+                if user_proc_mode.lower() == 'dedicated':
+                    for field in fields_to_reset:
+                        if field in profile_settings['processor_settings']:
+                            profile_settings['processor_settings'][field] = None
+                if user_proc_mode.lower() == 'shared':
+                    profile_settings['processor_settings']['allow_processor_sharing'] = None
+            profile_settings['name'] = name
+            profile_settings['state'] = 'updated'
+            validate_parameters(profile_settings)
+            config = build_config_dict(profile_settings)
+            proc_settings = profile_settings.get('processor_settings', {})
+            processor_mode = proc_settings.get('processor_mode', '').lower()
+            config['operating_system'] = operating_system
+            if processor_mode == 'shared':
+                config['processor_mode'] = 'false'
+                if not config.get('sharing_mode'):
+                    config['sharing_mode'] = 'capped'
+                    config['uncapped_weight'] = 0
+                if not config.get('shared_processor_pool'):
+                    config['shared_processor_pool'] = 0
+                if config.get('sharing_mode').lower() == 'capped':
+                    if not config.get('uncapped_weight'):
+                        config['uncapped_weight'] = 0
             else:
-                for key, (xml_tag, cast) in PROFILE_FIELD_MAP.items():
-                    section, field = key.split('.')
-                    if section != 'processor_settings':
-                        continue
-                    user_val = user_input['processor_settings'].get(field)
-                    if user_val is None:
-                        continue
-                    tag_to_use = xml_tag.get(processor_mode) if isinstance(xml_tag, dict) else xml_tag
-                    if not tag_to_use:
-                        continue
-                    elems = profile_root.xpath(
-                        f"{proc_base}/lpp:{tag_to_use}",
-                        namespaces=ns
-                    )
-                    if elems:
-                        elems[0].text = str(cast(user_val))
-                    elif field == 'uncapped_weight':
-                        pool_elems = profile_root.xpath(
-                            f"{proc_base}/lpp:SharedProcessorPoolID",
-                            namespaces=ns
-                        )
-                        lpp_ns_uri = ns['lpp']
-                        new_elem = etree.SubElement(
-                            pool_elems[0].getparent() if pool_elems else profile_root,
-                            f'{{{lpp_ns_uri}}}UncappedWeight',
-                            attrib={'kxe': 'false', 'kb': 'CUD'}
-                        )
-                        new_elem.text = str(cast(user_val))
-                        if pool_elems:
-                            pool_elems[0].addnext(new_elem)
-                user_sharing = user_input['processor_settings'].get('sharing_mode')
-                user_allow_sharing = user_input['processor_settings'].get('allow_processor_sharing')
-                if user_sharing is not None or user_allow_sharing is not None:
-                    elems = profile_root.xpath(
-                        ".//lpp:ProcessorAttributes/lpp:SharingMode", namespaces=ns)
-                    if elems:
-                        if user_sharing is not None:
-                            elems[0].text = user_sharing
-                        else:
-                            elems[0].text = allow_processor_sharing_MAP.get(
-                                user_allow_sharing, elems[0].text)
-            lpp_ns_uri = ns['lpp']
-            mem_input = dict(user_input['memory_settings'])
-            user_ame = mem_input.get('active_memory_expansion')
-            user_exp_factor = mem_input.get('expansion_factor')
-            if user_ame is False and user_exp_factor is None:
-                mem_input['expansion_factor'] = 0.0
-            elif user_ame is True and user_exp_factor is None:
-                mem_input['expansion_factor'] = 1.0
-            elif user_exp_factor is not None and user_ame is None:
-                mem_input['active_memory_expansion'] = True
-            for key, (xml_tag, cast) in PROFILE_FIELD_MAP.items():
-                section, field = key.split('.')
-                if section != 'memory_settings':
-                    continue
-                user_val = mem_input.get(field)
-                if user_val is None:
-                    continue
-                elems = profile_root.xpath(
-                    f".//lpp:ProfileMemory/lpp:{xml_tag}",
-                    namespaces=ns
-                )
-                new_text = str(user_val).lower() if cast is bool else str(cast(user_val))
-                if elems:
-                    elems[0].text = new_text
+                config['processor_mode'] = 'true'
+                if config.get('allow_processor_sharing'):
+                    sharing_input = config.get('allow_processor_sharing', 'never')
+                    allow_sharing_mode = allow_processor_sharing_MAP.get(sharing_input)
+                    config['allow_processor_sharing'] = allow_sharing_mode
                 else:
-                    mem_parent = profile_root.xpath(".//lpp:ProfileMemory", namespaces=ns)
-                    if mem_parent:
-                        new_elem = etree.SubElement(
-                            mem_parent[0],
-                            f'{{{lpp_ns_uri}}}{xml_tag}',
-                            attrib={'kxe': 'false', 'kb': 'CUD'}
-                        )
-                        new_elem.text = new_text
+                    config['allow_processor_sharing'] = allow_processor_sharing_MAP['never']
+            user_ame = user_input.get('memory_settings', {}).get('active_memory_expansion')
+            user_exp_factor = user_input.get('memory_settings', {}).get('expansion_factor')
+            apply_ame_config(config, user_ame, user_exp_factor)
+
+            lpp_ns = ns['lpp']
+            if config['processor_mode'].lower() == 'false':
+                new_proc_xml = rest_conn.sharedProcessorAttributesXML(config)
+            else:
+                new_proc_xml = rest_conn.dedicatedProcessorAttributesXML(config)
+            new_proc_xml = new_proc_xml.strip().replace(
+                '<ProcessorAttributes ', f'<ProcessorAttributes xmlns="{lpp_ns}" ', 1)
+            new_proc_elem = etree.fromstring(new_proc_xml)
+            old_proc = profile_root.xpath(".//lpp:ProcessorAttributes", namespaces=ns)
+            if old_proc:
+                parent = old_proc[0].getparent()
+                idx = list(parent).index(old_proc[0])
+                parent.remove(old_proc[0])
+                parent.insert(idx, new_proc_elem)
+
+            new_mem_xml = rest_conn.buildMemoryPayloadXML(config)
+            mem_fragment = new_mem_xml[:new_mem_xml.index('</ProfileMemory>') + len('</ProfileMemory>')]
+            mem_fragment = mem_fragment.strip().replace(
+                '<ProfileMemory ', f'<ProfileMemory xmlns="{lpp_ns}" ', 1)
+            new_mem_elem = etree.fromstring(mem_fragment)
+            old_mem = profile_root.xpath(".//lpp:ProfileMemory", namespaces=ns)
+            if old_mem:
+                parent = old_mem[0].getparent()
+                idx = list(parent).index(old_mem[0])
+                parent.remove(old_mem[0])
+                parent.insert(idx, new_mem_elem)
+
             patched_xml = etree.tostring(profile_root, encoding='unicode')
             code, result = rest_conn.updatePartitionProfile(lpar_uuid, profile_uuid, patched_xml, force=force)
         if code != 200:
             return False, result, None
         else:
             final_result = {"msg": f"{result} partition profile is updated successfully"}
-            return True, final_result, None
+            changed = True
+            return changed, final_result, None
     except Exception as e:
         return False, repr(e), None
     finally:
