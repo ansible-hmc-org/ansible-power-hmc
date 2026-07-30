@@ -205,6 +205,7 @@ options:
             - C(facts) to list serviceable events.
         type: str
         choices: ['created', 'facts']
+        required: true
 '''
 
 EXAMPLES = '''
