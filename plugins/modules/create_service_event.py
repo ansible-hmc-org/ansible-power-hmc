@@ -265,6 +265,21 @@ EXAMPLES = '''
     system_name: <system name>
     days: 7
     number_of_events: 10
+
+- name: List last 10 hardware events with selected display attributes
+  create_service_event:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth: "{{ curr_hmc_auth }}"
+    state: facts
+    event_type: hardware
+    system_name: "{{ system_name }}"
+    number_of_events: 10
+    display_attributes:
+        - problem_num
+        - status
+        - customer_description
+        - customer_email
+        - event_severity
 '''
 
 import logging
