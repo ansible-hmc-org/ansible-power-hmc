@@ -304,8 +304,6 @@ def get_hmc_resource(module, params):
     hmc_conn = HmcCliConnection(module, params['hmc_host'], params['hmc_auth']['username'], params['hmc_auth']['password'])
     return Hmc(hmc_conn)
 
-
-
 def validate_parameters(params, system_gen):
     '''Check that the input parameters satisfy the mutual exclusiveness of HMC'''
     unsupported_params = {
@@ -488,8 +486,6 @@ def format_svc_event_output(output, event_type, display_attributes):
         rows.append(event)
     return rows
 
-
-
 def list_svc_events(module, params):
     validate_parameters(params, None)
     hmc = get_hmc_resource(module, params)
@@ -499,8 +495,6 @@ def list_svc_events(module, params):
         return False, format_svc_event_output(output, params['event_type'], params['display_attributes']), None
     except Exception as e:
         return False, repr(e), None
-
-
 
 def perform_task(module):
     params = module.params
