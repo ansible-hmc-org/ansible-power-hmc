@@ -858,12 +858,15 @@ class Hmc():
         headers = "service_pack,level,ecnumber"
         res_dict = self.cmdClass.parseAttributes(headers, raw_result)
         service_pack = res_dict.get('service_pack', '').strip().lower()
-        if service_pack.startswith('fw9'):
-            return 'power9'
-        if service_pack.startswith('fw10'):
-            return 'power10'
-        if service_pack.startswith('fw11'):
-            return 'power11'
+        match = re.match(r'^fw(\d+)', service_pack)
+        if not match:
+            return None
+        digits = match.group(1)
+        if digits.startswith('9'):
+            version = '9'
+        else:
+            version = digits[:2]
+        return f'power{version}'
 
     def get_io_sriov_level(self, system_name, lic_type):
 
