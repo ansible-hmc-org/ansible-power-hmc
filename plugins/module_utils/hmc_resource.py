@@ -1072,7 +1072,7 @@ class Hmc():
             attributes['service_file'] = csv_string
         option_map = {'title': '-TITLE', 'severity': '-SEVERITY', 'contact_name': '-NAME', 'service_file': '-SERVICE_FILE',
                       'contact_phone': '-PHONE', 'contact_email': '-EMAIL', 'target_lpar_name': '-TARGET_LPAR_NAME', 'target_mtms': '-TARGET_MTMS',
-                      'lpar_name': '-LPAR_NAME'}
+                      'lpar_name': '-LPAR_NAME', 'hostname': '-HOSTNAME', 'user': '-USER', 'password': '-PASSWORD'}
         svc_ticket_cmd += self.OPT['MKSVCEVENT']['-A']
         for key in option_map:
             if attributes[key] is not None:
