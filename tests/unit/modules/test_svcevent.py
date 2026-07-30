@@ -150,13 +150,23 @@ test_data = [
       'event_type': None, 'days': None, 'minutes': None, 'number_of_events': None, 'display_attributes': None},
      "ParameterError: 'user' is mandatory for types: novalink"),
 
+    # password is missed for novalink type
+    ({'hmc_host': 'data', 'hmc_auth': hmc_auth, 'state': 'created', 'system_name': 'sys1',
+      'description': 'test', 'types': 'novalink', 'attributes':
+     {'title': 'data', 'severity': '2', 'contact_name': 'data',
+      'contact_phone': 'data', 'contact_email': 'data', 'service_file': ['novalinkffdc'],
+      'target_lpar_name': None, 'target_mtms': None, 'lpar_name': None,
+      'hostname': 'host1', 'user': 'admin', 'password': None},
+      'event_type': None, 'days': None, 'minutes': None, 'number_of_events': None, 'display_attributes': None},
+     "ParameterError: 'password' is mandatory for types: novalink"),
+
     # service_file is missed for novalink type
     ({'hmc_host': 'data', 'hmc_auth': hmc_auth, 'state': 'created', 'system_name': 'sys1',
       'description': 'test', 'types': 'novalink', 'attributes':
      {'title': 'data', 'severity': '2', 'contact_name': 'data',
       'contact_phone': 'data', 'contact_email': 'data', 'service_file': None,
       'target_lpar_name': None, 'target_mtms': None, 'lpar_name': None,
-      'hostname': 'host1', 'user': 'admin'},
+      'hostname': 'host1', 'user': 'admin', 'password': 'passw0rd'},
       'event_type': None, 'days': None, 'minutes': None, 'number_of_events': None, 'display_attributes': None},
      "ParameterError: 'service_file' is mandatory for types: novalink"),
 
