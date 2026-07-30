@@ -154,7 +154,7 @@ options:
             password:
                 description:
                     - NovaLink password.
-                    - Valid with C(novalink).
+                    - Required with C(novalink).
                 type: str
             service_file:
                 description:
@@ -265,21 +265,6 @@ EXAMPLES = '''
     system_name: <system name>
     days: 7
     number_of_events: 10
-
-- name: List last 10 hardware events with selected display attributes
-  create_service_event:
-    hmc_host: "{{ inventory_hostname }}"
-    hmc_auth: "{{ curr_hmc_auth }}"
-    state: facts
-    event_type: hardware
-    system_name: "{{ system_name }}"
-    number_of_events: 10
-    display_attributes:
-        - problem_num
-        - status
-        - customer_description
-        - customer_email
-        - event_severity
 '''
 
 import logging
@@ -402,6 +387,8 @@ def validate_parameters(params, system_gen):
             raise ParameterError("'hostname' is mandatory for types: novalink")
         if attributes['user'] is None:
             raise ParameterError("'user' is mandatory for types: novalink")
+        if attributes['password'] is None:
+            raise ParameterError("'password' is mandatory for types: novalink")
 
     valid_service_files = {
         'aix': {'aixffdc', 'aixsnap', 'pedbgq4'},
