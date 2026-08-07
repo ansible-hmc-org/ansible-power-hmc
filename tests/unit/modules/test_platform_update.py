@@ -211,7 +211,7 @@ platform_config_test_data = [
                  'sriov_adapter_update': [{'all': True, 'subtype': 'DriverOnly'}]
              },
              'partition_migration': {'is_quick_evac': True, 'destination_managed_system': 'sys2', 'vios_name': 'v1'}
-         }},
+        }},
         "ParameterError: unsupported parameter [vios_name] for partition_migration"
     ),
 
@@ -225,7 +225,7 @@ platform_config_test_data = [
                  'update_type': 'Update', 'update_order': 1,
                  'repository': 'sftp', 'level': 'latest', 'sftp': None
              }
-         }},
+        }},
         "ParameterError: 'sftp' block is required for system_firmware_update when repository=sftp"
     ),
 
@@ -238,7 +238,7 @@ platform_config_test_data = [
                  'repository': 'sftp', 'level': 'latest',
                  'sftp': {'hostname': None, 'directory': '/fw', 'username': 'user', 'password': 'pass', 'keyfile': None}
              }
-         }},
+        }},
         "ParameterError: mandatory parameter [hostname] is missing in sftp block for system_firmware_update"
     ),
 
@@ -251,7 +251,7 @@ platform_config_test_data = [
                  'repository': 'sftp', 'level': 'latest',
                  'sftp': {'hostname': 'sftp.host', 'directory': None, 'username': 'user', 'password': 'pass', 'keyfile': None}
              }
-         }},
+        }},
         "ParameterError: mandatory parameter [directory] is missing in sftp block for system_firmware_update"
     ),
 
@@ -264,7 +264,7 @@ platform_config_test_data = [
                  'repository': 'sftp', 'level': 'latest',
                  'sftp': {'hostname': 'sftp.host', 'directory': '/fw', 'username': 'user', 'password': None, 'keyfile': None}
              }
-         }},
+        }},
         "ParameterError: Either 'password' or 'keyfile' is required in sftp block for system_firmware_update"
     ),
 
@@ -277,7 +277,7 @@ platform_config_test_data = [
                  'repository': 'sftp', 'level': 'latest',
                  'sftp': {'hostname': 'sftp.host', 'directory': '/fw', 'username': 'user', 'password': 'pass', 'keyfile': '/id_rsa'}
              }
-         }},
+        }},
         "ParameterError: Parameters 'password' and 'keyfile' are mutually exclusive in sftp block for system_firmware_update"
     ),
 
@@ -291,7 +291,7 @@ platform_config_test_data = [
                  'update_type': 'Update', 'vios_name': 'vios1', 'update_order': 1,
                  'resource_type': 'sftp', 'vios_image_name': 'pkg', 'sftp': None
              }]
-         }},
+        }},
         "ParameterError: 'sftp' block is required for vios_update when resource_type=sftp"
     ),
 
@@ -304,7 +304,7 @@ platform_config_test_data = [
                  'resource_type': 'sftp', 'vios_image_name': None,
                  'sftp': {'hostname': 'sftp.host', 'username': 'user', 'password': 'pass', 'ssh_key': None}
              }]
-         }},
+        }},
         "ParameterError: mandatory parameter [vios_image_name] is missing for vios_update"
     ),
 
@@ -317,7 +317,7 @@ platform_config_test_data = [
                  'resource_type': 'sftp', 'vios_image_name': 'pkg',
                  'sftp': {'hostname': 'sftp.host', 'username': 'user', 'password': None, 'ssh_key': None}
              }]
-         }},
+        }},
         "ParameterError: Either 'password' or 'ssh_key' is required in sftp block for vios_update"
     ),
 
@@ -330,7 +330,7 @@ platform_config_test_data = [
                  'resource_type': 'sftp', 'vios_image_name': 'pkg',
                  'sftp': {'hostname': 'sftp.host', 'username': 'user', 'password': 'pass', 'ssh_key': '/id_rsa'}
              }]
-         }},
+        }},
         "ParameterError: Parameters 'password' and 'ssh_key' are mutually exclusive in sftp block for vios_update"
     ),
 
@@ -344,7 +344,7 @@ platform_config_test_data = [
                  'update_type': 'NoUpdate', 'vios_name': 'vios1', 'update_order': 1,
                  'io_adapter_update': [{'all': True, 'repository': 'sftp', 'sftp': None}]
              }]
-         }},
+        }},
         "ParameterError: 'sftp' block is required for io_adapter_update when repository=sftp"
     ),
 
@@ -359,7 +359,7 @@ platform_config_test_data = [
                      'sftp': {'hostname': 'sftp.host', 'directory': '/io', 'username': 'user', 'password': None, 'keyfile': None}
                  }]
              }]
-         }},
+        }},
         "ParameterError: Either 'password' or 'keyfile' is required in sftp block for io_adapter_update"
     ),
 
@@ -374,7 +374,7 @@ platform_config_test_data = [
                      'sftp': {'hostname': 'sftp.host', 'directory': '/io', 'username': 'user', 'password': 'pass', 'keyfile': '/id_rsa'}
                  }]
              }]
-         }},
+        }},
         "ParameterError: Parameters 'password' and 'keyfile' are mutually exclusive in sftp block for io_adapter_update"
     ),
 

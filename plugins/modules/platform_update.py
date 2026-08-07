@@ -123,17 +123,17 @@ options:
                             hostname:
                                 description:
                                     - Hostname or IP address of the SFTP server.
-                                required: true
+                                    - Required when C(repository=sftp).
                                 type: str
                             directory:
                                 description:
                                     - Directory on the SFTP server containing the firmware image.
-                                required: true
+                                    - Required when C(repository=sftp).
                                 type: str
                             username:
                                 description:
                                     - Username for SFTP authentication.
-                                required: true
+                                    - Required when C(repository=sftp).
                                 type: str
                             password:
                                 description:
@@ -233,12 +233,12 @@ options:
                             hostname:
                                 description:
                                     - Hostname or IP address of the SFTP server.
-                                required: true
+                                    - Required when C(resource_type=sftp).
                                 type: str
                             username:
                                 description:
                                     - Username for SFTP authentication.
-                                required: true
+                                    - Required when C(resource_type=sftp).
                                 type: str
                             password:
                                 description:
@@ -295,17 +295,17 @@ options:
                                     hostname:
                                         description:
                                             - Hostname or IP address of the SFTP server.
-                                        required: true
+                                            - Required when C(repository=sftp).
                                         type: str
                                     directory:
                                         description:
                                             - Directory on the SFTP server containing the adapter firmware.
-                                        required: true
+                                            - Required when C(repository=sftp).
                                         type: str
                                     username:
                                         description:
                                             - Username for SFTP authentication.
-                                        required: true
+                                            - Required when C(repository=sftp).
                                         type: str
                                     password:
                                         description:
