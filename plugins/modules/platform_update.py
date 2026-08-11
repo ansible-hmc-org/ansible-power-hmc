@@ -247,7 +247,7 @@ options:
                                 type: str
                             ssh_key:
                                 description:
-                                    - SSH private key content used for authentication.
+                                    - Path to an SSH private key file used for SFTP authentication.
                                     - Mutually exclusive with C(password).
                                 type: str
                             remote_directory:
@@ -507,44 +507,6 @@ EXAMPLES = '''
           username: sftpuser
           password: sftppass
 
-- name: Perform a System Firmware update from an SFTP server using SSH key authentication
-  platform_update:
-    hmc_host: <host>
-    hmc_auth:
-      username: <hscroot>
-      password: <hmcpass>
-    system_name: <system_name>
-    platform_config:
-      system_firmware_update:
-        update_type: Update
-        update_order: 1
-        repository: sftp
-        sftp:
-          hostname: sftp.example.com
-          directory: /firmware/images
-          username: sftpuser
-          keyfile: /home/hscroot/.ssh/id_rsa
-
-- name: Update VIOS from an SFTP server using password authentication
-  platform_update:
-    hmc_host: <host>
-    hmc_auth:
-      username: <hscroot>
-      password: <hmcpass>
-    system_name: <system_name>
-    platform_config:
-      vios_update:
-        - update_type: Update
-          vios_name: vios1
-          update_order: 1
-          resource_type: sftp
-          vios_image_name: vios_package_name
-          sftp:
-            hostname: sftp.example.com
-            username: sftpuser
-            password: sftppass
-            remote_directory: /vios/images
-
 - name: Update VIOS from an SFTP server using SSH key authentication with specific files
   platform_update:
     hmc_host: <host>
@@ -567,7 +529,7 @@ EXAMPLES = '''
             file_names:
               - vios_image.tar.gz
 
-- name: Update I/O adapters from an SFTP server using password authentication
+- name: Update I/O adapters from an SFTP server using SSH key authentication
   platform_update:
     hmc_host: <host>
     hmc_auth:
@@ -586,7 +548,7 @@ EXAMPLES = '''
                 hostname: sftp.example.com
                 directory: /io/firmware
                 username: sftpuser
-                password: sftppass
+                keyfile: /home/hscroot/.ssh/id_rsa
 
 - name: Facts
   platform_update:
@@ -768,7 +730,7 @@ def validate_parameters(params):
         if update_type == 'noupdate':
             if not sriov_updates:
                 raise ParameterError("Missing parameter sriov_adapter_update for system_firmware_update")
-            if sfw_update.get('repository'):
+            if repo:
                 sfw_update['repository'] = None
             if sfw_update.get('level') != 'latest':
                 raise ParameterError("Parameter 'level' is not supported for system_firmware_update when update_type = 'NoUpdate'")
@@ -1061,17 +1023,6 @@ def map_entries(data):
         "level": "Level",
         "vios_image_name": "Name",
         "all": "ALL",
-        # Already-flattened SFTP keys (inlined from the sftp block before map_entries runs)
-        "HostName": "HostName",
-        "Directory": "Directory",
-        "UserName": "UserName",
-        "Password": "Password",
-        "Keyfile": "Keyfile",
-        "ServerHostOrIP": "ServerHostOrIP",
-        "SSHKey": "SSHKey",
-        "RemoteDirectory": "RemoteDirectory",
-        "FileNames": "FileNames",
-        "SaveFile": "SaveFile",
     }
 
     if isinstance(data, dict):
