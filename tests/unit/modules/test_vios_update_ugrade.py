@@ -155,7 +155,23 @@ test_data = [
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
       'option': None, 'save': None, 'restart': None, 'disks': 'data', 'device': None, 'filesets': None, 'vios_name': None}},
-     "ParameterError: unsupported parameter: disks")]
+     "ParameterError: unsupported parameter: disks"),
+
+    # device is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'updated', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': '/dev/cd0', 'filesets': None, 'vios_name': None}},
+     "ParameterError: unsupported parameter: device"),
+
+    # filesets is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'updated', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': ['file1'], 'vios_name': None}},
+     "ParameterError: unsupported parameter: filesets")]
 
 test_data1 = [
 
@@ -287,7 +303,23 @@ test_data1 = [
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
       'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
-     "ParameterError: mandatory parameter 'mount_loc' is missing")]
+     "ParameterError: mandatory parameter 'mount_loc' is missing"),
+
+    # device is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'upgraded', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': '/dev/cd0', 'filesets': None}},
+     "ParameterError: unsupported parameter: device"),
+
+    # filesets is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'upgraded', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': ['file1']}},
+     "ParameterError: unsupported parameter: filesets")]
 
 test_data_list = [
     # device is missed

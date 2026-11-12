@@ -266,7 +266,7 @@ EXAMPLES = '''
       vios_name: <vios_name>
       system_name: <sys/MTMS>
       filesets:
-        - bos.net.tcp.server
+        - <fileset-name>
     action: remove
 
 - name: Cleanup partially installed updates on the VIOS from the HMC.
