@@ -149,6 +149,26 @@ options:
                 description:
                     - Save the update image on the HMC hard disk.
                 type: bool
+            device:
+                description:
+                    - Specifies the device or directory containing the images to list, such as C(/dev/cd0).
+                    - This parameter is mandatory when I(action=list).
+                type: str
+            filesets:
+                description:
+                    - Specifies the list of filesets to remove from the VIOS.
+                    - This parameter is mandatory when I(action=remove).
+                type: list
+                elements: str
+    action:
+        description:
+            - The operation to perform on the VIOS.
+            - C(list) lists the available filesets on the VIOS installation media.
+            - C(remove) removes the specified filesets from the system.
+            - C(cleanup) removes all incomplete pieces of the previous installation.
+            - C(remove_outdated_filesets) removes all outdated filesets from the system.
+        type: str
+        choices: ['list', 'remove', 'cleanup', 'remove_outdated_filesets']
     state:
         description:
             - The desired build state of the target VIOS.
@@ -223,6 +243,53 @@ EXAMPLES = '''
         - Disk1
         - Disk2
     state: upgraded
+
+- name: List the available filesets on the VIOS installation media from the HMC.
+  ibm.power_hmc.vios_update_upgrade:
+    hmc_host: '{{ hmc_ip }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    attributes:
+      vios_name: <vios_name>
+      system_name: <sys/MTMS>
+      device: /dev/cd0
+    action: list
+
+- name: Remove the specified filesets from the VIOS from the HMC.
+  ibm.power_hmc.vios_update_upgrade:
+    hmc_host: '{{ hmc_ip }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    attributes:
+      vios_name: <vios_name>
+      system_name: <sys/MTMS>
+      filesets:
+        - <fileset-name>
+    action: remove
+
+- name: Cleanup partially installed updates on the VIOS from the HMC.
+  ibm.power_hmc.vios_update_upgrade:
+    hmc_host: '{{ hmc_ip }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    attributes:
+      vios_name: <vios_name>
+      system_name: <sys/MTMS>
+    action: cleanup
+
+- name: Remove outdated filesets from the VIOS from the HMC.
+  ibm.power_hmc.vios_update_upgrade:
+    hmc_host: '{{ hmc_ip }}'
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    attributes:
+      vios_name: <vios_name>
+      system_name: <sys/MTMS>
+    action: remove_outdated_filesets
 '''
 
 RETURN = '''
@@ -260,10 +327,21 @@ def validate_sub_params(params):
     opr = None
     unsupportedList = []
     mandatoryList = []
-    opr = params['state']
+    if params['state'] is not None:
+        opr = params['state']
+    else:
+        opr = params['action']
     params = params['attributes']
     mandatoryList = ['repository', 'system_name']
     if opr == 'facts':
+        mandatoryList = ['system_name']
+    elif opr == 'list':
+        mandatoryList = ['system_name', 'device']
+    elif opr == 'remove':
+        mandatoryList = ['system_name', 'filesets']
+    elif opr == 'cleanup':
+        mandatoryList = ['system_name']
+    elif opr == 'remove_outdated_filesets':
         mandatoryList = ['system_name']
     count = sum(x is not None for x in [params['vios_id'], params['vios_name']])
     if count == 0:
@@ -274,17 +352,29 @@ def validate_sub_params(params):
     repo = params['repository']
 
     if opr == 'updated':
-        unsupportedList += ['disks']
+        unsupportedList += ['disks', 'device', 'filesets']
     elif opr == 'upgraded':
         mandatoryList += ['disks']
-        unsupportedList += ['restart']
+        unsupportedList += ['restart', 'device', 'filesets']
         if params['repository'] == 'ibmwebsite':
             raise ParameterError("Upgrade using 'ibmwebsite' is not supported")
         if params['repository'] in ['sftp', 'nfs']:
             mandatoryList += ['files']
     elif opr == 'facts':
         unsupportedList += ['files', 'host_name', 'user_id', 'password', 'ssh_key_file', 'repository', 'restart',
-                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name']
+                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name', 'device', 'filesets']
+    elif opr == 'list':
+        unsupportedList += ['files', 'host_name', 'user_id', 'password', 'ssh_key_file', 'repository', 'restart',
+                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name', 'filesets']
+    elif opr == 'remove':
+        unsupportedList += ['files', 'host_name', 'user_id', 'password', 'ssh_key_file', 'repository', 'restart',
+                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name', 'device']
+    elif opr == 'cleanup':
+        unsupportedList += ['files', 'host_name', 'user_id', 'password', 'ssh_key_file', 'repository', 'restart',
+                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name', 'device', 'filesets']
+    elif opr == 'remove_outdated_filesets':
+        unsupportedList += ['files', 'host_name', 'user_id', 'password', 'ssh_key_file', 'repository', 'restart',
+                            'mount_loc', 'option', 'directory', 'save', 'disks', 'image_name', 'device', 'filesets']
 
     if repo == 'sftp':
         count = sum(x is not None for x in [params['ssh_key_file'], params['password']])
@@ -385,6 +475,148 @@ def facts(module, params, changed=False):
     return changed, version, None
 
 
+def list_filesets(module, params, changed=False):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    validate_parameters(params)
+    attributes = params['attributes']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    vios_name = attributes['vios_name'] or attributes['vios_id']
+    m_system = attributes['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if m_system not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
+        if attributes['vios_name'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
+    filesets = hmc.list_vios_filesets(configDict=attributes).strip()
+    result = {
+        "vios": vios_name,
+        "system": m_system,
+        "device": attributes['device'],
+        "filesets": filesets
+    }
+    return changed, result, None
+
+
+def remove_filesets(module, params, changed=False):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    validate_parameters(params)
+    attributes = params['attributes']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    vios_name = attributes['vios_name'] or attributes['vios_id']
+    m_system = attributes['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if m_system not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
+        if attributes['vios_name'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
+    output = hmc.remove_vios_filesets(configDict=attributes).strip()
+    result = {
+        "vios": vios_name,
+        "system": m_system,
+        "filesets": attributes['filesets'],
+        "output": output
+    }
+    return True, result, None
+
+
+def cleanup_vios(module, params, changed=False):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    validate_parameters(params)
+    attributes = params['attributes']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    vios_name = attributes['vios_name'] or attributes['vios_id']
+    m_system = attributes['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if m_system not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
+        if attributes['vios_name'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
+    output = hmc.cleanup_vios(configDict=attributes).strip()
+    result = {
+        "vios": vios_name,
+        "system": m_system,
+        "output": output
+    }
+    return True, result, None
+
+
+def remove_outdated_filesets(module, params, changed=False):
+    hmc_host = params['hmc_host']
+    hmc_user = params['hmc_auth']['username']
+    password = params['hmc_auth']['password']
+    validate_parameters(params)
+    attributes = params['attributes']
+    hmc_conn = HmcCliConnection(module, hmc_host, hmc_user, password)
+    hmc = Hmc(hmc_conn)
+    vios_name = attributes['vios_name'] or attributes['vios_id']
+    m_system = attributes['system_name']
+    sys_list = (
+        hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
+    )
+    if m_system not in sys_list:
+        module.fail_json(msg="The managed system is not available in HMC")
+    else:
+        vios_list = list(hmc_conn.execute("lssyscfg -r lpar -m {0} -F name,state,lpar_id".format(m_system)).splitlines())
+        if attributes['vios_name'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[0] == vios_name), None)
+        elif attributes['vios_id'] is not None:
+            vios_details = next((entry.split(',') for entry in vios_list if entry.split(',')[2] == vios_name), None)
+        if vios_details:
+            if vios_details[1] != 'Running':
+                module.fail_json(msg="The VIOS is not in running state")
+        else:
+            module.fail_json(msg="The VIOS is not available in HMC")
+    output = hmc.remove_outdated_vios_filesets(configDict=attributes).strip()
+    result = {
+        "vios": vios_name,
+        "system": m_system,
+        "output": output
+    }
+    return True, result, None
+
+
 def ensure_update_upgrade(module, params):
     hmc_host = params['hmc_host']
     hmc_user = params['hmc_auth']['username']
@@ -446,12 +678,17 @@ def perform_task(module):
         "updated": ensure_update_upgrade,
         "upgraded": ensure_update_upgrade,
         "facts": facts,
+        "list": list_filesets,
+        "remove": remove_filesets,
+        "cleanup": cleanup_vios,
+        "remove_outdated_filesets": remove_outdated_filesets,
     }
 
     if not params['hmc_auth']:
         return False, "missing credential info", None
+    opr = params['state'] if params['state'] is not None else params['action']
     try:
-        return actions[params['state']](module, params)
+        return actions[opr](module, params)
     except Exception as error:
         return False, repr(error), None
 
@@ -468,6 +705,7 @@ def run_module():
                       )
                       ),
         state=dict(type='str', choices=['updated', 'upgraded', 'facts']),
+        action=dict(type='str', choices=['list', 'remove', 'cleanup', 'remove_outdated_filesets']),
         attributes=dict(type='dict',
                         required=True,
                         options=dict(
@@ -487,12 +725,16 @@ def run_module():
                             restart=dict(type='bool'),
                             save=dict(type='bool'),
                             disks=dict(type='list', elements='str'),
+                            device=dict(type='str'),
+                            filesets=dict(type='list', elements='str'),
                         )
                         ),
     )
 
     module = AnsibleModule(
         argument_spec=module_args,
+        mutually_exclusive=[('state', 'action')],
+        required_one_of=[('state', 'action')],
     )
 
     if module._verbosity >= 5:

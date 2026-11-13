@@ -1032,6 +1032,51 @@ class Hmc():
             vios_version += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
         return self.hmcconn.execute(vios_version)
 
+    def list_vios_filesets(self, configDict=None):
+        cmd = 'updateios -list -dev ' + configDict['device']
+        vios_cmd = ''
+        vios_cmd += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + '"' + cmd + '"'
+        if configDict['vios_name'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_cmd)
+
+    def remove_vios_filesets(self, configDict=None):
+        filesets = configDict['filesets'] if isinstance(configDict['filesets'], str) else ' '.join(configDict['filesets'])
+        cmd = 'updateios -remove ' + filesets
+        vios_cmd = ''
+        vios_cmd += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + '"' + cmd + '"'
+        if configDict['vios_name'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_cmd)
+
+    def cleanup_vios(self, configDict=None):
+        cmd = 'updateios -cleanup'
+        vios_cmd = ''
+        vios_cmd += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + '"' + cmd + '"'
+        if configDict['vios_name'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_cmd)
+
+    def remove_outdated_vios_filesets(self, configDict=None):
+        cmd = 'updateios -remove_outdated_filesets'
+        vios_cmd = ''
+        vios_cmd += self.CMD['VIOSVRCMD'] + self.OPT['VIOSVRCMD']['-M'] + configDict['system_name'] + \
+            self.OPT['VIOSVRCMD']['-C'] + '"' + cmd + '"'
+        if configDict['vios_name'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['-P'] + configDict['vios_name']
+        elif configDict['vios_id'] is not None:
+            vios_cmd += self.OPT['VIOSVRCMD']['--ID'] + configDict['vios_id']
+        return self.hmcconn.execute(vios_cmd)
+
     def updatevios(self, state, configDict=None):
         updviosbk_cmd = ''
         if state == 'updated':

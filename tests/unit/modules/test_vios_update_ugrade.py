@@ -17,7 +17,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': None, 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: mandatory parameter 'host_name' is missing"),
 
     # system name is missed
@@ -25,7 +25,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': None, 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
     # providing both vios_name and vios_id
@@ -33,7 +33,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
 
     # both vios_name and vios_id are missed
@@ -41,7 +41,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # user_id is missed
@@ -49,7 +49,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None,
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: mandatory parameter 'user_id' is missing"),
 
     # password and ssh_key_file are missed
@@ -57,7 +57,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': None, 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: Either 'ssh_key_file' or 'password' is mandatory"),
 
     # both password and ssh_key_file are provided
@@ -65,7 +65,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': 'data', 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: Parameters 'ssh_key_file' and 'password' are mutually exclusive"),
 
     # mount_loc is provided
@@ -73,7 +73,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: unsupported parameter: mount_loc"),
 
     # providing both vios_name and vios_id
@@ -81,7 +81,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
 
     # both vios_name and vios_id are missed
@@ -89,7 +89,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # disks is provided
@@ -97,7 +97,7 @@ test_data = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: unsupported parameter: disks"),
 
     # All nfs update related testcases
@@ -106,7 +106,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': None, 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: mandatory parameter 'host_name' is missing"),
 
     # system name is missed
@@ -114,7 +114,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': None, 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
     # both password and ssh_key_file are provided
@@ -122,7 +122,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': 'data',
       'ssh_key_file': 'data', 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: unsupported parameters: password,ssh_key_file"),
 
     # password is provided
@@ -130,7 +130,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None,
       'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: unsupported parameter: password"),
 
     # providing both vios_name and vios_id
@@ -138,7 +138,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data',
       'password': 'data', 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': 'data'}},
      "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
 
     # both vios_name and vios_id are missed
@@ -146,7 +146,7 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None,
       'password': None, 'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'vios_name': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': None, 'vios_name': None}},
      "ParameterError: Missing VIOS details"),
 
     # disks is provided
@@ -154,8 +154,24 @@ test_data = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'vios_name': None}},
-     "ParameterError: unsupported parameter: disks")]
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'device': None, 'filesets': None, 'vios_name': None}},
+     "ParameterError: unsupported parameter: disks"),
+
+    # device is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'updated', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': '/dev/cd0', 'filesets': None, 'vios_name': None}},
+     "ParameterError: unsupported parameter: device"),
+
+    # filesets is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'updated', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data',
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'device': None, 'filesets': ['file1'], 'vios_name': None}},
+     "ParameterError: unsupported parameter: filesets")]
 
 test_data1 = [
 
@@ -165,7 +181,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None, 'vios_name': 'data',
       'image_name': 'data', 'host_name': None, 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'host_name' is missing"),
 
     # system name is missed
@@ -173,7 +189,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': None, 'vios_id': None, 'vios_name': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
     # providing both vios_name and vios_id
@@ -181,7 +197,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
 
     # both vios_name and vios_id are missed
@@ -189,7 +205,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': None, 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: Missing VIOS details"),
 
     # user_id is missed
@@ -197,7 +213,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'user_id' is missing"),
 
     # password and ssh_key_file are missed
@@ -205,7 +221,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None, 'filesets': None}},
      "ParameterError: Either 'ssh_key_file' or 'password' is mandatory"),
 
     # both password and ssh_key_file are provided
@@ -213,7 +229,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': 'data', 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None, 'filesets': None}},
      "ParameterError: Parameters 'ssh_key_file' and 'password' are mutually exclusive"),
 
     # files is missing
@@ -221,7 +237,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': None}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': None, 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'files' is missing"),
 
     # disks is missing
@@ -229,7 +245,7 @@ test_data1 = [
      {'repository': 'sftp', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'disks' is missing"),
 
     # All nfs upgrade related testcases
@@ -238,7 +254,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': None, 'vios_name': 'data',
       'image_name': 'data', 'host_name': None, 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'host_name' is missing"),
 
     # system name is missed
@@ -246,7 +262,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': None, 'vios_id': None, 'vios_name': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: mandatory parameter 'system_name' is missing"),
 
     # both password and ssh_key_file are provided
@@ -254,7 +270,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': 'data',
       'ssh_key_file': 'data', 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: unsupported parameters: password,ssh_key_file"),
 
     # password is provided
@@ -262,7 +278,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': 'data',
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: unsupported parameter: password"),
 
     # providing both vios_name and vios_id
@@ -270,7 +286,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': 'data',
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
 
     # both vios_name and vios_id are missed
@@ -278,7 +294,7 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': None, 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': 'data', 'password': 'data',
       'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data'}},
+      'option': None, 'save': None, 'restart': None, 'disks': None, 'files': 'data', 'device': None, 'filesets': None}},
      "ParameterError: Missing VIOS details"),
 
     # mount_loc is missed
@@ -286,8 +302,176 @@ test_data1 = [
      {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
       'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
       'ssh_key_file': None, 'mount_loc': None, 'directory': None,
-      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data'}},
-     "ParameterError: mandatory parameter 'mount_loc' is missing")]
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': None}},
+     "ParameterError: mandatory parameter 'mount_loc' is missing"),
+
+    # device is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'upgraded', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': '/dev/cd0', 'filesets': None}},
+     "ParameterError: unsupported parameter: device"),
+
+    # filesets is provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': 'upgraded', 'attributes':
+     {'repository': 'nfs', 'system_name': 'data', 'vios_id': 'data', 'vios_name': None,
+      'image_name': 'data', 'host_name': 'data', 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': 'data', 'directory': None,
+      'option': None, 'save': None, 'restart': None, 'disks': 'data', 'files': 'data', 'device': None, 'filesets': ['file1']}},
+     "ParameterError: unsupported parameter: filesets")]
+
+test_data_list = [
+    # device is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'list', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: mandatory parameter 'device' is missing"),
+
+    # system_name is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'list', 'attributes':
+     {'system_name': None, 'vios_id': None, 'vios_name': 'data', 'device': '/dev/cd0', 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: mandatory parameter 'system_name' is missing"),
+
+    # both vios_name and vios_id missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'list', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': None, 'device': '/dev/cd0', 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Missing VIOS details"),
+
+    # both vios_name and vios_id provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'list', 'attributes':
+     {'system_name': 'data', 'vios_id': '1', 'vios_name': 'data', 'device': '/dev/cd0', 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
+
+    # unsupported parameter repository provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'list', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'device': '/dev/cd0', 'repository': 'nfs',
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: unsupported parameter: repository"),
+]
+
+test_data_remove = [
+    # filesets is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'filesets': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None}},
+     "ParameterError: mandatory parameter 'filesets' is missing"),
+
+    # system_name is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove', 'attributes':
+     {'system_name': None, 'vios_id': None, 'vios_name': 'data', 'filesets': ['bos.net.tcp.server'], 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None}},
+     "ParameterError: mandatory parameter 'system_name' is missing"),
+
+    # both vios_name and vios_id missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': None, 'filesets': ['bos.net.tcp.server'], 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None}},
+     "ParameterError: Missing VIOS details"),
+
+    # both vios_name and vios_id provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove', 'attributes':
+     {'system_name': 'data', 'vios_id': '1', 'vios_name': 'data', 'filesets': ['bos.net.tcp.server'], 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'device': None}},
+     "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
+
+    # unsupported parameter device provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'filesets': ['bos.net.tcp.server'], 'device': '/dev/cd0', 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None}},
+     "ParameterError: unsupported parameter: device"),
+]
+
+test_data_cleanup = [
+    # system_name is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'cleanup', 'attributes':
+     {'system_name': None, 'vios_id': None, 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: mandatory parameter 'system_name' is missing"),
+
+    # both vios_name and vios_id missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'cleanup', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': None, 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Missing VIOS details"),
+
+    # both vios_name and vios_id provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'cleanup', 'attributes':
+     {'system_name': 'data', 'vios_id': '1', 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
+
+    # unsupported parameter device provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'cleanup', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'device': '/dev/cd0', 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: unsupported parameter: device"),
+]
+
+test_data_remove_outdated = [
+    # system_name is missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove_outdated_filesets', 'attributes':
+     {'system_name': None, 'vios_id': None, 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: mandatory parameter 'system_name' is missing"),
+
+    # both vios_name and vios_id missed
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove_outdated_filesets', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': None, 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Missing VIOS details"),
+
+    # both vios_name and vios_id provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove_outdated_filesets', 'attributes':
+     {'system_name': 'data', 'vios_id': '1', 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': None}},
+     "ParameterError: Parameters 'vios_id' and 'vios_name' are mutually exclusive"),
+
+    # unsupported parameter filesets provided
+    ({'hmc_host': "0.0.0.0", 'hmc_auth': hmc_auth, 'state': None, 'action': 'remove_outdated_filesets', 'attributes':
+     {'system_name': 'data', 'vios_id': None, 'vios_name': 'data', 'device': None, 'repository': None,
+      'image_name': None, 'host_name': None, 'user_id': None, 'password': None,
+      'ssh_key_file': None, 'mount_loc': None, 'directory': None, 'option': None,
+      'save': None, 'restart': None, 'disks': None, 'files': None, 'filesets': ['bos.net.tcp.server']}},
+     "ParameterError: unsupported parameter: filesets"),
+]
 
 
 def common_mock_setup(mocker):
@@ -319,3 +503,51 @@ def test_upgrade_vios(mocker, update_teset_input, expectedError):
         assert expectedError == repr(e.value)
     else:
         vios_update_upgrade.ensure_update_upgrade(vios_update_upgrade, update_teset_input)
+
+
+@pytest.mark.parametrize("list_test_input, expectedError", test_data_list)
+def test_list_vios(mocker, list_test_input, expectedError):
+    vios_update_upgrade = common_mock_setup(mocker)
+    vios_update_upgrade.Hmc.checkIfHMCFullyBootedUp.return_value = (True, {})
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            vios_update_upgrade.list_filesets(vios_update_upgrade, list_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        vios_update_upgrade.list_filesets(vios_update_upgrade, list_test_input)
+
+
+@pytest.mark.parametrize("remove_test_input, expectedError", test_data_remove)
+def test_remove_vios(mocker, remove_test_input, expectedError):
+    vios_update_upgrade = common_mock_setup(mocker)
+    vios_update_upgrade.Hmc.checkIfHMCFullyBootedUp.return_value = (True, {})
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            vios_update_upgrade.remove_filesets(vios_update_upgrade, remove_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        vios_update_upgrade.remove_filesets(vios_update_upgrade, remove_test_input)
+
+
+@pytest.mark.parametrize("cleanup_test_input, expectedError", test_data_cleanup)
+def test_cleanup_vios(mocker, cleanup_test_input, expectedError):
+    vios_update_upgrade = common_mock_setup(mocker)
+    vios_update_upgrade.Hmc.checkIfHMCFullyBootedUp.return_value = (True, {})
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            vios_update_upgrade.cleanup_vios(vios_update_upgrade, cleanup_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        vios_update_upgrade.cleanup_vios(vios_update_upgrade, cleanup_test_input)
+
+
+@pytest.mark.parametrize("remove_outdated_test_input, expectedError", test_data_remove_outdated)
+def test_remove_outdated_vios(mocker, remove_outdated_test_input, expectedError):
+    vios_update_upgrade = common_mock_setup(mocker)
+    vios_update_upgrade.Hmc.checkIfHMCFullyBootedUp.return_value = (True, {})
+    if 'ParameterError' in expectedError:
+        with pytest.raises(ParameterError) as e:
+            vios_update_upgrade.remove_outdated_filesets(vios_update_upgrade, remove_outdated_test_input)
+        assert expectedError == repr(e.value)
+    else:
+        vios_update_upgrade.remove_outdated_filesets(vios_update_upgrade, remove_outdated_test_input)
