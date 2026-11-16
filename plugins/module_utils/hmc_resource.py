@@ -1098,6 +1098,42 @@ class Hmc():
             svc_events_cmd += self.OPT['LSSVCEVENTS']['-F'] + ','.join(params['display_attributes'])
         return self.hmcconn.execute(svc_events_cmd)
 
+    def create_rules_command(self, params):
+        opr = params['state']
+        # Map Ansible state name to the actual VIOS rules -o operation value
+        vios_opr = 'list' if opr == 'rule_list' else opr
+        rules_cmd = self.CMD['RULES'] + self.OPT['RULES']['-O'] + vios_opr
+
+        if opr in ('add', 'modify', 'delete'):
+            if params['device_instance'] is not None:
+                rules_cmd += self.OPT['RULES']['-L'] + str(params['device_instance'])
+            elif params['device_type'] is not None:
+                rules_cmd += self.OPT['RULES']['-T'] + str(params['device_type'])
+            if params['attribute'] is not None:
+                rules_cmd += self.OPT['RULES']['-A'] + str(params['attribute'])
+
+        if opr in ('deploy', 'rule_list', 'diff'):
+            if params.get('default_rules'):
+                rules_cmd += self.OPT['RULES']['-D']
+
+        if opr in ('rule_list', 'diff'):
+            if params.get('system_settings'):
+                rules_cmd += self.OPT['RULES']['-S']
+
+        if opr == 'diff':
+            if params.get('show_count'):
+                rules_cmd += self.OPT['RULES']['-N']
+
+        if opr in ('import', 'rule_list', 'diff', 'add', 'modify', 'delete'):
+            if params.get('rules_file') is not None:
+                rules_cmd += self.OPT['RULES']['-F'] + str(params['rules_file'])
+
+        if opr == 'import':
+            if params.get('force'):
+                rules_cmd += self.OPT['RULES']['-FORCE']
+
+        return rules_cmd
+
     def create_viosecure_command(self, params, fields):
         option_map = {'port': '-PORT', 'interface': '-INTERFACE', 'remote': '-REMOTE', 'address': '-ADDRESS', 'timeout': '-TIMEOUT'}
         viosecure_cmd = 'viosecure'
