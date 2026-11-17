@@ -2,9 +2,22 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 import logging
 import os
+import re
 from collections import OrderedDict
 from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import HmcError
+from ansible_collections.ibm.power_hmc.plugins.module_utils.hmc_exceptions import ParameterError
 logger = logging.getLogger(__name__)
+
+# Whitelist: valid IPv4, IPv6, and hostname/FQDN characters only
+_SAFE_HOST = re.compile(
+    r'^('
+    r'(\d{1,3}\.){3}\d{1,3}'                               # IPv4
+    r'|'
+    r'[0-9a-fA-F:]{2,39}'                                  # IPv6
+    r'|'
+    r'[a-zA-Z0-9]([a-zA-Z0-9\-\.]{0,251}[a-zA-Z0-9])?'   # hostname / FQDN
+    r')$'
+)
 
 
 def resolve_return_code(rc):
@@ -30,6 +43,10 @@ class HmcCliConnection:
     # Constructor for HmcCliConnection
     #
     def __init__(self, module, ip, username, password):
+        ip = ip.strip()
+        if not _SAFE_HOST.match(ip):
+            raise ParameterError("Invalid hmc_host value: '%s'. "
+                                 "Must be a valid IPv4, IPv6, or hostname." % ip)
         self.ip = ip
         self.pwd = password
         self.user = username

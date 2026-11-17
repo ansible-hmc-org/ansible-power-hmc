@@ -50,10 +50,10 @@ class Hmc():
     def pingTest(self, i_host):
         pattern = re.compile(r"(\d) (packets\s)?received")
         report = ("No response", "Partial Response", "Alive")
-        cmd = "ping -c 2 " + i_host.strip()
+        cmd = ["ping", "-c", "2", i_host.strip()]
 
         result = 'No response'
-        rc, stdout_value, stderr_value = self.hmcconn.module.run_command(cmd, use_unsafe_shell=True)
+        rc, stdout_value, stderr_value = self.hmcconn.module.run_command(cmd)
 
         if isinstance(stdout_value, bytes):
             stdout_value = stdout_value.decode('ascii')
@@ -67,10 +67,11 @@ class Hmc():
     def sshTest(self, i_host, u_host):
         pattern = re.compile(r"Alive")
         report = ("No response", "Alive")
-        cmd = "ssh -o ConnectTimeout=5 -o Batchmode=yes " + u_host.strip() + "@" + i_host.strip() + " echo 'Alive'"
+        cmd = ["ssh", "-o", "ConnectTimeout=5", "-o", "Batchmode=yes",
+               u_host.strip() + "@" + i_host.strip(), "echo", "Alive"]
 
         result = report[0]
-        rc, stdout_value, stderr_value = self.hmcconn.module.run_command(cmd, use_unsafe_shell=True)
+        rc, stdout_value, stderr_value = self.hmcconn.module.run_command(cmd)
 
         if isinstance(stdout_value, bytes):
             stdout_value = stdout_value.decode('ascii')

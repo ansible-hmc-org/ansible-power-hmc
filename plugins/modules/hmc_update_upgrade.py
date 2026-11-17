@@ -262,6 +262,24 @@ logger = logging.getLogger(__name__)
 
 HMC_REBOOT_TIMEOUT = 60
 
+# Whitelist: valid IPv4, IPv6, and hostname/FQDN characters only
+_SAFE_HOST = re.compile(
+    r'^('
+    r'(\d{1,3}\.){3}\d{1,3}'                               # IPv4
+    r'|'
+    r'[0-9a-fA-F:]{2,39}'                                  # IPv6
+    r'|'
+    r'[a-zA-Z0-9]([a-zA-Z0-9\-\.]{0,251}[a-zA-Z0-9])?'   # hostname / FQDN
+    r')$'
+)
+
+
+def _validate_hmc_host(module, hmc_host):
+    """Raise fail_json immediately if hmc_host contains shell-unsafe characters."""
+    if not _SAFE_HOST.match(hmc_host.strip()):
+        module.fail_json(msg="Invalid hmc_host value: '%s'. "
+                             "Must be a valid IPv4, IPv6, or hostname." % hmc_host)
+
 
 def init_logger():
     old_umask = os.umask(0o177)
@@ -338,6 +356,7 @@ def command_option_checker(config):
 
 def remove_image_from_hmc(module, params):
     hmc_host = params['hmc_host']
+    _validate_hmc_host(module, hmc_host)
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     list_on_hmc = 'sshpass -p {0} ssh {1}@{2} ls network_install'.format(password, hmc_user, hmc_host)
@@ -351,6 +370,7 @@ def remove_image_from_hmc(module, params):
 
 def check_image_in_hmc(module, params):
     hmc_host = params['hmc_host']
+    _validate_hmc_host(module, hmc_host)
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     local_path = params['build_config']['build_file']
@@ -368,6 +388,7 @@ def check_image_in_hmc(module, params):
 
 def image_copy_from_local_to_hmc(module, params):
     hmc_host = params['hmc_host']
+    _validate_hmc_host(module, hmc_host)
     hmc_user = params['hmc_auth']['username']
     password = params['hmc_auth']['password']
     local_path = params['build_config']['build_file']
