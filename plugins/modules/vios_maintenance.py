@@ -260,8 +260,6 @@ EXAMPLES = '''
       system: <sys>
     action: list
 
-
-
 - name: View the mapping information of a viosbr backup file present on the VIOS
   ibm.power_hmc.vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
