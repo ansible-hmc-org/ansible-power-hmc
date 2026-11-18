@@ -20,7 +20,6 @@ short_description: Manage the vios backup
 notes:
     - All Operations support passwordless authentication.
     - The C(list) and C(view) actions are performed directly on the VIOS
-    - Exactly one of C(state) or C(action) must be provided.
 description:
     - Create a VIOS backup file
     - List VIOS backup file details
@@ -83,7 +82,6 @@ options:
                 description:
                     - The name of the VIOS to backup.
                       vios_id, vios_uuid, vios_name are mutually exclusive.
-                    - Mandatory for C(action). Only I(vios_name) is supported with C(action).
                 type: str
             backup_name:
                 description:
@@ -250,6 +248,18 @@ EXAMPLES = '''
       system: <sys>
       dir: /tmp/backups
     action: list
+- name: List the viosbr backup files present on the VIOS identified by its ID
+  ibm.power_hmc.vios_maintenance:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: '{{ ansible_user }}'
+      password: '{{ hmc_password }}'
+    attributes:
+      vios_id: <vios id>
+      system: <sys>
+    action: list
+
+
 
 - name: View the mapping information of a viosbr backup file present on the VIOS
   ibm.power_hmc.vios_maintenance:
@@ -325,16 +335,16 @@ def validate_sub_params(params):
                            'dir', 'view_backup_file', 'mapping', 'devtype']
     if opr == 'list':
         params = params['attributes']
-        mandatoryList = ['system', 'vios_name']
-        unsupportedList = ['types', 'vios_id', 'vios_uuid', 'backup_name', 'file_list', 'nimol_resource', 'media_repository',
+        mandatoryList = ['system']
+        unsupportedList = ['types', 'backup_name', 'file_list', 'nimol_resource', 'media_repository',
                            'volume_group_structure', 'restart', 'new_name', 'view_backup_file', 'mapping', 'devtype']
     if opr == 'view':
         params = params['attributes']
-        mandatoryList = ['system', 'vios_name', 'view_backup_file']
-        unsupportedList = ['types', 'vios_id', 'vios_uuid', 'backup_name', 'file_list', 'nimol_resource', 'media_repository',
+        mandatoryList = ['system', 'view_backup_file']
+        unsupportedList = ['types', 'backup_name', 'file_list', 'nimol_resource', 'media_repository',
                            'volume_group_structure', 'restart', 'new_name', 'dir']
 
-    if opr in ['present', 'restore', 'absent', 'modify']:
+    if opr in ['present', 'restore', 'absent', 'modify', 'list', 'view']:
         count = sum(x is not None for x in [params['vios_id'], params['vios_uuid'], params['vios_name']])
         if count == 0:
             raise ParameterError("Missing VIOS details")
@@ -672,13 +682,22 @@ def viosbr_action(module, params):
     hmc = Hmc(hmc_conn)
 
     m_system = attributes['system']
-    vios_name = attributes['vios_name']
     sys_list = (
         hmc_conn.execute("lssyscfg -r sys -F name").splitlines() + hmc_conn.execute("lssyscfg -r sys -F type_model*serial_num").splitlines()
     )
     if m_system not in sys_list:
         module.fail_json(msg="The managed system is not available in HMC")
     vios_list = hmc_conn.execute("lssyscfg -r lpar -m {0} -F name".format(m_system)).splitlines()
+    if attributes['vios_name'] is not None:
+        vios_name = attributes['vios_name']
+    else:
+        # viosvrcmd needs the VIOS name, so map the given id/uuid to it
+        if attributes['vios_id'] is not None:
+            key, field = attributes['vios_id'], 'lpar_id'
+        else:
+            key, field = attributes['vios_uuid'], 'uuid'
+        key_list = hmc_conn.execute("lssyscfg -r lpar -m {0} -F {1}".format(m_system, field)).splitlines()
+        vios_name = dict(zip(key_list, vios_list)).get(key)
     if vios_name not in vios_list:
         module.fail_json(msg="The vios is not available in the managed system")
 
