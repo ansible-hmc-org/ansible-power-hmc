@@ -248,6 +248,7 @@ EXAMPLES = '''
       system: <sys>
       dir: /tmp/backups
     action: list
+
 - name: List the viosbr backup files present on the VIOS identified by its ID
   ibm.power_hmc.vios_maintenance:
     hmc_host: "{{ inventory_hostname }}"
